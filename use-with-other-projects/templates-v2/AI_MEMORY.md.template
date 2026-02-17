@@ -1,0 +1,28 @@
+# AI Memory ([PROJECT_NAME])
+
+Read when: starting any session to recall user preferences and past lessons.
+Write when: the user explicitly states a preference or a significant lesson is learned.
+Skip when: never.
+
+Owner: [OWNER]
+Last updated: [YYYY-MM-DD]
+
+## Safety and Data Rules
+- Do not store secrets, credentials, API keys, tokens, or private personal data in this file.
+- Keep entries concise and implementation-relevant.
+- If sensitive data is accidentally added, remove it immediately and rotate affected secrets.
+
+## 1) User Preferences & Style
+- **Language/Tone:** [Formal/Casual/Terse]
+- **Coding Style:**
+  - [Preference 1: e.g., "Prefer functional patterns over classes"]
+  - [Preference 2: e.g., "Always use TypeScript strict mode"]
+  - [Preference 3: e.g., "Comments should explain 'why', not 'what'"]
+
+## 2) Project-Specific Lessons (Do Not Repeat Mistakes)
+- [yyyy-mm-dd]: [Lesson learned about a specific library quirk or architectural decision]
+- [yyyy-mm-dd]: [e.g., "The auth service requires a specialized restart sequence"]
+- [yyyy-mm-dd]: [e.g., "Never update dependency X past version Y due to breaking change"]
+
+## 3) Active Context / Scratchpad
+- [Current focus or temporary context to remember between prompts]

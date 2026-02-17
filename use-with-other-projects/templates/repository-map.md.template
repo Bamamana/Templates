@@ -1,0 +1,35 @@
+# Repository Map
+
+## Root
+- `AI_AGENT.md` — AI session entry contract
+- `AI_CONTEXT.md` — machine-generated AI module/document map
+- `CHANGELOG.md` — project history for human + AI context
+- `README.md` — overview and quick start
+- `pyproject.toml` — formatter/linter/type-checker/test configuration
+- `.pre-commit-config.yaml` — local commit quality gates
+
+## Application
+- `[APP_ENTRY]` — composition root / app bootstrap
+- `[APP_MODULE_DIR]` — routes/services/security/models by concern
+
+## Documentation
+- `docs/INSTRUCTIONS_INDEX.md` — canonical docs navigation
+- `docs/constitution/AI_SOURCE_OF_TRUTH.md` — contributor rules and standards
+- `docs/WORKFLOW_COMMANDS.md` — command runbook
+- `docs/WORKFLOW_TEST_MATRIX.md` — workflow-to-test mapping
+- `docs/MANUAL_SMOKE_RUNBOOK.md` — manual smoke procedure
+- `docs/GAME_PLAN.md` — phase tracking and execution roadmap
+- `docs/POST_CODING_CHECKS.md` — mandatory after-coding checklist
+- `docs/architecture/repository-map.md` — this structure map
+
+## Operations
+- `[VERIFY_SCRIPT]` — one-command validation gate
+- `[SMOKE_SCRIPT]` — smoke test runner
+- `[TARGETED_SCRIPT]` — targeted workflow test runner
+- `[AI_CONTEXT_SCRIPT]` — AI context map generator
+- `[STRUCTURE_GUARD_SCRIPT]` — file/function guardrail checks
+
+## Tests
+- `[SMOKE_TEST_PATH]` — import/startup smoke validation
+- `[INTEGRATION_TEST_PATH]` — security/workflow posture checks
+- `[UNIT_TEST_PATH]` — unit tests

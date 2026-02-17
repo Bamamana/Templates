@@ -1,0 +1,50 @@
+# AI Agent Contract ([PROJECT_NAME])
+
+Read when: always; this is the canonical AI startup contract.
+Skip when: never.
+
+This is the single canonical file the human should point the AI to.
+
+Human startup instruction:
+"Read `AI_AGENT.md` and follow it strictly."
+
+## AI Navigation Map (Read in this order)
+1. `AI_AGENT.md` (this file)
+2. `docs/AI_MEMORY.md` (user preferences & lessons)
+3. `docs/TEMPLATE_INDEX.yaml` (if present)
+4. `docs/PROJECT_CANVAS.md`
+5. `docs/TECH_STACK.md`
+6. `docs/ENGINEERING_PLAYBOOK.md`
+7. `docs/OPS_SECURITY_RELEASE.md`
+8. `CHANGELOG.md`
+9. `AI_CONTEXT.md` (if present)
+
+## Mandatory Working Rules
+- If confidence is below 90%, pause and ask 1-3 precise clarifying questions.
+- Make smallest correct change first; avoid unnecessary scope.
+- For behavior changes, add/update targeted tests.
+- Update docs in the same change when behavior, commands, paths, or structure changes.
+- Regenerate AI context map: `[AI_CONTEXT_COMMAND]`.
+- Run verify gate before handoff: `[VERIFY_COMMAND]`.
+
+## File Size and Modularity Rules
+- Soft target: keep new files <= 400 lines.
+- Hard trigger: refactor when any source file > 500 lines.
+- Keep modules cohesive and dependency direction clear.
+
+## Tier Selection
+- Selected tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
+- Rationale: [WHY_THIS_TIER]
+
+## Definition of Done (Per Change)
+- [ ] Scope completed
+- [ ] Targeted tests updated/passing
+- [ ] Verify gate passed
+- [ ] Relevant docs updated
+- [ ] Changelog updated
+- [ ] Risks noted (or `None`)
+
+## Required Handoff Format
+- Files changed
+- Commands/tests run with results
+- Open risks or follow-up refactors

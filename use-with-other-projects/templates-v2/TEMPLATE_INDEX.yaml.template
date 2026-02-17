@@ -1,0 +1,165 @@
+version: v2.2
+purpose: Machine-readable navigation and applicability map for templates-v2
+canonical_startup: AI_AGENT.md
+read_order:
+  - AI_AGENT.md
+  - docs/AI_MEMORY.md
+  - docs/PROJECT_CANVAS.md
+  - docs/TECH_STACK.md
+  - docs/ENGINEERING_PLAYBOOK.md
+  - docs/OPS_SECURITY_RELEASE.md
+  - CHANGELOG.md
+  - AI_CONTEXT.md
+
+core_templates:
+  - template: AI_AGENT.md.template
+    destination: AI_AGENT.md
+    purpose: Canonical AI startup contract and execution rules
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: AI_MEMORY.md.template
+    destination: docs/AI_MEMORY.md
+    purpose: Persistent user preferences and lessons learned
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: TECH_STACK.md.template
+    destination: docs/TECH_STACK.md
+    purpose: Architecture, technology choices, and decision records
+    required_by_tier: [A, B, C]
+    read_when: Making architectural decisions or onboarding
+    skip_when: Never
+
+  - template: PROJECT_CANVAS.md.template
+    destination: docs/PROJECT_CANVAS.md
+    purpose: Current project state, goals, phase, and next action
+    required_by_tier: [A, B, C]
+    read_when: Establishing current state, scope, and next work item
+    skip_when: Never
+
+  - template: ENGINEERING_PLAYBOOK.md.template
+    destination: docs/ENGINEERING_PLAYBOOK.md
+    purpose: Commands, matrix, feature workflow, and after-coding checks
+    required_by_tier: [A, B, C]
+    read_when: Implementing, testing, validating, or troubleshooting
+    skip_when: Never
+
+  - template: OPS_SECURITY_RELEASE.md.template
+    destination: docs/OPS_SECURITY_RELEASE.md
+    purpose: Tiered ops/security/release/observability/risk controls
+    required_by_tier: [A, B, C]
+    read_when: Deploying, hardening, or assessing operational risk
+    skip_when: Never
+
+  - template: CHANGELOG.md.template
+    destination: CHANGELOG.md
+    purpose: Release history and verification evidence
+    required_by_tier: [A, B, C]
+    read_when: Planning or documenting behavior changes
+    skip_when: Never
+
+  - template: TEMPLATE_VALIDATION_CHECKLIST.md.template
+    destination: docs/TEMPLATE_VALIDATION_CHECKLIST.md
+    purpose: Manual template quality and tier compliance checks
+    required_by_tier: [A, B, C]
+    read_when: Validating template application
+    skip_when: Never
+
+  - template: APPLY_CHECKLIST.md.template
+    destination: docs/APPLY_CHECKLIST.md
+    purpose: Apply-order checklist before validation and final handoff
+    required_by_tier: [A, B, C]
+    read_when: Initial template install/migration
+    skip_when: Ongoing feature work after setup
+
+  - template: .github/workflows/ci.yml.template
+    destination: .github/workflows/ci.yml
+    purpose: Baseline CI quality and security checks
+    required_by_tier: [A, B, C]
+    read_when: Setting CI baseline or troubleshooting CI failures
+    skip_when: Never
+
+optional_addons:
+  - template: addons/README.md.template
+    destination: README.md
+    purpose: Project overview, quickstart, docs pointers, and license surface
+    use_when: Project needs a standardized repository landing page
+
+  - template: addons/.gitignore.template
+    destination: .gitignore
+    purpose: Prevent secrets and build artifacts from being committed
+    use_when: Repository lacks a vetted ignore baseline
+
+  - template: addons/CONTRIBUTING.md.template
+    destination: CONTRIBUTING.md
+    purpose: Contributor workflow and review expectations
+    use_when: Team or open-source collaboration requires explicit contribution rules
+
+  - template: addons/LICENSE.template
+    destination: LICENSE
+    purpose: License placeholder/reference for legal clarity
+    use_when: Repository needs explicit licensing
+
+  - template: addons/.github/PULL_REQUEST_TEMPLATE.md.template
+    destination: .github/PULL_REQUEST_TEMPLATE.md
+    purpose: Standardize PR quality and evidence
+    use_when: Pull requests are used for change review
+
+  - template: addons/.github/ISSUE_TEMPLATE/bug_report.md.template
+    destination: .github/ISSUE_TEMPLATE/bug_report.md
+    purpose: Structured defect reporting
+    use_when: Issue tracking is enabled
+
+  - template: addons/.github/ISSUE_TEMPLATE/feature_request.md.template
+    destination: .github/ISSUE_TEMPLATE/feature_request.md
+    purpose: Structured feature intake
+    use_when: Issue tracking is enabled
+
+  - template: addons/.github/ISSUE_TEMPLATE/config.yml.template
+    destination: .github/ISSUE_TEMPLATE/config.yml
+    purpose: Issue form behavior and security contact path
+    use_when: Issue templates are enabled
+
+  - template: addons/.github/workflows/ci.python.yml.template
+    destination: .github/workflows/ci.yml
+    purpose: Python-optimized CI variant
+    use_when: Project runtime is Python and team prefers runtime-specific CI template
+
+  - template: addons/.github/workflows/ci.node.yml.template
+    destination: .github/workflows/ci.yml
+    purpose: Node-optimized CI variant
+    use_when: Project runtime is Node.js and team prefers runtime-specific CI template
+
+  - template: addons/docker-compose.local.yml.template
+    destination: docker-compose.local.yml
+    purpose: Local compose runtime profile
+    use_when: Compose runtime is used locally
+
+  - template: addons/MULTI_APP_SERVER_BLUEPRINT.md.template
+    destination: docs/MULTI_APP_SERVER_BLUEPRINT.md
+    purpose: Multi-app host isolation and onboarding baseline
+    use_when: Hosting 2+ independent apps on one server
+
+  - template: addons/FIRST_SESSION_PROMPT.txt.template
+    destination: docs/FIRST_SESSION_PROMPT.txt
+    purpose: Optional human startup helper prompt
+    use_when: Team wants a copy-paste startup prompt
+
+  - template: addons/ADR_TEMPLATE.md.template
+    destination: docs/ADR_TEMPLATE.md
+    purpose: Structured architecture decision record
+    use_when: Material architecture decision or tradeoff needs tracking
+
+  - template: addons/AI_OPERATING_CONTRACT.md.template
+    destination: AI_OPERATING_CONTRACT.md
+    purpose: Legacy compatibility alias to AI_AGENT
+    use_when: Legacy automation requires this exact filename
+
+validation_order:
+  - Apply files using APPLY_CHECKLIST
+  - Complete TEMPLATE_VALIDATION_CHECKLIST
+  - Run scripts/validate_templates.sh
+  - Run project verify command

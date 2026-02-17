@@ -1,0 +1,12 @@
+services:
+  app:
+    environment:
+      SESSION_COOKIE_SECURE: "false"
+      REMEMBER_COOKIE_SECURE: "false"
+      PREFERRED_URL_SCHEME: "http"
+    ports:
+      - "8000:8000"
+
+  cloudflared:
+    profiles:
+      - tunnel

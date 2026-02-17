@@ -1,0 +1,17 @@
+# AI Operating Contract ([PROJECT_NAME])
+
+Read when: legacy automation requires this exact filename.
+Skip when: `AI_AGENT.md` is the startup contract (default and recommended).
+
+Compatibility alias for teams that still reference `AI_OPERATING_CONTRACT.md`.
+
+Canonical and authoritative file is always `AI_AGENT.md` generated from `AI_AGENT.md.template`.
+If both files exist in a project, AI must follow `AI_AGENT.md` only.
+
+## Required Content
+Mirror the exact content of `AI_AGENT.md` in this file only when legacy automation requires this filename.
+Do not maintain separate rules here.
+
+## Migration Note
+Recommended steady-state is a single startup file:
+- `AI_AGENT.md`

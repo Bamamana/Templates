@@ -1,0 +1,32 @@
+# [PROJECT_NAME]
+
+[ONE_LINE_DESCRIPTION]
+
+## Status
+- Tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
+- Lifecycle: [ACTIVE/MAINTENANCE/ARCHIVED]
+
+## Quickstart
+```bash
+[SETUP_COMMANDS]
+[BUILD_RUN_COMMAND]
+```
+
+## Verify
+```bash
+[VERIFY_COMMAND]
+```
+
+## Documentation
+- AI startup: `AI_AGENT.md`
+- Project state: `docs/PROJECT_CANVAS.md`
+- Tech stack: `docs/TECH_STACK.md`
+- Engineering workflow: `docs/ENGINEERING_PLAYBOOK.md`
+- Ops/security/release: `docs/OPS_SECURITY_RELEASE.md`
+- Change history: `CHANGELOG.md`
+
+## Contributing
+See `CONTRIBUTING.md`.
+
+## License
+[LICENSE_TYPE]

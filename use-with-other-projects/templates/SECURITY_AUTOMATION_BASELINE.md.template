@@ -1,0 +1,37 @@
+# Security Automation Baseline
+
+Automated security controls baseline for [PROJECT_NAME].
+
+## Project Tier
+- Tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
+- Required controls by tier: see `docs/PROJECT_TIER_POLICY.md`
+
+## Required Scanners
+- Secret scanning: [TOOL_OR_NA]
+- Dependency vulnerability scanning (SCA): [TOOL_OR_NA]
+- Static analysis (SAST): [TOOL_OR_NA]
+- Container/image scan (if applicable): [TOOL_OR_NA]
+
+## Supply Chain Controls
+- Dependency pinning policy:
+- Lockfile required: [YES/NO]
+- SBOM generation: [TOOL_OR_NA]
+- Artifact signing/provenance: [TOOL_OR_NA]
+
+## CI Enforcement
+- Fail-on-critical vulnerabilities: [YES/NO]
+- Fail-on-secrets-detected: [YES/NO]
+- Exception process:
+
+## Verification Commands
+```bash
+[SECRET_SCAN_COMMAND]
+[SCA_COMMAND]
+[SAST_COMMAND]
+[SBOM_COMMAND]
+```
+
+## Security Review Cadence
+- Automated scan cadence:
+- Manual review cadence:
+- Owner:

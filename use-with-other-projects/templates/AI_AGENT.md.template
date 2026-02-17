@@ -1,0 +1,38 @@
+# AI Agent Session Contract ([PROJECT_NAME])
+
+This file is the mandatory entry point for every AI session in this repository.
+
+## Required Startup Order
+1. Read `AI_AGENT.md` (this file)
+2. Read `docs/constitution/AI_SOURCE_OF_TRUTH.md`
+3. Read `AI_CONTEXT.md` (machine-generated map)
+4. Read `docs/INSTRUCTIONS_INDEX.md`
+5. Use `docs/WORKFLOW_COMMANDS.md` and `docs/WORKFLOW_TEST_MATRIX.md`
+
+## File Lookup Map (What to Read for What)
+- **Rules and non-negotiables:** `docs/constitution/AI_SOURCE_OF_TRUTH.md`
+- **Tier required/optional controls:** `docs/PROJECT_TIER_POLICY.md`
+- **Where everything lives:** `docs/architecture/repository-map.md`
+- **Commands to run:** `docs/WORKFLOW_COMMANDS.md`
+- **Which tests prove which workflow:** `docs/WORKFLOW_TEST_MATRIX.md`
+- **Feature planning spec:** `docs/FEATURE_SPEC_TEMPLATE.md`
+- **Architecture decisions:** `docs/ADR_TEMPLATE.md`
+- **Delivery/security risk tracking:** `docs/RISK_REGISTER.md`
+- **Release governance:** `docs/RELEASE_POLICY.md`
+- **Security automation controls:** `docs/SECURITY_AUTOMATION_BASELINE.md`
+- **Monitoring and incident handling:** `docs/OBSERVABILITY_RUNBOOK.md`
+- **Post-change quality checklist:** `docs/POST_CODING_CHECKS.md`
+- **Smoke test inventory:** `docs/SMOKE_TEST_CATALOG.md`
+- **Deployment process:** `docs/DEPLOYMENT_RUNBOOK.md`
+- **Secrets governance:** `docs/SECRETS_POLICY.md`
+- **Template quality gate:** `docs/TEMPLATE_LINT_CHECKLIST.md`
+- **Project change history:** `CHANGELOG.md`
+- **Live module/document map:** `AI_CONTEXT.md`
+- **Current execution status and roadmap:** `docs/GAME_PLAN.md`
+
+## Mandatory AI Workflow
+1. Understand scope from this file + source-of-truth docs.
+2. Make minimal, modular changes in the correct layer.
+3. Update docs in the same change when commands, paths, tests, or behavior change.
+4. Run `[VERIFY_COMMAND]` before handoff.
+5. Report changed files, commands run, and remaining risks.

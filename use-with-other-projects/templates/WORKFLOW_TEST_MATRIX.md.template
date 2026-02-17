@@ -1,0 +1,14 @@
+# Workflow Test Matrix
+
+| Workflow | Purpose | Command | Type |
+|---|---|---|---|
+| App/module syntax | Catch immediate syntax failures | `[SYNTAX_COMMAND]` | static/smoke |
+| App startup import | Ensure app factory/module loads | `[SMOKE_COMMAND]` | smoke |
+| Auth/security posture | Ensure auth and security route posture remains enforced | `[TARGETED_TEST_COMMAND]` | workflow-targeted |
+| Full local verify | Standard pre-handoff gate | `[VERIFY_COMMAND]` | gate |
+| Full suite coverage | Detect regressions and enforce minimum confidence | `[COVERAGE_COMMAND]` | regression |
+
+## Policy
+- Every behavior change must map to at least one targeted test command.
+- New workflow = add matrix row in the same change.
+- Smoke scenarios are cataloged in `docs/SMOKE_TEST_CATALOG.md`.

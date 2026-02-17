@@ -1,0 +1,48 @@
+# Deployment Runbook
+
+Production deployment execution guide for [PROJECT_NAME].
+
+## Current Status
+- Phase: 3 (Server Deployment Readiness)
+- Production cutover: [NOT_STARTED/IN_PROGRESS/READY]
+
+## Preconditions
+- [ ] Feature scope for release is complete and documented
+- [ ] Verify gate passes on release candidate
+- [ ] Backup and restore process validated
+- [ ] Required environment variables validated
+- [ ] Security posture checklist reviewed
+
+## Environment Baseline
+- Host OS hardened and access policy enforced
+- Runtime installed and healthy
+- External routing/tunnel config validated
+- Secrets provided via environment/secret manager only
+
+## Deployment Steps
+1. Pull latest code on target host.
+2. Ensure environment values are present and valid.
+3. Start/update runtime stack.
+4. Initialize/migrate DB as needed.
+5. Verify service status.
+6. Validate key workflows.
+
+## Post-Deploy Validation
+- [ ] Service status healthy
+- [ ] Logs contain no critical startup errors
+- [ ] Auth and critical workflows succeed
+- [ ] No unintended public write endpoints
+- [ ] Automated verify/smoke checks pass where applicable
+
+## Rollback Procedure
+1. Stop current release.
+2. Re-deploy prior known-good image/tag/commit.
+3. Restore DB from latest validated backup if needed.
+4. Re-run smoke checks.
+
+## Incident Notes Template
+- Timestamp:
+- Symptom:
+- Impact:
+- Mitigation:
+- Follow-up action:

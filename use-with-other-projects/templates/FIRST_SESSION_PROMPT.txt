@@ -1,0 +1,17 @@
+Read `AI_AGENT.md` first and follow it strictly.
+
+Then read:
+1. `docs/constitution/AI_SOURCE_OF_TRUTH.md`
+2. `AI_CONTEXT.md`
+3. `docs/INSTRUCTIONS_INDEX.md`
+
+Execution requirements:
+- Keep changes modular and minimal.
+- Add or update targeted tests for behavior changes.
+- Update docs + changelog in the same change when behavior/paths/commands/tests change.
+- Run verify gate before handoff.
+
+Handoff format:
+- Files changed
+- Commands/tests run with results
+- Open risks or follow-up refactors

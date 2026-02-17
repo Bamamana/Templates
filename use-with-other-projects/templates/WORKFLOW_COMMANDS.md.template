@@ -1,0 +1,52 @@
+# [PROJECT_NAME] Workflow Commands
+
+## Setup
+```bash
+[SETUP_COMMANDS]
+```
+
+## AI Context Refresh
+```bash
+[AI_CONTEXT_COMMAND]
+```
+
+## Structure Guardrails
+```bash
+[STRUCTURE_GUARD_COMMAND]
+```
+
+## Build & Run
+```bash
+[BUILD_RUN_COMMAND]
+```
+
+## Build & Run (Local-Only / No Tunnel)
+```bash
+[LOCAL_ONLY_RUN_COMMAND]
+```
+
+## Local Validation Gate
+```bash
+[VERIFY_COMMAND]
+```
+
+## Quality Tools (Direct)
+```bash
+[LINT_COMMAND]
+[FORMAT_CHECK_COMMAND]
+[TYPECHECK_COMMAND]
+```
+
+## Targeted Tests
+```bash
+[SMOKE_COMMAND]
+[TARGETED_TEST_COMMAND]
+```
+
+## Manual Smoke Run
+- Follow: `docs/MANUAL_SMOKE_RUNBOOK.md`
+
+## Logs / Troubleshooting
+```bash
+[LOGS_COMMAND]
+```

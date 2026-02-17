@@ -1,0 +1,37 @@
+# Template Lint Checklist
+
+Use this checklist whenever applying templates to a new project.
+
+## Placeholder Integrity
+- [ ] No unresolved placeholders remain (e.g., `[PROJECT_NAME]`, `[VERIFY_COMMAND]`)
+- [ ] Commands are executable on target OS/runtime
+- [ ] File links point to existing files
+
+## Governance Integrity
+- [ ] `AI_AGENT.md` exists at project root
+- [ ] `docs/constitution/AI_SOURCE_OF_TRUTH.md` exists and references startup order
+- [ ] `docs/INSTRUCTIONS_INDEX.md` includes all core workflow docs
+- [ ] `CHANGELOG.md` exists and has `Unreleased` section
+- [ ] `docs/GAME_PLAN.md` exists with phase statuses
+- [ ] `docs/PROJECT_TIER_POLICY.md` exists and selected tier is recorded
+
+## Quality Gate Integrity
+- [ ] Verify command is defined and works
+- [ ] Smoke command exists and runs
+- [ ] At least one targeted workflow test exists
+- [ ] Workflow matrix maps each key workflow to a command
+
+## Operations Integrity
+- [ ] Manual smoke runbook exists and is executable
+- [ ] Deployment runbook exists with rollback section
+- [ ] Secrets policy exists and matches runtime environment
+
+## Tier-Control Integrity
+- [ ] Tier A: advanced docs may be `N/A` with rationale
+- [ ] Tier B: ADR/Risk/Release/Security/Observability docs are present or `N/A` with rationale
+- [ ] Tier C: ADR/Risk/Release/Security/Observability docs are present and executable
+
+## AI Context Integrity
+- [ ] AI context generator exists and runs
+- [ ] `AI_CONTEXT.md` generated successfully
+- [ ] AI startup order is consistent across docs

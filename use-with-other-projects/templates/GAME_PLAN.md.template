@@ -1,0 +1,48 @@
+# Game Plan (Execution Checklist)
+
+Purpose: Track exactly where the project is now, what is next, and when implementation/server rollout starts.
+
+## Phase Status
+
+- [ ] **Phase 0 — AI Governance Baseline**
+  - [ ] Canonical AI entrypoint (`AI_AGENT.md`)
+  - [ ] Source-of-truth governance (`docs/constitution/AI_SOURCE_OF_TRUTH.md`)
+  - [ ] Generated project map (`AI_CONTEXT.md`)
+  - [ ] Quality tooling (`ruff`, `black`, `mypy`, `pytest`, coverage)
+  - [ ] CI gate (`.github/workflows/ci.yml`)
+  - [ ] Validation gate (`[VERIFY_COMMAND]`)
+
+- [ ] **Phase 1 — Application Modularization (No behavior changes)**
+  - [ ] Split oversized entry modules into focused components
+  - [ ] Preserve exact API behavior and security posture
+  - [ ] Add targeted tests per extracted module
+  - [ ] Keep all new files <= 400 lines
+
+- [ ] **Phase 2 — Feature Implementation**
+  - [ ] Implement prioritized feature backlog item 1
+  - [ ] Implement prioritized feature backlog item 2
+  - [ ] Implement prioritized feature backlog item 3
+  - [ ] Add tests with each feature change
+  - [ ] Keep docs and matrix updated in same PR/change
+
+- [ ] **Phase 3 — Server Deployment Readiness**
+  - [ ] Finalize production env vars and secrets rotation process
+  - [ ] Validate runtime, health checks, and backups
+  - [ ] Run regression suite and security posture checks
+  - [ ] Produce deployment runbook and rollback checklist
+
+- [ ] **Phase 4 — Production Rollout**
+  - [ ] Deploy to server
+  - [ ] Run smoke checks in production
+  - [ ] Verify logs, auth flows, and DB connectivity
+  - [ ] Confirm backup/restore drill success
+
+## Current Position
+Set this line to the current phase and update each time a phase transitions.
+
+## Definition of Done per Change
+1. Behavior implemented or refactor completed.
+2. Targeted tests added/updated.
+3. Verify gate passes.
+4. Relevant docs updated.
+5. AI context map regenerated.

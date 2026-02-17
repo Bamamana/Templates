@@ -1,0 +1,33 @@
+# ADR-[NUMBER]: [TITLE]
+
+Use this optional add-on when a change introduces a meaningful architecture decision.
+Keep ADRs short, decision-focused, and linked from your project canvas/playbook.
+
+Status: [PROPOSED/ACCEPTED/SUPERSEDED]
+Date: [YYYY-MM-DD]
+Owners: [OWNER]
+Related work: [FEATURE_OR_CHANGELOG_LINK]
+
+## Context
+- Problem or constraint driving this decision:
+- Options considered:
+
+## Decision
+- Chosen option:
+- Why this option:
+
+## Consequences
+### Positive
+-
+
+### Tradeoffs / Risks
+-
+
+## Implementation + Verification
+- Affected modules/services:
+- Migration/rollout notes:
+- Verification evidence:
+
+## Follow-up
+- Review date:
+- Superseded by (if applicable):

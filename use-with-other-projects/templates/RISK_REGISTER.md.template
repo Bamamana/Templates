@@ -1,0 +1,20 @@
+# Risk Register
+
+Central risk tracking log for [PROJECT_NAME].
+
+## Usage Rules
+- Track delivery, security, reliability, and operational risks.
+- Every high risk must have an owner and mitigation action.
+- Review on each milestone/release.
+
+## Risk Table
+| ID | Category | Description | Likelihood (1-5) | Impact (1-5) | Score | Owner | Mitigation | Status |
+|---|---|---|---:|---:|---:|---|---|---|
+| R-001 | [Delivery/Security/Reliability/Ops] | [Risk] | [1-5] | [1-5] | [LxI] | [Owner] | [Action] | [Open/Monitoring/Closed] |
+
+## Escalation Rules
+- Escalate score >= 15 immediately.
+- Block release when unresolved critical risk violates tier policy.
+
+## Review Notes
+- [YYYY-MM-DD] [review summary]

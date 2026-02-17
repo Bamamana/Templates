@@ -1,0 +1,103 @@
+# Engineering Playbook ([PROJECT_NAME])
+
+Read when: implementing, testing, validating, or troubleshooting.
+Skip when: never.
+
+Single source for commands, testing policy, feature execution, and repository structure.
+
+## 1) Commands
+```bash
+# setup
+[SETUP_COMMANDS]
+
+# run/build
+[BUILD_RUN_COMMAND]
+[LOCAL_ONLY_RUN_COMMAND]
+
+# logs/troubleshooting
+[LOGS_COMMAND]
+
+# quality
+[LINT_COMMAND]
+[FORMAT_CHECK_COMMAND]
+[TYPECHECK_COMMAND]
+
+# tests
+[SMOKE_COMMAND]
+[TARGETED_TEST_COMMAND]
+[COVERAGE_COMMAND]
+
+# full validation gate
+[VERIFY_COMMAND]
+```
+
+## 2) Test Policy
+- Every behavior change maps to at least one targeted test.
+- Smoke tests remain fast and run in seconds.
+- Verify gate is mandatory before handoff.
+
+## 2.2) Branching and PR Workflow
+- Branching model: [TRUNK_BASED_OR_GITFLOW]
+- Branch naming: `[feature|fix|chore]/[short-description]`
+- PR size target: [SMALL_MEDIUM]
+- Merge rule: [SQUASH_OR_MERGE_COMMIT]
+- Required checks before merge: verify gate + CI + required reviewers
+
+## 2.3) Code Review Guidelines
+- Review for correctness, security impact, test coverage, and rollback safety.
+- Reject undocumented behavior changes.
+- Require at least one approver for Tier A and two for Tier B/C (or document solo-owner exception).
+- Ensure commands/docs/paths changed in code are updated in docs in the same change.
+
+## 2.1) Manual Smoke Runbook (Concise)
+1. Start app/runtime.
+2. Initialize data store if needed.
+3. Create bootstrap/admin user if needed.
+4. Validate auth, core workflow, and logout manually.
+5. Run `[SMOKE_COMMAND]`, `[TARGETED_TEST_COMMAND]`, and `[VERIFY_COMMAND]`.
+
+## 3) Workflow-to-Test Matrix
+| Workflow | Command | Type | Required by Tier |
+|---|---|---|---|
+| Syntax/build integrity | `[SYNTAX_COMMAND]` | static/smoke | A/B/C |
+| Startup/load integrity | `[SMOKE_COMMAND]` | smoke | A/B/C |
+| Core workflow behavior | `[TARGETED_TEST_COMMAND]` | targeted | A/B/C |
+| Full local validation | `[VERIFY_COMMAND]` | gate | A/B/C |
+| Coverage confidence | `[COVERAGE_COMMAND]` | regression | B/C |
+
+## 4) Feature Execution Template
+- Feature:
+- Problem solved:
+- In scope:
+- Non-goals:
+- Acceptance criteria:
+- Security/data implications:
+- Feature-flag strategy: [NONE/FLAG_NAME + ROLLOUT_PLAN]
+- Rollback note:
+
+## 5) Repository Structure Map
+- `AI_AGENT.md` (AI operating contract)
+- `CHANGELOG.md`
+- `AI_CONTEXT.md` (generated)
+- `docs/AI_MEMORY.md`
+- `docs/PROJECT_CANVAS.md`
+- `docs/TECH_STACK.md`
+- `docs/ENGINEERING_PLAYBOOK.md`
+- `docs/OPS_SECURITY_RELEASE.md`
+- `src/...`
+- `tests/...`
+- `.github/workflows/ci.yml`
+
+## 6) After-Coding Checklist
+- [ ] `CHANGELOG.md` updated
+- [ ] Structure map section updated (if changed)
+- [ ] Commands section updated (if changed)
+- [ ] Matrix row(s) updated for new workflows
+- [ ] AI context regenerated (`[AI_CONTEXT_COMMAND]`)
+- [ ] Verify gate passed
+
+## 7) Refactor Triggers and Workflow
+- Trigger refactor if any source file exceeds 500 lines.
+- Target <= 400 lines for new files.
+- Extract cohesive modules without changing behavior.
+- Re-run smoke + targeted tests + verify gate.

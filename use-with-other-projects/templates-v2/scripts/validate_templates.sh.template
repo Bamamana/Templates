@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Validate a project that applied templates-v2.
+# Usage: ./scripts/validate_templates.sh [project_root]
+
+project_root="${1:-.}"
+cd "$project_root"
+
+fail() {
+  echo "[FAIL] $1"
+  exit 1
+}
+
+warn() {
+  echo "[WARN] $1"
+}
+
+pass() {
+  echo "[PASS] $1"
+}
+
+required_files=(
+  "AI_AGENT.md"
+  "docs/AI_MEMORY.md"
+  "docs/PROJECT_CANVAS.md"
+  "docs/TECH_STACK.md"
+  "docs/ENGINEERING_PLAYBOOK.md"
+  "docs/OPS_SECURITY_RELEASE.md"
+  "CHANGELOG.md"
+  "docs/TEMPLATE_INDEX.yaml"
+  ".github/workflows/ci.yml"
+)
+
+for file in "${required_files[@]}"; do
+  [[ -f "$file" ]] || fail "Missing required file: $file"
+done
+pass "Required files exist"
+
+scan_paths=(
+  "AI_AGENT.md"
+  "docs/AI_MEMORY.md"
+  "docs/PROJECT_CANVAS.md"
+  "docs/TECH_STACK.md"
+  "docs/ENGINEERING_PLAYBOOK.md"
+  "docs/OPS_SECURITY_RELEASE.md"
+  "CHANGELOG.md"
+  "docs/TEMPLATE_VALIDATION_CHECKLIST.md"
+  "docs/APPLY_CHECKLIST.md"
+  "docs/TEMPLATE_INDEX.yaml"
+  ".github/workflows/ci.yml"
+)
+
+if [[ -f "AI_OPERATING_CONTRACT.md" ]]; then
+  scan_paths+=("AI_OPERATING_CONTRACT.md")
+fi
+
+if grep -nE '\\[[A-Z0-9_]+\\]' "${scan_paths[@]}" >/tmp/v2_placeholders.txt 2>/dev/null; then
+  echo "[FAIL] Unresolved placeholders found:"
+  cat /tmp/v2_placeholders.txt
+  exit 1
+fi
+pass "No unresolved placeholders"
+
+if [[ -f "AI_OPERATING_CONTRACT.md" ]] && ! cmp -s "AI_OPERATING_CONTRACT.md" "AI_AGENT.md"; then
+  fail "AI_OPERATING_CONTRACT.md differs from AI_AGENT.md; alias must mirror canonical startup contract"
+fi
+pass "Canonical startup contract consistency valid"
+
+if ! grep -q "## \[Unreleased\]" CHANGELOG.md; then
+  fail "CHANGELOG.md missing [Unreleased] section"
+fi
+pass "Changelog structure looks valid"
+
+tier_line=$(grep -E "Selected tier:" -n AI_AGENT.md || true)
+[[ -n "$tier_line" ]] || fail "Selected tier not set in AI_AGENT.md"
+pass "Tier selection present"
+
+if command -v bash >/dev/null 2>&1; then
+  pass "Shell runtime available"
+else
+  fail "Shell runtime not available"
+fi
+
+echo "Validation complete. Run your project verify command next."

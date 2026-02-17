@@ -1,0 +1,59 @@
+name: CI (Python)
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '[PYTHON_VERSION]'
+
+      - name: Install dependencies
+        run: |
+          [CI_INSTALL_COMMAND]
+
+      - name: Lint
+        run: |
+          [LINT_COMMAND]
+
+      - name: Format check
+        run: |
+          [FORMAT_CHECK_COMMAND]
+
+      - name: Type check
+        run: |
+          [TYPECHECK_COMMAND]
+
+      - name: Smoke tests
+        run: |
+          [SMOKE_COMMAND]
+
+      - name: Targeted tests
+        run: |
+          [TARGETED_TEST_COMMAND]
+
+      - name: Verify gate
+        run: |
+          [VERIFY_COMMAND]
+
+  security:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Security scan baseline
+        run: |
+          [SECRET_SCAN_COMMAND]
+          [SCA_COMMAND]
+          [SAST_COMMAND]

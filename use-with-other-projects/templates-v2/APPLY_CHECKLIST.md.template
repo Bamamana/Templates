@@ -1,0 +1,43 @@
+# V2 Apply Checklist
+
+Read when: applying/migrating templates into a project.
+Skip when: templates are already applied and validated.
+
+## 1) Apply Files (Only)
+- [ ] `AI_AGENT.md.template` copied to `AI_AGENT.md`
+- [ ] `AI_MEMORY.md.template` copied to `docs/AI_MEMORY.md`
+- [ ] `PROJECT_CANVAS.md.template` copied to `docs/PROJECT_CANVAS.md`
+- [ ] `TECH_STACK.md.template` copied to `docs/TECH_STACK.md`
+- [ ] `ENGINEERING_PLAYBOOK.md.template` copied to `docs/ENGINEERING_PLAYBOOK.md`
+- [ ] `OPS_SECURITY_RELEASE.md.template` copied to `docs/OPS_SECURITY_RELEASE.md`
+- [ ] `CHANGELOG.md.template` copied to `CHANGELOG.md`
+- [ ] `ci.yml.template` copied to `.github/workflows/ci.yml`
+- [ ] `TEMPLATE_INDEX.yaml.template` copied to `docs/TEMPLATE_INDEX.yaml`
+- [ ] Optional add-ons copied only if needed
+	- `addons/README.md.template`
+	- `addons/.gitignore.template`
+	- `addons/CONTRIBUTING.md.template`
+	- `addons/LICENSE.template`
+	- `addons/.github/PULL_REQUEST_TEMPLATE.md.template`
+	- `addons/.github/ISSUE_TEMPLATE/bug_report.md.template`
+	- `addons/.github/ISSUE_TEMPLATE/feature_request.md.template`
+	- `addons/.github/ISSUE_TEMPLATE/config.yml.template`
+	- `addons/.github/workflows/ci.python.yml.template` OR `addons/.github/workflows/ci.node.yml.template`
+	- `addons/docker-compose.local.yml.template`
+	- `addons/MULTI_APP_SERVER_BLUEPRINT.md.template`
+	- `addons/FIRST_SESSION_PROMPT.txt.template`
+	- `addons/ADR_TEMPLATE.md.template`
+	- `addons/AI_OPERATING_CONTRACT.md.template` (legacy compatibility only)
+
+## 2) Run Manual Validation
+- [ ] Complete `TEMPLATE_VALIDATION_CHECKLIST.md`
+
+## 3) Run Automated Validation
+- [ ] Run `scripts/validate_templates.sh` (if included)
+
+## 4) Canonical Startup + Final Baseline
+- [ ] Human startup instruction points to `AI_AGENT.md`
+- [ ] If `AI_OPERATING_CONTRACT.md` is used, it mirrors `AI_AGENT.md` (no separate rules)
+- [ ] `AI_CONTEXT.md` generation command defined
+- [ ] Verify gate command defined
+- [ ] Changelog contains `Unreleased`
