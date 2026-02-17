@@ -44,6 +44,14 @@ Goal: provide one-click auditability that V2 preserves structural and industry-s
 - `templates-v2/AI_MEMORY.md.template`: persistent memory for user preferences and lessons learned
 - `templates-v2/TECH_STACK.md.template`: centralized architecture and dependency choices
 - `templates-v2/addons/AI_OPERATING_CONTRACT.md.template`: legacy compatibility alias (optional only)
+- `templates-v2/addons/README.md.template`: optional standardized project landing page
+- `templates-v2/addons/.gitignore.template`: optional repository hygiene baseline
+- `templates-v2/addons/CONTRIBUTING.md.template`: optional collaboration and review workflow
+- `templates-v2/addons/LICENSE.template`: optional licensing placeholder
+- `templates-v2/addons/.github/PULL_REQUEST_TEMPLATE.md.template`: optional PR quality gate template
+- `templates-v2/addons/.github/ISSUE_TEMPLATE/*`: optional issue intake templates
+- `templates-v2/addons/.github/workflows/ci.python.yml.template`: optional Python-specific CI variant
+- `templates-v2/addons/.github/workflows/ci.node.yml.template`: optional Node-specific CI variant
 
 ## Parity Notes
 - V2 consolidates overlapping V1 governance into fewer canonical files while preserving all core concerns: startup contract, phase/state tracking, command matrix, testing policy, deployment, rollback, security automation, observability, release, and risk.
