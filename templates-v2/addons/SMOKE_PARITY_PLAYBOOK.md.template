@@ -1,0 +1,103 @@
+# Smoke + Pathway Parity Playbook
+
+Use this playbook to implement robust post-refactor verification in this project.
+
+## Core Pattern
+
+Run three layers together:
+
+1. Baseline smoke (repo health, required files, limits)
+2. Targeted lane contract smoke (module wiring + exports)
+3. Baseline parity report (pre-refactor + latest deployed snapshot vs current)
+
+This catches:
+- missing functions after refactor,
+- broken delegation pathways,
+- accidental behavior-path loss relative to historical baselines.
+
+## Suggested Script Layout
+
+```text
+scripts/
+  test_smoke.sh
+  verify.sh
+  refactor_smoke_contract.py
+  parity_pathways_report.py
+  parity-retired-pathways.json
+  smoke_<lane>_refactor.sh
+  refactor-contracts/
+    <lane>-slice1.json
+```
+
+## Verify Pipeline (Recommended)
+
+In `scripts/verify.sh`, run in order:
+
+1. `bash scripts/test_smoke.sh`
+2. high-risk compatibility smokes (API + engine pathways)
+3. `python3 scripts/parity_pathways_report.py`
+4. template/config lock checks
+
+`verify.sh` should be the required pre-merge/pre-deploy gate.
+
+## Contract Schema (Lane Smokes)
+
+Each lane contract should validate:
+
+- `functions`: expected declarations
+- `exports`: expected public surface
+- `required_strings`: required delegation call wiring
+
+Use a checker script to enforce these contract files in CI and locally.
+
+## Baseline Parity Strategy
+
+Compare current code against:
+
+- Pre-refactor baseline (`legacy` source of intended behavior)
+- Latest deployed snapshot baseline (`snapshots/deployed-*` production truth)
+
+Pass criteria for each baseline function:
+
+- still present in-place, OR
+- moved/renamed but found in current, OR
+- intentionally retired in allowlist.
+
+Intentional removals must be tracked in `scripts/parity-retired-pathways.json`.
+
+## Baseline Evolution Rule (Critical)
+
+After successful deploy:
+
+1. Pull fresh cloud snapshot into `snapshots/deployed-YYYY-MM-DD/`
+2. Keep parity checker pointed at latest snapshot automatically
+3. Add allowlist retirement entries (with reason/date) for intentional removals
+
+This keeps the baseline living with deployed reality.
+
+## One-Command Predeploy Runner
+
+Add `scripts/predeploy_full_suite.sh` to run:
+
+1. all lane smokes (`scripts/smoke_*_refactor.sh`)
+2. `bash scripts/verify.sh`
+
+Use this as final predeploy command.
+
+## Optional Hardening Upgrades
+
+For higher assurance, add:
+
+1. Golden input/output fixtures for critical transformations
+2. Consumer-driven request/response contract fixtures
+3. Scheduled clean-room integration smoke runs
+4. Canary deploy + rollback trigger thresholds
+
+## Adoption Checklist
+
+- [ ] Add lane contract checker + contracts
+- [ ] Add baseline parity checker + retirement allowlist
+- [ ] Wire all checks into `verify.sh`
+- [ ] Add one-command predeploy runner
+- [ ] Document lane ownership and required smoke commands
+- [ ] Enforce docs/changelog updates for any contract changes

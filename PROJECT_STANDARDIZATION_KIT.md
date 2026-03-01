@@ -40,6 +40,22 @@ Copy the following templates into the destination project and replace placeholde
 - `templates/REFRACTOR_PLAYBOOK.md.template`
 - `templates/FIRST_SESSION_PROMPT.txt`
 
+### Templates-v2 recommended add-ons for refactor-safe verification
+- `templates-v2/addons/SMOKE_PARITY_PLAYBOOK.md.template` -> `docs/SMOKE_PARITY_PLAYBOOK.md`
+- `templates-v2/addons/FIXTURE_TESTING_PLAYBOOK.md.template` -> `docs/FIXTURE_TESTING_PLAYBOOK.md`
+- `templates-v2/addons/RELEASE_CANARY_CHECKLIST.md.template` -> `docs/RELEASE_CANARY_CHECKLIST.md`
+- `templates-v2/addons/.github/workflows/ci.predeploy.yml.template` -> `.github/workflows/ci.yml`
+- `templates-v2/scripts/predeploy_full_suite.sh.template` -> `scripts/predeploy_full_suite.sh`
+- `templates-v2/scripts/parity_pathways_report.py.template` -> `scripts/parity_pathways_report.py`
+- `templates-v2/scripts/parity-retired-pathways.json.template` -> `scripts/parity-retired-pathways.json`
+- `templates-v2/scripts/run_fixture_suite.sh.template` -> `scripts/run_fixture_suite.sh`
+- `templates-v2/scripts/refresh_snapshot_baseline.sh.template` -> `scripts/refresh_snapshot_baseline.sh`
+- `templates-v2/scripts/refactor_smoke_contract.py.template` -> `scripts/refactor_smoke_contract.py`
+- `templates-v2/scripts/smoke_masterapi_refactor.sh.template` -> `scripts/smoke_masterapi_refactor.sh`
+- `templates-v2/scripts/smoke_enginepath_refactor.sh.template` -> `scripts/smoke_enginepath_refactor.sh`
+- `templates-v2/scripts/refactor-contracts/masterapi-slice1.json.template` -> `scripts/refactor-contracts/masterapi-slice1.json`
+- `templates-v2/scripts/refactor-contracts/enginepath-slice1.json.template` -> `scripts/refactor-contracts/enginepath-slice1.json`
+
 ### Constitution templates
 - `templates/AI_SOURCE_OF_TRUTH.md.template`
 
@@ -50,6 +66,7 @@ Copy the following templates into the destination project and replace placeholde
 - `templates/docker-compose.local.yml.template`
 
 ## Bootstrap Sequence (Per Project)
+0. (Optional) Use `templates-v2/scripts/apply_templates_wizard.sh.template` to apply core + optional packs consistently.
 1. Apply template files and replace placeholders.
 2. Create/verify scripts:
 	- `scripts/verify.sh`

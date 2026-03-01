@@ -1,0 +1,10 @@
+{
+  "retired": [
+    {
+      "baseline": "snapshot_latest",
+      "file": "snapshots/deployed-YYYY-MM-DD/path/to/file.js",
+      "function": "functionName",
+      "reason": "Intentional retirement after refactor; replacement pathway exists."
+    }
+  ]
+}

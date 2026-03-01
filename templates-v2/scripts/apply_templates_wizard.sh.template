@@ -1,0 +1,163 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEMPLATE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+TARGET_DIR="${1:-}"
+if [[ -z "$TARGET_DIR" ]]; then
+  read -r -p "Target project directory (default: current directory): " TARGET_DIR
+fi
+TARGET_DIR="${TARGET_DIR:-$PWD}"
+mkdir -p "$TARGET_DIR"
+TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
+
+echo "[wizard] Template root: $TEMPLATE_ROOT"
+echo "[wizard] Target dir:    $TARGET_DIR"
+
+echo
+echo "Choose apply profile:"
+echo "  1) Core only"
+echo "  2) Core + verification hardening (recommended)"
+echo "  3) Core + all optional add-ons"
+read -r -p "Profile [1/2/3] (default 2): " PROFILE
+PROFILE="${PROFILE:-2}"
+
+echo
+echo "CI variant:"
+echo "  1) Baseline CI (core)"
+echo "  2) Python CI add-on"
+echo "  3) Node CI add-on"
+echo "  4) Predeploy-gated CI add-on"
+read -r -p "CI option [1/2/3/4] (default 1): " CI_OPTION
+CI_OPTION="${CI_OPTION:-1}"
+
+echo
+echo "Overwrite policy:"
+echo "  1) Skip existing files"
+echo "  2) Overwrite all"
+read -r -p "Policy [1/2] (default 1): " OVERWRITE_OPTION
+OVERWRITE_OPTION="${OVERWRITE_OPTION:-1}"
+
+SKIP_EXISTING=1
+if [[ "$OVERWRITE_OPTION" == "2" ]]; then
+  SKIP_EXISTING=0
+fi
+
+copy_template() {
+  local src_rel="$1"
+  local dst_rel="$2"
+  local src="$TEMPLATE_ROOT/$src_rel"
+  local dst="$TARGET_DIR/$dst_rel"
+
+  if [[ ! -f "$src" ]]; then
+    echo "[wizard][WARN] Missing template source: $src_rel"
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$dst")"
+
+  if [[ -f "$dst" && "$SKIP_EXISTING" == "1" ]]; then
+    echo "[wizard][skip] $dst_rel (exists)"
+    return 0
+  fi
+
+  cp "$src" "$dst"
+  echo "[wizard][copy] $src_rel -> $dst_rel"
+}
+
+apply_core() {
+  copy_template "AI_AGENT.md.template" "AI_AGENT.md"
+  copy_template "AI_MEMORY.md.template" "docs/AI_MEMORY.md"
+  copy_template "PROJECT_CANVAS.md.template" "docs/PROJECT_CANVAS.md"
+  copy_template "TECH_STACK.md.template" "docs/TECH_STACK.md"
+  copy_template "ENGINEERING_PLAYBOOK.md.template" "docs/ENGINEERING_PLAYBOOK.md"
+  copy_template "OPS_SECURITY_RELEASE.md.template" "docs/OPS_SECURITY_RELEASE.md"
+  copy_template "CHANGELOG.md.template" "CHANGELOG.md"
+  copy_template "TEMPLATE_VALIDATION_CHECKLIST.md.template" "docs/TEMPLATE_VALIDATION_CHECKLIST.md"
+  copy_template "APPLY_CHECKLIST.md.template" "docs/APPLY_CHECKLIST.md"
+  copy_template "TEMPLATE_INDEX.yaml.template" "docs/TEMPLATE_INDEX.yaml"
+  copy_template ".github/workflows/ci.yml.template" ".github/workflows/ci.yml"
+  copy_template "scripts/validate_templates.sh.template" "scripts/validate_templates.sh"
+}
+
+apply_ci_variant() {
+  case "$CI_OPTION" in
+    2)
+      copy_template "addons/.github/workflows/ci.python.yml.template" ".github/workflows/ci.yml"
+      ;;
+    3)
+      copy_template "addons/.github/workflows/ci.node.yml.template" ".github/workflows/ci.yml"
+      ;;
+    4)
+      copy_template "addons/.github/workflows/ci.predeploy.yml.template" ".github/workflows/ci.yml"
+      ;;
+    *)
+      ;;
+  esac
+}
+
+apply_verification_hardening() {
+  copy_template "addons/SMOKE_PARITY_PLAYBOOK.md.template" "docs/SMOKE_PARITY_PLAYBOOK.md"
+  copy_template "addons/FIXTURE_TESTING_PLAYBOOK.md.template" "docs/FIXTURE_TESTING_PLAYBOOK.md"
+  copy_template "addons/RELEASE_CANARY_CHECKLIST.md.template" "docs/RELEASE_CANARY_CHECKLIST.md"
+
+  copy_template "scripts/predeploy_full_suite.sh.template" "scripts/predeploy_full_suite.sh"
+  copy_template "scripts/parity_pathways_report.py.template" "scripts/parity_pathways_report.py"
+  copy_template "scripts/parity-retired-pathways.json.template" "scripts/parity-retired-pathways.json"
+  copy_template "scripts/refactor_smoke_contract.py.template" "scripts/refactor_smoke_contract.py"
+  copy_template "scripts/smoke_masterapi_refactor.sh.template" "scripts/smoke_masterapi_refactor.sh"
+  copy_template "scripts/smoke_enginepath_refactor.sh.template" "scripts/smoke_enginepath_refactor.sh"
+  copy_template "scripts/run_fixture_suite.sh.template" "scripts/run_fixture_suite.sh"
+  copy_template "scripts/refresh_snapshot_baseline.sh.template" "scripts/refresh_snapshot_baseline.sh"
+  copy_template "scripts/refactor-contracts/masterapi-slice1.json.template" "scripts/refactor-contracts/masterapi-slice1.json"
+  copy_template "scripts/refactor-contracts/enginepath-slice1.json.template" "scripts/refactor-contracts/enginepath-slice1.json"
+}
+
+apply_all_optional_addons() {
+  copy_template "addons/README.md.template" "README.md"
+  copy_template "addons/.gitignore.template" ".gitignore"
+  copy_template "addons/CONTRIBUTING.md.template" "CONTRIBUTING.md"
+  copy_template "addons/LICENSE.template" "LICENSE"
+  copy_template "addons/ADR_TEMPLATE.md.template" "docs/ADR_TEMPLATE.md"
+  copy_template "addons/FIRST_SESSION_PROMPT.txt.template" "docs/FIRST_SESSION_PROMPT.txt"
+  copy_template "addons/MULTI_APP_SERVER_BLUEPRINT.md.template" "docs/MULTI_APP_SERVER_BLUEPRINT.md"
+  copy_template "addons/docker-compose.local.yml.template" "docker-compose.local.yml"
+  copy_template "addons/AI_OPERATING_CONTRACT.md.template" "AI_OPERATING_CONTRACT.md"
+  copy_template "addons/SMOKE_PARITY_PLAYBOOK.md.template" "docs/SMOKE_PARITY_PLAYBOOK.md"
+  copy_template "addons/FIXTURE_TESTING_PLAYBOOK.md.template" "docs/FIXTURE_TESTING_PLAYBOOK.md"
+  copy_template "addons/RELEASE_CANARY_CHECKLIST.md.template" "docs/RELEASE_CANARY_CHECKLIST.md"
+}
+
+apply_core
+apply_ci_variant
+
+case "$PROFILE" in
+  1)
+    ;;
+  2)
+    apply_verification_hardening
+    ;;
+  3)
+    apply_verification_hardening
+    apply_all_optional_addons
+    ;;
+  *)
+    echo "[wizard][WARN] Unknown profile '$PROFILE'; using profile 2"
+    apply_verification_hardening
+    ;;
+esac
+
+if [[ -f "$TARGET_DIR/scripts/validate_templates.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/validate_templates.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/predeploy_full_suite.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/predeploy_full_suite.sh" || true
+fi
+
+echo
+echo "[wizard] Template apply complete."
+echo "[wizard] Next steps:"
+echo "  1) Replace placeholders like [VERIFY_COMMAND], [CI_SETUP_COMMAND], [FIXTURE_TEST_COMMAND]."
+echo "  2) Run: bash scripts/validate_templates.sh"
+echo "  3) Run your verify command / CI."

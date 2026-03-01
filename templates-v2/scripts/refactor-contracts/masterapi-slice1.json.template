@@ -1,0 +1,27 @@
+{
+  "root": ".",
+  "checks": [
+    {
+      "file": "[MASTER_API_FILE]",
+      "functions": [
+        "doGet",
+        "doPost"
+      ],
+      "required_strings": [
+        "action === \"[READ_ACTION]\"",
+        "action === \"[WRITE_ACTION]\"",
+        "result = [MASTER_LOGIC_NAMESPACE].[READ_HANDLER]("
+      ]
+    },
+    {
+      "file": "[CLIENT_API_FILE]",
+      "functions": [
+        "[CLIENT_FETCH_WRAPPER]"
+      ],
+      "required_strings": [
+        "fetch_(\"[READ_ACTION]\"",
+        "fetch_(\"[WRITE_ACTION]\""
+      ]
+    }
+  ]
+}

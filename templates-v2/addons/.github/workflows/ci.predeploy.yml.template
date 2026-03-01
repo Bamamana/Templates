@@ -1,0 +1,29 @@
+name: CI (Predeploy Gate)
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  predeploy-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Optional project setup
+        run: |
+          [CI_SETUP_COMMAND]
+
+      - name: Run predeploy full suite if available
+        run: |
+          if [[ -f scripts/predeploy_full_suite.sh ]]; then
+            chmod +x scripts/predeploy_full_suite.sh
+            bash scripts/predeploy_full_suite.sh
+          elif [[ -f scripts/verify.sh ]]; then
+            bash scripts/verify.sh
+          else
+            echo "[ci][FAIL] Neither scripts/predeploy_full_suite.sh nor scripts/verify.sh exists."
+            exit 1
+          fi

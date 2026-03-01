@@ -1,0 +1,25 @@
+{
+  "root": ".",
+  "checks": [
+    {
+      "file": "[ENGINE_ENTRYPOINT_FILE]",
+      "functions": [
+        "[ENTRY_HANDLER_1]",
+        "[ENTRY_HANDLER_2]"
+      ],
+      "required_strings": [
+        "[ENTRY_HANDLER_1_DELEGATION_TOKEN]",
+        "[ENTRY_HANDLER_2_DELEGATION_TOKEN]"
+      ]
+    },
+    {
+      "file": "[ENGINE_RUNTIME_FILE]",
+      "functions": [
+        "[RUNTIME_FN_1]"
+      ],
+      "required_strings": [
+        "[QUEUE_OR_API_CALL_TOKEN]"
+      ]
+    }
+  ]
+}

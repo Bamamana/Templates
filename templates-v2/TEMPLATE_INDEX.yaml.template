@@ -133,6 +133,11 @@ optional_addons:
     purpose: Node-optimized CI variant
     use_when: Project runtime is Node.js and team prefers runtime-specific CI template
 
+  - template: addons/.github/workflows/ci.predeploy.yml.template
+    destination: .github/workflows/ci.yml
+    purpose: Predeploy-gated CI workflow that runs full smoke/verify gate
+    use_when: Team wants deployment-safe CI gating with one canonical predeploy command
+
   - template: addons/docker-compose.local.yml.template
     destination: docker-compose.local.yml
     purpose: Local compose runtime profile
@@ -153,10 +158,80 @@ optional_addons:
     purpose: Structured architecture decision record
     use_when: Material architecture decision or tradeoff needs tracking
 
+  - template: addons/FIXTURE_TESTING_PLAYBOOK.md.template
+    destination: docs/FIXTURE_TESTING_PLAYBOOK.md
+    purpose: Fixture testing guidance for deterministic behavior verification
+    use_when: Team wants stable input/output assertions for high-risk pathways
+
+  - template: addons/RELEASE_CANARY_CHECKLIST.md.template
+    destination: docs/RELEASE_CANARY_CHECKLIST.md
+    purpose: Release canary acceptance and rollback threshold checklist
+    use_when: Project has staged rollout and explicit rollback requirements
+
+  - template: addons/SMOKE_PARITY_PLAYBOOK.md.template
+    destination: docs/SMOKE_PARITY_PLAYBOOK.md
+    purpose: Reusable smoke/contract/parity verification architecture and baseline-evolution workflow
+    use_when: Team wants robust post-refactor pathway verification and deploy-safe evolution gates
+
   - template: addons/AI_OPERATING_CONTRACT.md.template
     destination: AI_OPERATING_CONTRACT.md
     purpose: Legacy compatibility alias to AI_AGENT
     use_when: Legacy automation requires this exact filename
+
+  - template: scripts/predeploy_full_suite.sh.template
+    destination: scripts/predeploy_full_suite.sh
+    purpose: One-command predeploy gate running all lane smokes plus verify
+    use_when: Team wants a single mandatory predeploy command
+
+  - template: scripts/apply_templates_wizard.sh.template
+    destination: scripts/apply_templates_wizard.sh
+    purpose: Interactive apply helper for core templates, CI variant, and optional hardening packs
+    use_when: Team wants fast, consistent template bootstrapping with fewer manual copy mistakes
+
+  - template: scripts/parity_pathways_report.py.template
+    destination: scripts/parity_pathways_report.py
+    purpose: Baseline parity report across pre-refactor and latest snapshot pathways
+    use_when: Team needs automated function-pathway parity checks as refactors evolve
+
+  - template: scripts/parity-retired-pathways.json.template
+    destination: scripts/parity-retired-pathways.json
+    purpose: Allowlist for intentional pathway retirements used by parity checks
+    use_when: Intentional function-path retirements should be tracked without disabling parity gates
+
+  - template: scripts/refactor_smoke_contract.py.template
+    destination: scripts/refactor_smoke_contract.py
+    purpose: Generic contract checker for lane smoke JSON definitions
+    use_when: Team wants lightweight static contract verification for refactor safety
+
+  - template: scripts/smoke_masterapi_refactor.sh.template
+    destination: scripts/smoke_masterapi_refactor.sh
+    purpose: Starter smoke wrapper for master API compatibility contract
+    use_when: Project has a central API/router boundary requiring deploy-safe checks
+
+  - template: scripts/smoke_enginepath_refactor.sh.template
+    destination: scripts/smoke_enginepath_refactor.sh
+    purpose: Starter smoke wrapper for engine/internal pathway contract
+    use_when: Project has orchestrated runtime pathways that are split across modules
+
+  - template: scripts/refactor-contracts/masterapi-slice1.json.template
+    destination: scripts/refactor-contracts/masterapi-slice1.json
+    purpose: Starter contract skeleton for master API/router and client endpoint mapping
+    use_when: Team needs an initial pattern for API boundary contract checks
+
+  - template: scripts/refactor-contracts/enginepath-slice1.json.template
+    destination: scripts/refactor-contracts/enginepath-slice1.json
+    purpose: Starter contract skeleton for setup/sync/runtime pathway wiring
+    use_when: Team needs an initial pattern for end-to-end internal pathway checks
+
+  - template: scripts/run_fixture_suite.sh.template
+    destination: scripts/run_fixture_suite.sh
+    purpose: Fixture suite entrypoint script with project-specific command hook
+    use_when: Team wants fixture tests as part of local and CI gates
+
+  - template: scripts/refresh_snapshot_baseline.sh.template
+    destination: scripts/refresh_snapshot_baseline.sh
+    purpose: Snapshot refresh helper and parity baseline run entrypoint
+    use_when: Team maintains deployed snapshot baselines and parity-evolution workflow
 
 validation_order:
   - Apply files using APPLY_CHECKLIST

@@ -1,0 +1,53 @@
+# Fixture Testing Playbook
+
+Use fixture tests to lock high-risk behavior with deterministic input/output checks.
+
+## Why
+
+Contract/pathway smoke checks prove wiring.
+Fixture tests prove behavior outputs remain stable.
+
+Use fixture tests for:
+- parsing/normalization pipelines,
+- payload mapping,
+- routing decisions,
+- policy/rule evaluation.
+
+## Suggested Structure
+
+```text
+tests/fixtures/
+  [lane]/
+    case-001.input.json
+    case-001.expected.json
+    case-002.input.json
+    case-002.expected.json
+scripts/
+  run_fixture_suite.sh
+```
+
+## Fixture Contract
+
+Each case should have:
+- input fixture (request/source state)
+- expected fixture (stable output/decision)
+
+Avoid asserting timestamps/random IDs unless normalized.
+
+## Runner Integration
+
+1. Add `scripts/run_fixture_suite.sh`
+2. Add to CI and local verify/predeploy gates
+3. Fail build on any fixture mismatch
+
+## Lifecycle
+
+- Add fixtures whenever behavior changes intentionally.
+- Keep old fixtures when behavior must remain backward-compatible.
+- For intentional breaking changes, update fixture + changelog in same change.
+
+## Minimum Adoption
+
+- [ ] Add at least 3 critical fixtures for one high-risk lane
+- [ ] Add fixture run command to CI
+- [ ] Add fixture run command to predeploy checklist

@@ -1,0 +1,41 @@
+# Release Canary & Rollback Checklist
+
+Use this for any production-impacting release.
+
+## Pre-Canary Gate
+
+- [ ] `bash scripts/predeploy_full_suite.sh` passed (or `bash scripts/verify.sh` if predeploy runner is not present)
+- [ ] Changelog updated with deployment scope and risk notes
+- [ ] Rollback owner assigned
+- [ ] Rollback command/procedure validated in staging or dry run
+
+## Canary Scope
+
+- [ ] Canary target group identified (`[CANARY_PERCENT_OR_SEGMENT]`)
+- [ ] Canary start time recorded
+- [ ] Monitoring dashboards/logs open
+
+## Canary Acceptance Thresholds (Set before rollout)
+
+- Error rate threshold: `[ERROR_RATE_THRESHOLD]`
+- Latency threshold: `[LATENCY_THRESHOLD]`
+- Queue/backlog threshold (if applicable): `[QUEUE_THRESHOLD]`
+- Functional smoke threshold: `[SMOKE_THRESHOLD]`
+
+## Canary Decision
+
+- [ ] Pass: all thresholds within limits for `[CANARY_WINDOW]`
+- [ ] Fail: any threshold exceeded -> execute rollback immediately
+
+## Rollback Procedure
+
+- [ ] Trigger rollback command: `[ROLLBACK_COMMAND]`
+- [ ] Confirm previous version is active
+- [ ] Re-run minimum smoke checks
+- [ ] Record incident summary and follow-up tasks
+
+## Post-Release Record
+
+- [ ] Final rollout scope recorded
+- [ ] Any deviations documented
+- [ ] Follow-up ticket(s) opened
