@@ -6,6 +6,39 @@ on:
     branches: [ main ]
 
 jobs:
+  template-selftest:
+    if: ${{ hashFiles('templates-v2/scripts/bootstrap_agent_ready.sh.template') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bootstrap fixture project
+        run: |
+          set -euo pipefail
+          OUT_DIR="/tmp/templates-v2-fixture"
+          rm -rf "$OUT_DIR"
+          bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+            --target "$OUT_DIR" \
+            --template-root templates-v2 \
+            --project-name "Template Fixture" \
+            --tier TIER_B_STANDARD \
+            --profile 2 \
+            --ci 1 \
+            --overwrite overwrite \
+            --strict
+
+      - name: Verify expected fixture outputs
+        run: |
+          set -euo pipefail
+          OUT_DIR="/tmp/templates-v2-fixture"
+          EXPECTED="templates-v2/tests-fixture/expected_files_tier_b_profile2.txt"
+          while IFS= read -r rel; do
+            [[ -z "$rel" ]] && continue
+            [[ "$rel" =~ ^# ]] && continue
+            [[ -f "$OUT_DIR/$rel" ]] || { echo "[ci][FAIL] Missing fixture output: $rel"; exit 1; }
+          done < "$EXPECTED"
+
   validate:
     runs-on: ubuntu-latest
     steps:

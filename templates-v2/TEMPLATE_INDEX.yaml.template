@@ -1,4 +1,4 @@
-version: v2.3
+version: v2.6
 purpose: Machine-readable navigation and applicability map for templates-v2
 canonical_startup: AI_AGENT.md
 read_order:
@@ -131,16 +131,6 @@ optional_addons:
     purpose: Issue form behavior and security contact path
     use_when: Issue templates are enabled
 
-  - template: addons/.github/workflows/ci.python.yml.template
-    destination: .github/workflows/ci.yml
-    purpose: Python-optimized CI variant
-    use_when: Project runtime is Python and team prefers runtime-specific CI template
-
-  - template: addons/.github/workflows/ci.node.yml.template
-    destination: .github/workflows/ci.yml
-    purpose: Node-optimized CI variant
-    use_when: Project runtime is Node.js and team prefers runtime-specific CI template
-
   - template: addons/.github/workflows/ci.predeploy.yml.template
     destination: .github/workflows/ci.yml
     purpose: Predeploy-gated CI workflow that runs full smoke/verify gate
@@ -166,20 +156,10 @@ optional_addons:
     purpose: Structured architecture decision record
     use_when: Material architecture decision or tradeoff needs tracking
 
-  - template: addons/FIXTURE_TESTING_PLAYBOOK.md.template
-    destination: docs/FIXTURE_TESTING_PLAYBOOK.md
-    purpose: Fixture testing guidance for deterministic behavior verification
-    use_when: Team wants stable input/output assertions for high-risk pathways
-
-  - template: addons/RELEASE_CANARY_CHECKLIST.md.template
-    destination: docs/RELEASE_CANARY_CHECKLIST.md
-    purpose: Release canary acceptance and rollback threshold checklist
-    use_when: Project has staged rollout and explicit rollback requirements
-
-  - template: addons/SMOKE_PARITY_PLAYBOOK.md.template
-    destination: docs/SMOKE_PARITY_PLAYBOOK.md
-    purpose: Reusable smoke/contract/parity verification architecture and baseline-evolution workflow
-    use_when: Team wants robust post-refactor pathway verification and deploy-safe evolution gates
+  - template: addons/ADVANCED_VERIFICATION_PLAYBOOK.md.template
+    destination: docs/ADVANCED_VERIFICATION_PLAYBOOK.md
+    purpose: Unified smoke/parity + fixture + canary/rollback verification playbook
+    use_when: Team wants one consolidated advanced verification reference with lower doc maintenance overhead
 
   - template: addons/AI_OPERATING_CONTRACT.md.template
     destination: AI_OPERATING_CONTRACT.md
@@ -191,10 +171,15 @@ optional_addons:
     purpose: One-command predeploy gate running all lane smokes plus verify
     use_when: Team wants a single mandatory predeploy command
 
-  - template: scripts/apply_templates_wizard.sh.template
-    destination: scripts/apply_templates_wizard.sh
-    purpose: Interactive apply helper for core templates, CI variant, and optional hardening packs
-    use_when: Team wants fast, consistent template bootstrapping with fewer manual copy mistakes
+  - template: scripts/bootstrap_agent_ready.sh.template
+    destination: scripts/bootstrap_agent_ready.sh
+    purpose: One-command bootstrap with interactive mode, tier-profile pruning/enforcement, placeholder fill, validator run, and readiness report generation
+    use_when: Team wants one standardized apply engine for multi-project rollout with tier-based scaling
+
+  - template: scripts/placeholder_allowlist.txt.template
+    destination: scripts/placeholder_allowlist.txt
+    purpose: Optional allowlist for intentional unresolved placeholders used by bootstrap/validator scans
+    use_when: Team intentionally retains selected placeholders while enforcing strict unresolved checks
 
   - template: scripts/parity_pathways_report.py.template
     destination: scripts/parity_pathways_report.py
@@ -210,6 +195,11 @@ optional_addons:
     destination: scripts/refactor_smoke_contract.py
     purpose: Generic contract checker for lane smoke JSON definitions
     use_when: Team wants lightweight static contract verification for refactor safety
+
+  - template: scripts/enforce_doc_updates.sh.template
+    destination: scripts/enforce_doc_updates.sh
+    purpose: Guardrail script that fails when implementation changes are missing docs/changelog updates
+    use_when: Team wants automated policy enforcement for same-change documentation updates
 
   - template: scripts/smoke_masterapi_refactor.sh.template
     destination: scripts/smoke_masterapi_refactor.sh

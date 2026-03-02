@@ -68,7 +68,7 @@ Copy the following templates into the destination project and replace placeholde
 - `templates/docker-compose.local.yml.template`
 
 ## Bootstrap Sequence (Per Project)
-0. (Optional) Use `templates-v2/scripts/apply_templates_wizard.sh.template` to apply core + optional packs consistently.
+0. (Optional) Use `templates-v2/scripts/bootstrap_agent_ready.sh.template --tier-profile auto` for one-command apply + placeholder fill + validation report (or run it without `--target` for interactive mode).
 1. Apply template files and replace placeholders.
 2. Create/verify scripts:
 	- `scripts/verify.sh`

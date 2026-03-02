@@ -29,8 +29,8 @@ Purpose: canonical living map of entrypoints, function chains, side effects, exp
 | Path ID | Entry Point | Function Chain | Critical Side Effects | Expected Outcome | Smoke Coverage | Smoke Command / Runbook |
 |---|---|---|---|---|---|---|
 | UI-XX-01 | `[ENTRY_FUNCTION]` | `[CHAIN]` | `[WRITE/API/CACHE/TRIGGER/NONE]` | `[ASSERTION]` | `Automated` | `[SMOKE_COMMAND]` |
-| API-HT-01 | `[ENTRY_FUNCTION]` | `[CHAIN]` | `[WRITE/API/CACHE/TRIGGER]` | `[ASSERTION]` | `Manual` | `[RUNBOOK_SECTION]` |
-| CRON-01 | `[ENTRY_FUNCTION]` | `[CHAIN]` | `[WRITE/DELETE/QUEUE]` | `[ASSERTION]` | `N/A` | `[RATIONALE]` |
+| API-HT-01 | `[ENTRY_FUNCTION]` | `[CHAIN]` | `[WRITE/API/CACHE/TRIGGER]` | `[ASSERTION]` | `Manual` | `docs/MANUAL_SMOKE_RUNBOOK.md#pathway-check` |
+| CRON-01 | `[ENTRY_FUNCTION]` | `[CHAIN]` | `[WRITE/DELETE/QUEUE]` | `[ASSERTION]` | `N/A` | `Not automatable in baseline; covered by manual runbook` |
 
 ## State Mutation Index
 

@@ -1,0 +1,12 @@
+# Placeholder allowlist
+#
+# Optional: list placeholder token names to ignore during unresolved-placeholder validation.
+# Use token names without brackets, one per line.
+# Example:
+# VERIFY_COMMAND
+# CI_SETUP_COMMANDS
+#
+# Keep this list as small as possible.
+
+# Intentional literal used in CI message text.
+FAIL

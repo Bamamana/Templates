@@ -35,23 +35,21 @@ Default startup contract is only `AI_AGENT.md`.
 - `addons/.github/ISSUE_TEMPLATE/bug_report.md.template` -> `.github/ISSUE_TEMPLATE/bug_report.md`
 - `addons/.github/ISSUE_TEMPLATE/feature_request.md.template` -> `.github/ISSUE_TEMPLATE/feature_request.md`
 - `addons/.github/ISSUE_TEMPLATE/config.yml.template` -> `.github/ISSUE_TEMPLATE/config.yml`
-- `addons/.github/workflows/ci.python.yml.template` -> `.github/workflows/ci.yml` (Python variant)
-- `addons/.github/workflows/ci.node.yml.template` -> `.github/workflows/ci.yml` (Node variant)
 - `addons/MULTI_APP_SERVER_BLUEPRINT.md.template` -> `docs/MULTI_APP_SERVER_BLUEPRINT.md`
 - `addons/docker-compose.local.yml.template` -> `docker-compose.local.yml`
 - `addons/FIRST_SESSION_PROMPT.txt.template` -> `docs/FIRST_SESSION_PROMPT.txt`
 - `addons/ADR_TEMPLATE.md.template` -> `docs/ADR_TEMPLATE.md`
-- `addons/SMOKE_PARITY_PLAYBOOK.md.template` -> `docs/SMOKE_PARITY_PLAYBOOK.md`
-- `addons/FIXTURE_TESTING_PLAYBOOK.md.template` -> `docs/FIXTURE_TESTING_PLAYBOOK.md`
-- `addons/RELEASE_CANARY_CHECKLIST.md.template` -> `docs/RELEASE_CANARY_CHECKLIST.md`
+- `addons/ADVANCED_VERIFICATION_PLAYBOOK.md.template` -> `docs/ADVANCED_VERIFICATION_PLAYBOOK.md`
 - `addons/AI_OPERATING_CONTRACT.md.template` -> `AI_OPERATING_CONTRACT.md` (legacy compatibility alias)
 
 ### Optional Script Starters (Verification Hardening)
-- `scripts/apply_templates_wizard.sh.template` -> `scripts/apply_templates_wizard.sh`
+- `scripts/bootstrap_agent_ready.sh.template` -> `scripts/bootstrap_agent_ready.sh`
+- `scripts/placeholder_allowlist.txt.template` -> `scripts/placeholder_allowlist.txt`
 - `scripts/predeploy_full_suite.sh.template` -> `scripts/predeploy_full_suite.sh`
 - `scripts/parity_pathways_report.py.template` -> `scripts/parity_pathways_report.py`
 - `scripts/parity-retired-pathways.json.template` -> `scripts/parity-retired-pathways.json`
 - `scripts/refactor_smoke_contract.py.template` -> `scripts/refactor_smoke_contract.py`
+- `scripts/enforce_doc_updates.sh.template` -> `scripts/enforce_doc_updates.sh`
 - `scripts/smoke_masterapi_refactor.sh.template` -> `scripts/smoke_masterapi_refactor.sh`
 - `scripts/smoke_enginepath_refactor.sh.template` -> `scripts/smoke_enginepath_refactor.sh`
 - `scripts/refactor-contracts/masterapi-slice1.json.template` -> `scripts/refactor-contracts/masterapi-slice1.json`
@@ -66,15 +64,51 @@ Traceability coverage standard:
 ### Optional CI Add-on
 - `addons/.github/workflows/ci.predeploy.yml.template` -> `.github/workflows/ci.yml` (predeploy-gated variant)
 
-## Fast Apply Workflow (Wizard)
+## Fast Apply Workflow
+
+Use `bootstrap_agent_ready` as the single apply engine (non-interactive or interactive).
+
+## One-Command Bootstrap (Biggest Upgrade)
 
 ```bash
-cp templates-v2/scripts/apply_templates_wizard.sh.template scripts/apply_templates_wizard.sh
-chmod +x scripts/apply_templates_wizard.sh
-bash scripts/apply_templates_wizard.sh /path/to/target-project
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+	--target /path/to/target-project \
+	--project-name "My Project" \
+	--tier TIER_B_STANDARD \
+	--tier-profile auto \
+	--strict
 ```
 
-The wizard supports profile selection, CI variant choice, and overwrite policy.
+What it does in one run:
+- applies core templates (+ selected profile/CI options),
+- auto-fills common placeholders,
+- runs `scripts/validate_templates.sh`,
+- generates `docs/TEMPLATE_READINESS_REPORT.md` and unresolved placeholder report.
+
+Interactive mode:
+- Run without `--target` and it prompts for target/profile/CI/overwrite.
+
+Strict mode behavior:
+- `--strict` exits non-zero when unresolved placeholders remain after allowlist filtering.
+- Allowlist file: `scripts/placeholder_allowlist.txt`.
+
+Tier profile pruning:
+- `--tier-profile A` trims advanced verification assets for lightweight projects.
+- `--tier-profile B` keeps the balanced default setup.
+- `--tier-profile C` enforces full verification hardening (and defaults CI option to predeploy-focused when not explicitly set).
+- `--tier-profile auto` derives profile from `--tier`.
+
+## Template Regression Fixture
+
+- Fixture assets live under `templates-v2/tests-fixture/`.
+- CI self-test bootstraps a temporary fixture project and validates expected outputs.
+- Update `templates-v2/tests-fixture/expected_files_tier_b_profile2.txt` when intentional bootstrap outputs change.
+
+## Migration Guidance
+
+- Use **bootstrap** for both deterministic and interactive setup (omit `--target` for prompts).
+- For large-scale rollout, set `--tier-profile auto` and let bootstrap prune/enforce by tier.
+- Promote Tier A -> Tier B/C when project scope adds persistent state, multi-step workflows, or deploy-critical pathways; at promotion time, require `docs/MASTER_TRACEABILITY_TABLE.md` and per-Path-ID smoke coverage.
 
 ## Validation Assets
 - `TEMPLATE_VALIDATION_CHECKLIST.md.template` defines manual checks.

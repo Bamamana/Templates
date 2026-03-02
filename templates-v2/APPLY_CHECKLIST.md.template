@@ -14,6 +14,7 @@ Skip when: templates are already applied and validated.
 - [ ] `CHANGELOG.md.template` copied to `CHANGELOG.md`
 - [ ] `ci.yml.template` copied to `.github/workflows/ci.yml`
 - [ ] `TEMPLATE_INDEX.yaml.template` copied to `docs/TEMPLATE_INDEX.yaml`
+- [ ] `scripts/placeholder_allowlist.txt.template` copied to `scripts/placeholder_allowlist.txt` (optional but recommended)
 - [ ] Optional add-ons copied only if needed
 	- `addons/README.md.template`
 	- `addons/.gitignore.template`
@@ -23,11 +24,11 @@ Skip when: templates are already applied and validated.
 	- `addons/.github/ISSUE_TEMPLATE/bug_report.md.template`
 	- `addons/.github/ISSUE_TEMPLATE/feature_request.md.template`
 	- `addons/.github/ISSUE_TEMPLATE/config.yml.template`
-	- `addons/.github/workflows/ci.python.yml.template` OR `addons/.github/workflows/ci.node.yml.template`
 	- `addons/docker-compose.local.yml.template`
 	- `addons/MULTI_APP_SERVER_BLUEPRINT.md.template`
 	- `addons/FIRST_SESSION_PROMPT.txt.template`
 	- `addons/ADR_TEMPLATE.md.template`
+	- `addons/ADVANCED_VERIFICATION_PLAYBOOK.md.template`
 	- `addons/AI_OPERATING_CONTRACT.md.template` (legacy compatibility only)
 
 ## 2) Run Manual Validation
@@ -35,6 +36,8 @@ Skip when: templates are already applied and validated.
 
 ## 3) Run Automated Validation
 - [ ] Run `scripts/validate_templates.sh` (if included)
+- [ ] Optional: use `scripts/bootstrap_agent_ready.sh` for one-command apply + placeholder fill + validation + readiness report
+- [ ] For large-scale standardization, choose `--tier-profile auto|A|B|C` explicitly during bootstrap
 
 ## 4) Canonical Startup + Final Baseline
 - [ ] Human startup instruction points to `AI_AGENT.md`
