@@ -1,0 +1,45 @@
+# Master Traceability Table ([PROJECT_NAME])
+
+Read when: mapping pathways, planning refactors, and validating parity/smoke coverage.
+Skip when: never for Tier B/C; Tier A may mark N/A with rationale.
+
+Purpose: canonical living map of entrypoints, function chains, side effects, expected outcomes, and smoke/contract coverage.
+
+## Path ID Format
+- `[TYPE]-[COMPONENT]-[NUMBER]`
+- Types: `UI`, `API-CS`, `API-HT`, `CRON`, `EDIT`, `WEB`, `JOB`
+
+## Traceability Rules
+- Every active entrypoint/pathway must have a Path ID row.
+- Every Path ID must have smoke/contract coverage status:
+  - `Automated` (scripted command exists), or
+  - `Manual` (explicit runbook steps), or
+  - `N/A` (with rationale).
+- Refactor slices are blocked until touched Path IDs have passing coverage.
+- If pathways/entrypoints/wiring changes, update this file in the same change.
+
+## Entry Points Inventory
+
+| Path ID | Entry Point | Trigger/Method | Function Chain |
+|---|---|---|---|
+| UI-XX-01 | `[ENTRY_FUNCTION]` | `[MENU/OPEN/...]` | `[CHAIN_START] -> [CHAIN_NEXT] -> ...` |
+
+## Master Traceability Table
+
+| Path ID | Entry Point | Function Chain | Critical Side Effects | Expected Outcome | Smoke Coverage | Smoke Command / Runbook |
+|---|---|---|---|---|---|---|
+| UI-XX-01 | `[ENTRY_FUNCTION]` | `[CHAIN]` | `[WRITE/API/CACHE/TRIGGER/NONE]` | `[ASSERTION]` | `Automated` | `[SMOKE_COMMAND]` |
+| API-HT-01 | `[ENTRY_FUNCTION]` | `[CHAIN]` | `[WRITE/API/CACHE/TRIGGER]` | `[ASSERTION]` | `Manual` | `[RUNBOOK_SECTION]` |
+| CRON-01 | `[ENTRY_FUNCTION]` | `[CHAIN]` | `[WRITE/DELETE/QUEUE]` | `[ASSERTION]` | `N/A` | `[RATIONALE]` |
+
+## State Mutation Index
+
+| Location | Function | Mutation Type | Affected Data |
+|---|---|---|---|
+| `[FILE]` | `[FUNCTION]` | `[APPEND/UPDATE/DELETE/CLEAR/CREATE]` | `[SHEET/TABLE/CACHE/PROPERTIES]` |
+
+## Coverage Completion Checklist
+- [ ] Every active Path ID is present.
+- [ ] Every Path ID has smoke coverage status + command/runbook.
+- [ ] Touched Path IDs in this change have passing smoke evidence.
+- [ ] Retired pathways are marked with reason/date in changelog or parity allowlist.

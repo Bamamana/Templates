@@ -69,6 +69,7 @@ copy_template() {
 apply_core() {
   copy_template "AI_AGENT.md.template" "AI_AGENT.md"
   copy_template "AI_MEMORY.md.template" "docs/AI_MEMORY.md"
+  copy_template "MASTER_TRACEABILITY_TABLE.md.template" "docs/MASTER_TRACEABILITY_TABLE.md"
   copy_template "PROJECT_CANVAS.md.template" "docs/PROJECT_CANVAS.md"
   copy_template "TECH_STACK.md.template" "docs/TECH_STACK.md"
   copy_template "ENGINEERING_PLAYBOOK.md.template" "docs/ENGINEERING_PLAYBOOK.md"
@@ -158,6 +159,6 @@ fi
 echo
 echo "[wizard] Template apply complete."
 echo "[wizard] Next steps:"
-echo "  1) Replace placeholders like [VERIFY_COMMAND], [CI_SETUP_COMMAND], [FIXTURE_TEST_COMMAND]."
+echo "  1) Replace placeholders like [VERIFY_COMMAND], [CI_SETUP_COMMANDS], [FIXTURE_TEST_COMMAND]."
 echo "  2) Run: bash scripts/validate_templates.sh"
 echo "  3) Run your verify command / CI."

@@ -7,6 +7,7 @@ Every project should have:
 - A single AI entrypoint contract (`AI_AGENT.md`)
 - Canonical governance (`docs/constitution/AI_SOURCE_OF_TRUTH.md`)
 - Generated project map (`AI_CONTEXT.md`)
+- Master pathway map (`docs/MASTER_TRACEABILITY_TABLE.md`) for Tier B/C systems
 - Explicit plan/status tracking (`docs/GAME_PLAN.md`)
 - Change history (`CHANGELOG.md`)
 - Local smoke workflow + automated verify gate
@@ -17,6 +18,7 @@ Copy the following templates into the destination project and replace placeholde
 ### Root-level templates
 - `templates/AI_AGENT.md.template`
 - `templates/CHANGELOG.md.template`
+- `templates-v2/MASTER_TRACEABILITY_TABLE.md.template` (Tier B/C required)
 
 ### Core docs templates
 - `templates/INSTRUCTIONS_INDEX.md.template`
@@ -98,6 +100,7 @@ Copy the following templates into the destination project and replace placeholde
 
 ## Hard Standards
 - `AI_AGENT.md` is always the mandatory AI session entrypoint.
+- For Tier B/C, maintain `docs/MASTER_TRACEABILITY_TABLE.md` and ensure every active Path ID has smoke coverage status (`Automated`, `Manual`, or `N/A` with rationale).
 - Behavior changes require targeted tests and changelog updates.
 - Docs are updated in the same change as code/path/command changes.
 - Soft limit: new files <= 400 lines. Hard trigger: refactor at > 500 lines.

@@ -36,6 +36,15 @@ Single source for commands, testing policy, feature execution, and repository st
 - Smoke tests remain fast and run in seconds.
 - Verify gate is mandatory before handoff.
 
+## 2.4) Traceability and Pathway Smoke Coverage (Tier B/C)
+- Maintain `docs/MASTER_TRACEABILITY_TABLE.md` as the canonical pathway map.
+- Every active Path ID must map to smoke/contract coverage:
+	- `Automated` (scripted command exists),
+	- `Manual` (explicit runbook path), or
+	- `N/A` (documented rationale).
+- Refactor completion requires passing smoke evidence for all touched Path IDs.
+- Pathway/entrypoint/wiring changes must update traceability table rows in the same change.
+
 ## 2.2) Branching and PR Workflow
 - Branching model: [TRUNK_BASED_OR_GITFLOW]
 - Branch naming: `[feature|fix|chore]/[short-description]`
@@ -64,6 +73,7 @@ Single source for commands, testing policy, feature execution, and repository st
 | Core workflow behavior | `[TARGETED_TEST_COMMAND]` | targeted | A/B/C |
 | Full local validation | `[VERIFY_COMMAND]` | gate | A/B/C |
 | Coverage confidence | `[COVERAGE_COMMAND]` | regression | B/C |
+| Pathway contract parity | `[TRACEABILITY_SMOKE_COMMAND]` | contract/smoke | B/C |
 
 ## 4) Feature Execution Template
 - Feature:
@@ -93,6 +103,7 @@ Single source for commands, testing policy, feature execution, and repository st
 - [ ] Structure map section updated (if changed)
 - [ ] Commands section updated (if changed)
 - [ ] Matrix row(s) updated for new workflows
+- [ ] Traceability rows + per-path smoke coverage updated (Tier B/C)
 - [ ] AI context regenerated (`[AI_CONTEXT_COMMAND]`)
 - [ ] Verify gate passed
 

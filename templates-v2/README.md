@@ -14,6 +14,7 @@ It is designed to cover the full intent of V1 with a smaller core and optional a
 Copy and rename these templates into a project:
 - `AI_AGENT.md.template` -> `AI_AGENT.md` (canonical)
 - `AI_MEMORY.md.template` -> `docs/AI_MEMORY.md` (new context/memory)
+- `MASTER_TRACEABILITY_TABLE.md.template` -> `docs/MASTER_TRACEABILITY_TABLE.md` (required for Tier B/C)
 - `PROJECT_CANVAS.md.template` -> `docs/PROJECT_CANVAS.md`
 - `TECH_STACK.md.template` -> `docs/TECH_STACK.md` (new architecture/stack)
 - `ENGINEERING_PLAYBOOK.md.template` -> `docs/ENGINEERING_PLAYBOOK.md`
@@ -58,6 +59,10 @@ Default startup contract is only `AI_AGENT.md`.
 - `scripts/run_fixture_suite.sh.template` -> `scripts/run_fixture_suite.sh`
 - `scripts/refresh_snapshot_baseline.sh.template` -> `scripts/refresh_snapshot_baseline.sh`
 
+Traceability coverage standard:
+- For Tier B/C projects, maintain `docs/MASTER_TRACEABILITY_TABLE.md`.
+- Every active Path ID must include smoke/contract coverage status (`Automated`, `Manual`, or `N/A` with rationale).
+
 ### Optional CI Add-on
 - `addons/.github/workflows/ci.predeploy.yml.template` -> `.github/workflows/ci.yml` (predeploy-gated variant)
 
@@ -75,7 +80,7 @@ The wizard supports profile selection, CI variant choice, and overwrite policy.
 - `TEMPLATE_VALIDATION_CHECKLIST.md.template` defines manual checks.
 - `scripts/validate_templates.sh.template` provides an automated baseline validation script.
 - `TEMPLATE_INDEX.yaml.template` provides machine-readable navigation and applicability.
-- `V1_TO_V2_TRACEABILITY.md` provides full legacy-to-v2 parity mapping.
+- `MASTER_TRACEABILITY_TABLE.md.template` provides pathway-level traceability and smoke coverage mapping baseline.
 
 ## Startup Prompt for Human
 Use this single prompt with any AI agent:

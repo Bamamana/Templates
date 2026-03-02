@@ -6,6 +6,7 @@ Skip when: never.
 ## Core Presence
 - [ ] `AI_AGENT.md` exists and is used as mandatory startup file
 - [ ] `docs/AI_MEMORY.md` exists
+- [ ] `docs/MASTER_TRACEABILITY_TABLE.md` exists for Tier B/C (or Tier A has N/A rationale)
 - [ ] `docs/PROJECT_CANVAS.md` exists
 - [ ] `docs/TECH_STACK.md` exists
 - [ ] `docs/ENGINEERING_PLAYBOOK.md` exists
@@ -25,6 +26,8 @@ Skip when: never.
 - [ ] Smoke command runs
 - [ ] At least one targeted workflow test exists
 - [ ] Workflow-to-test matrix is populated
+- [ ] For Tier B/C: every active Path ID in `docs/MASTER_TRACEABILITY_TABLE.md` has smoke coverage status (`Automated`, `Manual`, or `N/A` with rationale)
+- [ ] For Tier B/C: touched Path IDs include command/runbook evidence in the same change
 
 ## Tier Compliance
 - [ ] Tier A advanced controls are implemented or marked `N/A` with rationale

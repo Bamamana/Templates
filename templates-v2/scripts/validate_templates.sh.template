@@ -37,6 +37,14 @@ for file in "${required_files[@]}"; do
 done
 pass "Required files exist"
 
+tier_line=$(grep -E "Selected tier:" -n AI_AGENT.md || true)
+[[ -n "$tier_line" ]] || fail "Selected tier not set in AI_AGENT.md"
+
+if grep -Eq "Selected tier:.*(TIER_B|TIER_C|Tier B|Tier C|B_STANDARD|C_PRODUCTION)" AI_AGENT.md; then
+  [[ -f "docs/MASTER_TRACEABILITY_TABLE.md" ]] || fail "Tier B/C requires docs/MASTER_TRACEABILITY_TABLE.md"
+  pass "Tier B/C traceability file present"
+fi
+
 scan_paths=(
   "AI_AGENT.md"
   "docs/AI_MEMORY.md"
@@ -53,6 +61,10 @@ scan_paths=(
 
 if [[ -f "AI_OPERATING_CONTRACT.md" ]]; then
   scan_paths+=("AI_OPERATING_CONTRACT.md")
+fi
+
+if [[ -f "docs/MASTER_TRACEABILITY_TABLE.md" ]]; then
+  scan_paths+=("docs/MASTER_TRACEABILITY_TABLE.md")
 fi
 
 if grep -nE '\\[[A-Z0-9_]+\\]' "${scan_paths[@]}" >/tmp/v2_placeholders.txt 2>/dev/null; then
@@ -72,9 +84,15 @@ if ! grep -q "## \[Unreleased\]" CHANGELOG.md; then
 fi
 pass "Changelog structure looks valid"
 
-tier_line=$(grep -E "Selected tier:" -n AI_AGENT.md || true)
-[[ -n "$tier_line" ]] || fail "Selected tier not set in AI_AGENT.md"
 pass "Tier selection present"
+
+if [[ -f "docs/MASTER_TRACEABILITY_TABLE.md" ]]; then
+  if grep -q "| Path ID |" "docs/MASTER_TRACEABILITY_TABLE.md" && grep -q "Smoke" "docs/MASTER_TRACEABILITY_TABLE.md"; then
+    pass "Traceability table includes pathway and smoke coverage columns"
+  else
+    fail "docs/MASTER_TRACEABILITY_TABLE.md must include Path ID rows and smoke coverage field(s)"
+  fi
+fi
 
 if command -v bash >/dev/null 2>&1; then
   pass "Shell runtime available"

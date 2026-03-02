@@ -14,7 +14,7 @@ jobs:
 
       - name: Optional project setup
         run: |
-          [CI_SETUP_COMMAND]
+          [CI_SETUP_COMMANDS]
 
       - name: Run predeploy full suite if available
         run: |

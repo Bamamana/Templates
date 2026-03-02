@@ -1,9 +1,10 @@
-version: v2.2
+version: v2.3
 purpose: Machine-readable navigation and applicability map for templates-v2
 canonical_startup: AI_AGENT.md
 read_order:
   - AI_AGENT.md
   - docs/AI_MEMORY.md
+  - docs/MASTER_TRACEABILITY_TABLE.md
   - docs/PROJECT_CANVAS.md
   - docs/TECH_STACK.md
   - docs/ENGINEERING_PLAYBOOK.md
@@ -25,6 +26,13 @@ core_templates:
     required_by_tier: [A, B, C]
     read_when: Always at session start
     skip_when: Never
+
+  - template: MASTER_TRACEABILITY_TABLE.md.template
+    destination: docs/MASTER_TRACEABILITY_TABLE.md
+    purpose: Canonical pathway/entrypoint traceability with per-path smoke/contract coverage
+    required_by_tier: [B, C]
+    read_when: Planning refactors, changing entrypoints, validating parity/smoke coverage
+    skip_when: Tier A projects with no multi-path runtime (mark N/A with rationale)
 
   - template: TECH_STACK.md.template
     destination: docs/TECH_STACK.md
@@ -236,5 +244,6 @@ optional_addons:
 validation_order:
   - Apply files using APPLY_CHECKLIST
   - Complete TEMPLATE_VALIDATION_CHECKLIST
+  - Ensure each active Path ID has smoke/contract coverage (Automated/Manual/N-A)
   - Run scripts/validate_templates.sh
   - Run project verify command

@@ -15,6 +15,10 @@ This catches:
 - broken delegation pathways,
 - accidental behavior-path loss relative to historical baselines.
 
+Pathway coverage rule:
+- Maintain `docs/MASTER_TRACEABILITY_TABLE.md` and ensure every active Path ID has smoke coverage status (`Automated`, `Manual`, or `N/A` with rationale).
+- Lane contracts should be traceable back to one or more Path IDs.
+
 ## Suggested Script Layout
 
 ```text
@@ -101,3 +105,4 @@ For higher assurance, add:
 - [ ] Add one-command predeploy runner
 - [ ] Document lane ownership and required smoke commands
 - [ ] Enforce docs/changelog updates for any contract changes
+- [ ] Ensure every active Path ID in `docs/MASTER_TRACEABILITY_TABLE.md` maps to smoke evidence

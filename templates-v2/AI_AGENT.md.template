@@ -12,17 +12,19 @@ Human startup instruction:
 1. `AI_AGENT.md` (this file)
 2. `docs/AI_MEMORY.md` (user preferences & lessons)
 3. `docs/TEMPLATE_INDEX.yaml` (if present)
-4. `docs/PROJECT_CANVAS.md`
-5. `docs/TECH_STACK.md`
-6. `docs/ENGINEERING_PLAYBOOK.md`
-7. `docs/OPS_SECURITY_RELEASE.md`
-8. `CHANGELOG.md`
-9. `AI_CONTEXT.md` (if present)
+4. `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C required)
+5. `docs/PROJECT_CANVAS.md`
+6. `docs/TECH_STACK.md`
+7. `docs/ENGINEERING_PLAYBOOK.md`
+8. `docs/OPS_SECURITY_RELEASE.md`
+9. `CHANGELOG.md`
+10. `AI_CONTEXT.md` (if present)
 
 ## Mandatory Working Rules
 - If confidence is below 90%, pause and ask 1-3 precise clarifying questions.
 - Make smallest correct change first; avoid unnecessary scope.
 - For behavior changes, add/update targeted tests.
+- For Tier B/C projects, maintain `docs/MASTER_TRACEABILITY_TABLE.md` and ensure each active Path ID has smoke/contract coverage (`Automated`, `Manual`, or `N/A` with rationale).
 - Update docs in the same change when behavior, commands, paths, or structure changes.
 - Regenerate AI context map: `[AI_CONTEXT_COMMAND]`.
 - Run verify gate before handoff: `[VERIFY_COMMAND]`.
@@ -39,6 +41,7 @@ Human startup instruction:
 ## Definition of Done (Per Change)
 - [ ] Scope completed
 - [ ] Targeted tests updated/passing
+- [ ] Touched Path IDs in `docs/MASTER_TRACEABILITY_TABLE.md` updated with smoke/contract evidence (Tier B/C)
 - [ ] Verify gate passed
 - [ ] Relevant docs updated
 - [ ] Changelog updated
