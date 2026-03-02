@@ -208,6 +208,14 @@ if [[ ! -f "$TEMPLATE_ROOT/AI_AGENT.md.template" ]]; then
   exit 1
 fi
 
+TEMPLATE_VERSION="unknown"
+if [[ -f "$TEMPLATE_ROOT/TEMPLATE_INDEX.yaml.template" ]]; then
+  TEMPLATE_VERSION="$(grep -E '^version:' "$TEMPLATE_ROOT/TEMPLATE_INDEX.yaml.template" | head -n1 | awk '{print $2}' | tr -d '[:space:]')"
+fi
+if [[ -z "$TEMPLATE_VERSION" ]]; then
+  TEMPLATE_VERSION="unknown"
+fi
+
 if [[ -z "$PROJECT_NAME" ]]; then
   PROJECT_NAME="$(basename "$TARGET_DIR")"
 fi
@@ -251,12 +259,15 @@ apply_core() {
   copy_template "ENGINEERING_PLAYBOOK.md.template" "docs/ENGINEERING_PLAYBOOK.md"
   copy_template "OPS_SECURITY_RELEASE.md.template" "docs/OPS_SECURITY_RELEASE.md"
   copy_template "CHANGELOG.md.template" "CHANGELOG.md"
+  copy_template "QUICKSTART_5_MIN.md.template" "docs/QUICKSTART_5_MIN.md"
+  copy_template "PLACEHOLDER_REFERENCE.md.template" "docs/PLACEHOLDER_REFERENCE.md"
   copy_template "TEMPLATE_VALIDATION_CHECKLIST.md.template" "docs/TEMPLATE_VALIDATION_CHECKLIST.md"
   copy_template "APPLY_CHECKLIST.md.template" "docs/APPLY_CHECKLIST.md"
   copy_template "TEMPLATE_INDEX.yaml.template" "docs/TEMPLATE_INDEX.yaml"
   copy_template ".github/workflows/ci.yml.template" ".github/workflows/ci.yml"
   copy_template "scripts/validate_templates.sh.template" "scripts/validate_templates.sh"
   copy_template "scripts/bootstrap_agent_ready.sh.template" "scripts/bootstrap_agent_ready.sh"
+  copy_template "scripts/check_template_drift.sh.template" "scripts/check_template_drift.sh"
   copy_template "scripts/placeholder_allowlist.txt.template" "scripts/placeholder_allowlist.txt"
 }
 
@@ -376,6 +387,9 @@ fi
 if [[ -f "$TARGET_DIR/scripts/bootstrap_agent_ready.sh" ]]; then
   chmod +x "$TARGET_DIR/scripts/bootstrap_agent_ready.sh" || true
 fi
+if [[ -f "$TARGET_DIR/scripts/check_template_drift.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/check_template_drift.sh" || true
+fi
 
 CI_SETUP_COMMANDS_DEFAULT="echo 'Configure runtime and dependencies'"
 case "$CI_OPTION" in
@@ -406,6 +420,8 @@ PLACEHOLDER_FILES=(
   "docs/TECH_STACK.md"
   "docs/ENGINEERING_PLAYBOOK.md"
   "docs/OPS_SECURITY_RELEASE.md"
+  "docs/QUICKSTART_5_MIN.md"
+  "docs/PLACEHOLDER_REFERENCE.md"
   "docs/TEMPLATE_VALIDATION_CHECKLIST.md"
   "docs/APPLY_CHECKLIST.md"
   "docs/TEMPLATE_INDEX.yaml"
@@ -420,7 +436,7 @@ for rel in "${PLACEHOLDER_FILES[@]}"; do
   fi
 done
 
-python3 - "$PROJECT_NAME" "$TIER" "$VERIFY_COMMAND" "$AI_CONTEXT_COMMAND" "$SMOKE_COMMAND" "$TARGETED_TEST_COMMAND" "$TRACEABILITY_SMOKE_COMMAND" "$CI_SETUP_COMMANDS_DEFAULT" "${EXISTING_FILES[@]}" <<'PY'
+python3 - "$PROJECT_NAME" "$TIER" "$VERIFY_COMMAND" "$AI_CONTEXT_COMMAND" "$SMOKE_COMMAND" "$TARGETED_TEST_COMMAND" "$TRACEABILITY_SMOKE_COMMAND" "$CI_SETUP_COMMANDS_DEFAULT" "$TEMPLATE_VERSION" "${EXISTING_FILES[@]}" <<'PY'
 import pathlib
 import re
 import sys
@@ -433,7 +449,8 @@ smoke_command = sys.argv[5]
 targeted_test_command = sys.argv[6]
 traceability_smoke_command = sys.argv[7]
 ci_setup_commands = sys.argv[8]
-files = [pathlib.Path(p) for p in sys.argv[9:]]
+template_version = sys.argv[9]
+files = [pathlib.Path(p) for p in sys.argv[10:]]
 
 replacements = {
     "[PROJECT_NAME]": project_name,
@@ -503,6 +520,7 @@ replacements = {
     "[NUMBER]": "01",
     "[FILE]": "src/module.ts",
     "[FUNCTION]": "handleRequest",
+    "[TEMPLATE_VERSION]": template_version,
 }
 
 for path in files:
@@ -584,13 +602,27 @@ PY
 
 UNRESOLVED_COUNT=$(wc -l < "$UNRESOLVED_REPORT" | tr -d ' ')
 
-REPORT_FILE="$TARGET_DIR/docs/TEMPLATE_READINESS_REPORT.md"
 TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+VERSION_FILE="$TARGET_DIR/docs/TEMPLATE_VERSION.md"
+cat > "$VERSION_FILE" <<EOF
+# Applied Template Version
+
+template_version: $TEMPLATE_VERSION
+generated_utc: $TIMESTAMP
+template_root: $TEMPLATE_ROOT
+tier_profile: $TIER_PROFILE_RESOLVED
+apply_profile: $PROFILE
+ci_option: $CI_OPTION
+EOF
+
+REPORT_FILE="$TARGET_DIR/docs/TEMPLATE_READINESS_REPORT.md"
 
 cat > "$REPORT_FILE" <<EOF
 # Template Readiness Report
 
 - Generated (UTC): $TIMESTAMP
+- Template version: $TEMPLATE_VERSION
 - Template root: $TEMPLATE_ROOT
 - Target project: $TARGET_DIR
 - Apply profile: $PROFILE
@@ -607,10 +639,12 @@ cat > "$REPORT_FILE" <<EOF
 - Apply templates + placeholder fill via: \
   bash scripts/bootstrap_agent_ready.sh --target "$TARGET_DIR"
 - Validation command: bash scripts/validate_templates.sh .
+- Drift check command: bash scripts/check_template_drift.sh . "$TEMPLATE_ROOT"
 
 ## Outputs
 - Validation log: $VALIDATION_LOG
 - Placeholder scan: docs/TEMPLATE_UNRESOLVED_PLACEHOLDERS.txt
+- Version stamp: docs/TEMPLATE_VERSION.md
 - Allowlist file: $PLACEHOLDER_ALLOWLIST_FILE
 
 ## Next Actions

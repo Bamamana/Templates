@@ -31,9 +31,12 @@ required_files=(
   "docs/TECH_STACK.md"
   "docs/ENGINEERING_PLAYBOOK.md"
   "docs/OPS_SECURITY_RELEASE.md"
+  "docs/QUICKSTART_5_MIN.md"
+  "docs/PLACEHOLDER_REFERENCE.md"
   "CHANGELOG.md"
   "docs/TEMPLATE_INDEX.yaml"
   ".github/workflows/ci.yml"
+  "scripts/check_template_drift.sh"
 )
 
 for file in "${required_files[@]}"; do
@@ -57,6 +60,8 @@ scan_paths=(
   "docs/TECH_STACK.md"
   "docs/ENGINEERING_PLAYBOOK.md"
   "docs/OPS_SECURITY_RELEASE.md"
+  "docs/QUICKSTART_5_MIN.md"
+  "docs/PLACEHOLDER_REFERENCE.md"
   "CHANGELOG.md"
   "docs/TEMPLATE_VALIDATION_CHECKLIST.md"
   "docs/APPLY_CHECKLIST.md"
@@ -124,6 +129,20 @@ if ! grep -q "## \[Unreleased\]" CHANGELOG.md; then
   fail "CHANGELOG.md missing [Unreleased] section"
 fi
 pass "Changelog structure looks valid"
+
+if [[ -f "docs/TEMPLATE_VERSION.md" ]]; then
+  stamped_version="$(grep -E '^template_version:' docs/TEMPLATE_VERSION.md | head -n1 | awk '{print $2}' | tr -d '[:space:]')"
+  indexed_version="$(grep -E '^version:' docs/TEMPLATE_INDEX.yaml | head -n1 | awk '{print $2}' | tr -d '[:space:]')"
+  if [[ -z "$stamped_version" || -z "$indexed_version" ]]; then
+    fail "Template version check failed: missing template_version or version value"
+  fi
+  if [[ "$stamped_version" != "$indexed_version" ]]; then
+    fail "Template version mismatch: docs/TEMPLATE_VERSION.md=$stamped_version docs/TEMPLATE_INDEX.yaml=$indexed_version"
+  fi
+  pass "Template version stamp matches TEMPLATE_INDEX"
+else
+  warn "docs/TEMPLATE_VERSION.md not found (run bootstrap to stamp applied template version)"
+fi
 
 pass "Tier selection present"
 

@@ -1,0 +1,63 @@
+# 5-Minute Template Quickstart
+
+Read when: first-time setup in a new or existing project.
+Skip when: templates are already applied and readiness report is clean.
+
+## 1) Pick Tier
+- Tier A: static/lightweight
+- Tier B: standard app/API
+- Tier C: production-critical
+
+## 2) Run Bootstrap
+
+### Tier A
+```bash
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "[PROJECT_NAME]" \
+  --tier TIER_A_STATIC \
+  --tier-profile auto \
+  --profile 2 \
+  --ci 1 \
+  --strict
+```
+
+### Tier B
+```bash
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "[PROJECT_NAME]" \
+  --tier TIER_B_STANDARD \
+  --tier-profile auto \
+  --profile 2 \
+  --ci 2 \
+  --strict
+```
+
+### Tier C
+```bash
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "[PROJECT_NAME]" \
+  --tier TIER_C_PRODUCTION_CRITICAL \
+  --tier-profile auto \
+  --profile 2 \
+  --ci 4 \
+  --strict
+```
+
+## 3) Confirm Ready
+- Open `docs/TEMPLATE_READINESS_REPORT.md`
+- Confirm:
+  - `Validation status: pass`
+  - `Unresolved placeholder lines: 0`
+
+## 4) Check Drift
+```bash
+bash scripts/check_template_drift.sh . /path/to/templates-v2
+```
+
+## 5) Run Project Verify Gate
+```bash
+[VERIFY_COMMAND]
+```

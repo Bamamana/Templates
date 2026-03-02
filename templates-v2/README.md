@@ -20,6 +20,8 @@ Copy and rename these templates into a project:
 - `ENGINEERING_PLAYBOOK.md.template` -> `docs/ENGINEERING_PLAYBOOK.md`
 - `OPS_SECURITY_RELEASE.md.template` -> `docs/OPS_SECURITY_RELEASE.md`
 - `CHANGELOG.md.template` -> `CHANGELOG.md`
+- `QUICKSTART_5_MIN.md.template` -> `docs/QUICKSTART_5_MIN.md`
+- `PLACEHOLDER_REFERENCE.md.template` -> `docs/PLACEHOLDER_REFERENCE.md`
 - `TEMPLATE_VALIDATION_CHECKLIST.md.template` -> `docs/TEMPLATE_VALIDATION_CHECKLIST.md`
 - `TEMPLATE_INDEX.yaml.template` -> `docs/TEMPLATE_INDEX.yaml`
 - `.github/workflows/ci.yml.template` -> `.github/workflows/ci.yml`
@@ -44,6 +46,7 @@ Default startup contract is only `AI_AGENT.md`.
 
 ### Optional Script Starters (Verification Hardening)
 - `scripts/bootstrap_agent_ready.sh.template` -> `scripts/bootstrap_agent_ready.sh`
+- `scripts/check_template_drift.sh.template` -> `scripts/check_template_drift.sh`
 - `scripts/placeholder_allowlist.txt.template` -> `scripts/placeholder_allowlist.txt`
 - `scripts/predeploy_full_suite.sh.template` -> `scripts/predeploy_full_suite.sh`
 - `scripts/parity_pathways_report.py.template` -> `scripts/parity_pathways_report.py`
@@ -83,6 +86,7 @@ What it does in one run:
 - applies core templates (+ selected profile/CI options),
 - auto-fills common placeholders,
 - runs `scripts/validate_templates.sh`,
+- stamps `docs/TEMPLATE_VERSION.md`,
 - generates `docs/TEMPLATE_READINESS_REPORT.md` and unresolved placeholder report.
 
 Interactive mode:
@@ -97,6 +101,22 @@ Tier profile pruning:
 - `--tier-profile B` keeps the balanced default setup.
 - `--tier-profile C` enforces full verification hardening (and defaults CI option to predeploy-focused when not explicitly set).
 - `--tier-profile auto` derives profile from `--tier`.
+
+## 5-Minute Start + Placeholder Guide
+
+- Use `docs/QUICKSTART_5_MIN.md` in each applied project for exact Tier A/B/C one-command examples.
+- Use `docs/PLACEHOLDER_REFERENCE.md` to resolve or intentionally allowlist placeholders.
+
+## Template Versioning + Drift Detection
+
+- Bootstrap writes `docs/TEMPLATE_VERSION.md` with the applied template pack version.
+- Run drift check:
+
+```bash
+bash scripts/check_template_drift.sh . /path/to/templates-v2
+```
+
+- Drift check fails if target version differs from source template version.
 
 ## Template Regression Fixture
 

@@ -11,19 +11,24 @@ Skip when: never.
 - [ ] `docs/TECH_STACK.md` exists
 - [ ] `docs/ENGINEERING_PLAYBOOK.md` exists
 - [ ] `docs/OPS_SECURITY_RELEASE.md` exists
+- [ ] `docs/QUICKSTART_5_MIN.md` exists
+- [ ] `docs/PLACEHOLDER_REFERENCE.md` exists
 - [ ] `CHANGELOG.md` exists with `Unreleased`
 - [ ] `.github/workflows/ci.yml` exists
 - [ ] `docs/TEMPLATE_INDEX.yaml` exists and matches applied files
+- [ ] `docs/TEMPLATE_VERSION.md` exists and has current template version stamp
 - [ ] If `AI_OPERATING_CONTRACT.md` exists, it does not define separate rules
 
 ## Placeholder Integrity
 - [ ] No unresolved placeholders like `[PROJECT_NAME]`, `[VERIFY_COMMAND]`
+- [ ] Placeholder resolution follows `docs/PLACEHOLDER_REFERENCE.md` (or unresolved placeholders are explicitly allowlisted)
 - [ ] All commands execute in target environment
 - [ ] Tier is selected with rationale
 
 ## Quality Gate Integrity
 - [ ] Verify gate runs and passes
 - [ ] Smoke command runs
+- [ ] `scripts/check_template_drift.sh` passes against the selected template root
 - [ ] At least one targeted workflow test exists
 - [ ] Workflow-to-test matrix is populated
 - [ ] For Tier B/C: every active Path ID in `docs/MASTER_TRACEABILITY_TABLE.md` has smoke coverage status (`Automated`, `Manual`, or `N/A` with rationale)

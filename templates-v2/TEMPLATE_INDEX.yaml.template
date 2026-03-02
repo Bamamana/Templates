@@ -1,4 +1,4 @@
-version: v2.6
+version: v2.7
 purpose: Machine-readable navigation and applicability map for templates-v2
 canonical_startup: AI_AGENT.md
 read_order:
@@ -67,6 +67,20 @@ core_templates:
     purpose: Release history and verification evidence
     required_by_tier: [A, B, C]
     read_when: Planning or documenting behavior changes
+    skip_when: Never
+
+  - template: QUICKSTART_5_MIN.md.template
+    destination: docs/QUICKSTART_5_MIN.md
+    purpose: Single-page tier-specific setup commands to get projects standardized in minutes
+    required_by_tier: [A, B, C]
+    read_when: Initial setup and rollout onboarding
+    skip_when: Never
+
+  - template: PLACEHOLDER_REFERENCE.md.template
+    destination: docs/PLACEHOLDER_REFERENCE.md
+    purpose: Canonical placeholder dictionary with source, requirement level, and handling rules
+    required_by_tier: [A, B, C]
+    read_when: Resolving placeholders or triaging strict mode failures
     skip_when: Never
 
   - template: TEMPLATE_VALIDATION_CHECKLIST.md.template
@@ -176,6 +190,11 @@ optional_addons:
     purpose: One-command bootstrap with interactive mode, tier-profile pruning/enforcement, placeholder fill, validator run, and readiness report generation
     use_when: Team wants one standardized apply engine for multi-project rollout with tier-based scaling
 
+  - template: scripts/check_template_drift.sh.template
+    destination: scripts/check_template_drift.sh
+    purpose: Compares applied project template version against source template pack for drift detection
+    use_when: Team needs quick post-apply version parity checks during standardization
+
   - template: scripts/placeholder_allowlist.txt.template
     destination: scripts/placeholder_allowlist.txt
     purpose: Optional allowlist for intentional unresolved placeholders used by bootstrap/validator scans
@@ -236,4 +255,5 @@ validation_order:
   - Complete TEMPLATE_VALIDATION_CHECKLIST
   - Ensure each active Path ID has smoke/contract coverage (Automated/Manual/N-A)
   - Run scripts/validate_templates.sh
+  - Run scripts/check_template_drift.sh . /path/to/templates-v2
   - Run project verify command

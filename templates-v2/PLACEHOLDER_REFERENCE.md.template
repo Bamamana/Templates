@@ -1,0 +1,44 @@
+# Placeholder Reference
+
+Read when: replacing template placeholders or debugging unresolved placeholder reports.
+Skip when: all placeholders are already resolved and strict checks pass.
+
+## How to Use
+- `scripts/bootstrap_agent_ready.sh` auto-fills many placeholders.
+- Remaining placeholders are listed in `docs/TEMPLATE_UNRESOLVED_PLACEHOLDERS.txt`.
+- Allowlist intentional unresolved placeholders in `scripts/placeholder_allowlist.txt`.
+
+## Core Placeholders
+
+| Placeholder | Meaning | Usually set by | Required |
+|---|---|---|---|
+ | `<PROJECT_NAME>` | Human-readable project name | Bootstrap | Yes |
+ | `<TIER_SELECTION>` | Project tier selection | Bootstrap | Yes |
+ | `<VERIFY_COMMAND>` | Main verification gate command | Bootstrap/defaults | Yes |
+ | `<AI_CONTEXT_COMMAND>` | Command to regenerate AI/system context map | Bootstrap/defaults | Yes |
+ | `<SMOKE_COMMAND>` | Fast smoke test command | Bootstrap/defaults | Yes |
+ | `<TARGETED_TEST_COMMAND>` | Focused regression/feature test command | Bootstrap/defaults | Yes |
+ | `<TRACEABILITY_SMOKE_COMMAND>` | Pathway-level smoke command for Tier B/C | Bootstrap/defaults | Tier B/C |
+ | `<CI_SETUP_COMMANDS>` | CI runtime setup block | Bootstrap from `--ci` | Yes |
+
+## Documentation Placeholders
+
+| Placeholder | Meaning | Usually set by | Required |
+|---|---|---|---|
+ | `<WHY_THIS_TIER>` | Reason this tier matches project risk/complexity | Manual | Yes |
+ | `<EXACT_ITEM_TEXT>` | Concrete checklist item/action | Manual | Yes |
+ | `<NEXT_COMMAND>` | Immediate next action command | Bootstrap/manual | Yes |
+ | `<CHANGE_SUMMARY>` | Changelog summary text | Manual | Yes |
+ | `<COMMAND_AND_RESULT>` | Verification evidence line | Manual | Yes |
+ | `<RISK_OR_NONE>` | Risk note for the change | Manual | Yes |
+ | `<MILESTONE>` | Milestone label | Manual | Optional |
+
+## Versioning Placeholders
+
+| Placeholder | Meaning | Usually set by | Required |
+|---|---|---|---|
+ | `<TEMPLATE_VERSION>` | Applied template pack version from `TEMPLATE_INDEX.yaml.template` | Bootstrap | Yes |
+
+## Rule of Thumb
+- If a placeholder is project-specific and appears in active docs/workflows, resolve it.
+- If a placeholder is intentionally deferred, add it to `scripts/placeholder_allowlist.txt` with rationale.

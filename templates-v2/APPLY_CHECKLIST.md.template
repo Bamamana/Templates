@@ -12,8 +12,11 @@ Skip when: templates are already applied and validated.
 - [ ] `ENGINEERING_PLAYBOOK.md.template` copied to `docs/ENGINEERING_PLAYBOOK.md`
 - [ ] `OPS_SECURITY_RELEASE.md.template` copied to `docs/OPS_SECURITY_RELEASE.md`
 - [ ] `CHANGELOG.md.template` copied to `CHANGELOG.md`
+- [ ] `QUICKSTART_5_MIN.md.template` copied to `docs/QUICKSTART_5_MIN.md`
+- [ ] `PLACEHOLDER_REFERENCE.md.template` copied to `docs/PLACEHOLDER_REFERENCE.md`
 - [ ] `ci.yml.template` copied to `.github/workflows/ci.yml`
 - [ ] `TEMPLATE_INDEX.yaml.template` copied to `docs/TEMPLATE_INDEX.yaml`
+- [ ] `scripts/check_template_drift.sh.template` copied to `scripts/check_template_drift.sh`
 - [ ] `scripts/placeholder_allowlist.txt.template` copied to `scripts/placeholder_allowlist.txt` (optional but recommended)
 - [ ] Optional add-ons copied only if needed
 	- `addons/README.md.template`
@@ -38,6 +41,7 @@ Skip when: templates are already applied and validated.
 - [ ] Run `scripts/validate_templates.sh` (if included)
 - [ ] Optional: use `scripts/bootstrap_agent_ready.sh` for one-command apply + placeholder fill + validation + readiness report
 - [ ] For large-scale standardization, choose `--tier-profile auto|A|B|C` explicitly during bootstrap
+- [ ] Run `scripts/check_template_drift.sh . /path/to/templates-v2` to confirm applied version parity
 
 ## 4) Canonical Startup + Final Baseline
 - [ ] Human startup instruction points to `AI_AGENT.md`
