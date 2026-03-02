@@ -22,6 +22,7 @@ Copy and rename these templates into a project:
 - `CHANGELOG.md.template` -> `CHANGELOG.md`
 - `QUICKSTART_5_MIN.md.template` -> `docs/QUICKSTART_5_MIN.md`
 - `PLACEHOLDER_REFERENCE.md.template` -> `docs/PLACEHOLDER_REFERENCE.md`
+- `UPGRADE_GUIDE.md.template` -> `docs/UPGRADE_GUIDE.md`
 - `TEMPLATE_VALIDATION_CHECKLIST.md.template` -> `docs/TEMPLATE_VALIDATION_CHECKLIST.md`
 - `TEMPLATE_INDEX.yaml.template` -> `docs/TEMPLATE_INDEX.yaml`
 - `.github/workflows/ci.yml.template` -> `.github/workflows/ci.yml`
@@ -110,6 +111,7 @@ Tier profile pruning:
 ## Template Versioning + Drift Detection
 
 - Bootstrap writes `docs/TEMPLATE_VERSION.md` with the applied template pack version.
+- Use `docs/UPGRADE_GUIDE.md` for old -> new template version upgrades.
 - Run drift check:
 
 ```bash

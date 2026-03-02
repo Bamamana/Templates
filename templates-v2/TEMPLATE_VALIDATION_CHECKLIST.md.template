@@ -13,6 +13,7 @@ Skip when: never.
 - [ ] `docs/OPS_SECURITY_RELEASE.md` exists
 - [ ] `docs/QUICKSTART_5_MIN.md` exists
 - [ ] `docs/PLACEHOLDER_REFERENCE.md` exists
+- [ ] `docs/UPGRADE_GUIDE.md` exists
 - [ ] `CHANGELOG.md` exists with `Unreleased`
 - [ ] `.github/workflows/ci.yml` exists
 - [ ] `docs/TEMPLATE_INDEX.yaml` exists and matches applied files
@@ -29,6 +30,7 @@ Skip when: never.
 - [ ] Verify gate runs and passes
 - [ ] Smoke command runs
 - [ ] `scripts/check_template_drift.sh` passes against the selected template root
+- [ ] For template version changes, upgrade steps in `docs/UPGRADE_GUIDE.md` were followed
 - [ ] At least one targeted workflow test exists
 - [ ] Workflow-to-test matrix is populated
 - [ ] For Tier B/C: every active Path ID in `docs/MASTER_TRACEABILITY_TABLE.md` has smoke coverage status (`Automated`, `Manual`, or `N/A` with rationale)

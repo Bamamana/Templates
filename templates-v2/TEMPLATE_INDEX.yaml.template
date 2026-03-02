@@ -1,4 +1,4 @@
-version: v2.7
+version: v2.8
 purpose: Machine-readable navigation and applicability map for templates-v2
 canonical_startup: AI_AGENT.md
 read_order:
@@ -82,6 +82,13 @@ core_templates:
     required_by_tier: [A, B, C]
     read_when: Resolving placeholders or triaging strict mode failures
     skip_when: Never
+
+  - template: UPGRADE_GUIDE.md.template
+    destination: docs/UPGRADE_GUIDE.md
+    purpose: Version-bump procedure for safely upgrading applied projects to newer template pack releases
+    required_by_tier: [A, B, C]
+    read_when: Upgrading templates-v2 version in an existing project
+    skip_when: Initial onboarding only
 
   - template: TEMPLATE_VALIDATION_CHECKLIST.md.template
     destination: docs/TEMPLATE_VALIDATION_CHECKLIST.md

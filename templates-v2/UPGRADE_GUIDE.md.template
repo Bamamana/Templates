@@ -1,0 +1,65 @@
+# Template Upgrade Guide
+
+Read when: updating a project from one templates-v2 version to another.
+Skip when: initial onboarding only.
+
+## Goal
+Upgrade template governance safely while preserving project behavior.
+
+## 1) Preflight
+- Ensure working tree is clean.
+- Record current version:
+
+```bash
+grep '^version:' docs/TEMPLATE_INDEX.yaml
+grep '^template_version:' docs/TEMPLATE_VERSION.md || true
+```
+
+- Run current baseline gates:
+
+```bash
+bash scripts/validate_templates.sh .
+bash scripts/check_template_drift.sh . /path/to/templates-v2 || true
+```
+
+## 2) Apply New Template Pack
+Recommended: keep local project-specific edits by default.
+
+```bash
+bash /path/to/templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target . \
+  --template-root /path/to/templates-v2 \
+  --tier-profile auto \
+  --profile 2 \
+  --overwrite skip \
+  --strict
+```
+
+If you intentionally want template files refreshed to latest defaults, re-run with:
+
+```bash
+--overwrite overwrite
+```
+
+## 3) Resolve Any Deltas
+- Review `docs/TEMPLATE_UNRESOLVED_PLACEHOLDERS.txt` and resolve entries.
+- If intentionally deferred, add tokens to `scripts/placeholder_allowlist.txt` with rationale.
+- Confirm project commands in `AI_AGENT.md` and `docs/ENGINEERING_PLAYBOOK.md` still match reality.
+
+## 4) Validate Upgrade
+
+```bash
+bash scripts/validate_templates.sh .
+bash scripts/check_template_drift.sh . /path/to/templates-v2
+```
+
+Confirm in `docs/TEMPLATE_READINESS_REPORT.md`:
+- `Validation status: pass`
+- `Unresolved placeholder lines: 0`
+
+## 5) Commit Upgrade
+- Commit template upgrade separately from feature changes.
+- Include old -> new template version in commit message/changelog note.
+
+## Rollback
+- If validation fails and cannot be resolved quickly, revert the upgrade commit and retry in a smaller pass.
