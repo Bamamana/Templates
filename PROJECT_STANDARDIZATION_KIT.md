@@ -1,114 +1,116 @@
-# Project Standardization Kit (SmartCampusSystemServer)
+# Project Standardization Kit
 
-Use this kit to normalize any existing or new repository into the same AI-first professional format used here.
+Use this repository to standardize existing or new projects around the `templates-v2` pack.
+
+`templates-v2` is the canonical source. If this file and `templates-v2/README.md` ever disagree, follow `templates-v2/README.md` and update this guide.
 
 ## Target Outcome
-Every project should have:
-- A single AI entrypoint contract (`AI_AGENT.md`)
-- Canonical governance (`docs/constitution/AI_SOURCE_OF_TRUTH.md`)
-- Generated project map (`AI_CONTEXT.md`)
-- Master pathway map (`docs/MASTER_TRACEABILITY_TABLE.md`) for Tier B/C systems
-- Explicit plan/status tracking (`docs/GAME_PLAN.md`)
-- Change history (`CHANGELOG.md`)
-- Local smoke workflow + automated verify gate
+Every standardized project should have:
+- One canonical AI startup contract: `AI_AGENT.md`
+- A small core docs set under `docs/`
+- A tier-appropriate verification baseline
+- CI wired to the same project rules and commands
+- Placeholder resolution tracked and validated
+- Changelog discipline for behavior changes
 
-## Template Pack
-Copy the following templates into the destination project and replace placeholders:
+## Canonical Pack Layout
+The active template pack lives under `templates-v2/`.
 
-### Root-level templates
-- `templates/AI_AGENT.md.template`
-- `templates/CHANGELOG.md.template`
-- `templates-v2/MASTER_TRACEABILITY_TABLE.md.template` (Tier B/C required)
+Core templates:
+- `templates-v2/AI_AGENT.md.template` -> `AI_AGENT.md`
+- `templates-v2/AI_MEMORY.md.template` -> `docs/AI_MEMORY.md`
+- `templates-v2/MASTER_TRACEABILITY_TABLE.md.template` -> `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C)
+- `templates-v2/PROJECT_CANVAS.md.template` -> `docs/PROJECT_CANVAS.md`
+- `templates-v2/TECH_STACK.md.template` -> `docs/TECH_STACK.md`
+- `templates-v2/ENGINEERING_PLAYBOOK.md.template` -> `docs/ENGINEERING_PLAYBOOK.md`
+- `templates-v2/OPS_SECURITY_RELEASE.md.template` -> `docs/OPS_SECURITY_RELEASE.md`
+- `templates-v2/CHANGELOG.md.template` -> `CHANGELOG.md`
+- `templates-v2/QUICKSTART_5_MIN.md.template` -> `docs/QUICKSTART_5_MIN.md`
+- `templates-v2/PLACEHOLDER_REFERENCE.md.template` -> `docs/PLACEHOLDER_REFERENCE.md`
+- `templates-v2/UPGRADE_GUIDE.md.template` -> `docs/UPGRADE_GUIDE.md`
+- `templates-v2/TEMPLATE_VALIDATION_CHECKLIST.md.template` -> `docs/TEMPLATE_VALIDATION_CHECKLIST.md`
+- `templates-v2/APPLY_CHECKLIST.md.template` -> `docs/APPLY_CHECKLIST.md`
+- `templates-v2/TEMPLATE_INDEX.yaml.template` -> `docs/TEMPLATE_INDEX.yaml`
+- `templates-v2/.github/workflows/ci.yml.template` -> `.github/workflows/ci.yml`
 
-### Core docs templates
-- `templates/INSTRUCTIONS_INDEX.md.template`
-- `templates/GAME_PLAN.md.template`
-- `templates/WORKFLOW_COMMANDS.md.template`
-- `templates/WORKFLOW_TEST_MATRIX.md.template`
-- `templates/SMOKE_TEST_CATALOG.md.template`
-- `templates/POST_CODING_CHECKS.md.template`
-- `templates/MANUAL_SMOKE_RUNBOOK.md.template`
-- `templates/FEATURE_SPEC_TEMPLATE.md.template`
-- `templates/DEPLOYMENT_RUNBOOK.md.template`
-- `templates/MULTI_APP_SERVER_BLUEPRINT.md.template`
-- `templates/SECRETS_POLICY.md.template`
-- `templates/PROJECT_TIER_POLICY.md.template`
-- `templates/ADR_TEMPLATE.md.template`
-- `templates/RISK_REGISTER.md.template`
-- `templates/RELEASE_POLICY.md.template`
-- `templates/SECURITY_AUTOMATION_BASELINE.md.template`
-- `templates/OBSERVABILITY_RUNBOOK.md.template`
-- `templates/TEMPLATE_LINT_CHECKLIST.md.template`
-- `templates/REFRACTOR_PLAYBOOK.md.template`
-- `templates/FIRST_SESSION_PROMPT.txt`
-
-### Templates-v2 recommended add-ons for refactor-safe verification
-- `templates-v2/addons/SMOKE_PARITY_PLAYBOOK.md.template` -> `docs/SMOKE_PARITY_PLAYBOOK.md`
-- `templates-v2/addons/FIXTURE_TESTING_PLAYBOOK.md.template` -> `docs/FIXTURE_TESTING_PLAYBOOK.md`
-- `templates-v2/addons/RELEASE_CANARY_CHECKLIST.md.template` -> `docs/RELEASE_CANARY_CHECKLIST.md`
+Optional add-ons:
+- `templates-v2/addons/README.md.template` -> `README.md`
+- `templates-v2/addons/.gitignore.template` -> `.gitignore`
+- `templates-v2/addons/CONTRIBUTING.md.template` -> `CONTRIBUTING.md`
+- `templates-v2/addons/LICENSE.template` -> `LICENSE`
+- `templates-v2/addons/.github/PULL_REQUEST_TEMPLATE.md.template` -> `.github/PULL_REQUEST_TEMPLATE.md`
+- `templates-v2/addons/.github/ISSUE_TEMPLATE/bug_report.md.template` -> `.github/ISSUE_TEMPLATE/bug_report.md`
+- `templates-v2/addons/.github/ISSUE_TEMPLATE/feature_request.md.template` -> `.github/ISSUE_TEMPLATE/feature_request.md`
+- `templates-v2/addons/.github/ISSUE_TEMPLATE/config.yml.template` -> `.github/ISSUE_TEMPLATE/config.yml`
 - `templates-v2/addons/.github/workflows/ci.predeploy.yml.template` -> `.github/workflows/ci.yml`
-- `templates-v2/scripts/predeploy_full_suite.sh.template` -> `scripts/predeploy_full_suite.sh`
-- `templates-v2/scripts/parity_pathways_report.py.template` -> `scripts/parity_pathways_report.py`
-- `templates-v2/scripts/parity-retired-pathways.json.template` -> `scripts/parity-retired-pathways.json`
-- `templates-v2/scripts/run_fixture_suite.sh.template` -> `scripts/run_fixture_suite.sh`
-- `templates-v2/scripts/refresh_snapshot_baseline.sh.template` -> `scripts/refresh_snapshot_baseline.sh`
-- `templates-v2/scripts/refactor_smoke_contract.py.template` -> `scripts/refactor_smoke_contract.py`
-- `templates-v2/scripts/smoke_masterapi_refactor.sh.template` -> `scripts/smoke_masterapi_refactor.sh`
-- `templates-v2/scripts/smoke_enginepath_refactor.sh.template` -> `scripts/smoke_enginepath_refactor.sh`
-- `templates-v2/scripts/refactor-contracts/masterapi-slice1.json.template` -> `scripts/refactor-contracts/masterapi-slice1.json`
-- `templates-v2/scripts/refactor-contracts/enginepath-slice1.json.template` -> `scripts/refactor-contracts/enginepath-slice1.json`
+- `templates-v2/addons/MULTI_APP_SERVER_BLUEPRINT.md.template` -> `docs/MULTI_APP_SERVER_BLUEPRINT.md`
+- `templates-v2/addons/docker-compose.local.yml.template` -> `docker-compose.local.yml`
+- `templates-v2/addons/FIRST_SESSION_PROMPT.txt.template` -> `docs/FIRST_SESSION_PROMPT.txt`
+- `templates-v2/addons/ADR_TEMPLATE.md.template` -> `docs/ADR_TEMPLATE.md`
+- `templates-v2/addons/ADVANCED_VERIFICATION_PLAYBOOK.md.template` -> `docs/ADVANCED_VERIFICATION_PLAYBOOK.md`
+- `templates-v2/addons/AI_OPERATING_CONTRACT.md.template` -> `AI_OPERATING_CONTRACT.md`
 
-### Constitution templates
-- `templates/AI_SOURCE_OF_TRUTH.md.template`
+Verification and bootstrap scripts:
+- `templates-v2/scripts/bootstrap_agent_ready.sh.template`
+- `templates-v2/scripts/validate_templates.sh.template`
+- `templates-v2/scripts/check_template_drift.sh.template`
+- `templates-v2/scripts/placeholder_allowlist.txt.template`
+- `templates-v2/scripts/predeploy_full_suite.sh.template`
+- `templates-v2/scripts/parity_pathways_report.py.template`
+- `templates-v2/scripts/parity-retired-pathways.json.template`
+- `templates-v2/scripts/refactor_smoke_contract.py.template`
+- `templates-v2/scripts/enforce_doc_updates.sh.template`
+- `templates-v2/scripts/smoke_masterapi_refactor.sh.template`
+- `templates-v2/scripts/smoke_enginepath_refactor.sh.template`
+- `templates-v2/scripts/run_fixture_suite.sh.template`
+- `templates-v2/scripts/refresh_snapshot_baseline.sh.template`
+- `templates-v2/scripts/refactor-contracts/masterapi-slice1.json.template`
+- `templates-v2/scripts/refactor-contracts/enginepath-slice1.json.template`
 
-### Architecture templates
-- `templates/repository-map.md.template`
+## Recommended Apply Path
+Use the bootstrap script instead of manually copying files whenever possible.
 
-### Runtime templates
-- `templates/docker-compose.local.yml.template`
+Non-interactive example:
 
-## Bootstrap Sequence (Per Project)
-0. (Optional) Use `templates-v2/scripts/bootstrap_agent_ready.sh.template --tier-profile auto` for one-command apply + placeholder fill + validation report (or run it without `--target` for interactive mode).
-1. Apply template files and replace placeholders.
-2. Create/verify scripts:
-	- `scripts/verify.sh`
-	- `scripts/update_ai_map.py`
-	- `scripts/enforce_limits.py`
-	- `scripts/test_smoke.sh`
-	- targeted workflow scripts
-3. Add toolchain baseline:
-	- `pyproject.toml` (`ruff`, `black`, `mypy`, `pytest`, coverage)
-	- `.pre-commit-config.yaml`
-	- `.github/workflows/ci.yml`
-4. Add minimal tests:
-	- one smoke test
-	- one targeted workflow test
-5. Generate `AI_CONTEXT.md` and run verify gate.
+```bash
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "My Project" \
+  --tier TIER_B_STANDARD \
+  --tier-profile auto \
+  --strict
+```
 
-## Phase Model (Apply to all projects)
-- Phase 0: governance baseline
-- Phase 1: modularization (no behavior changes)
-- Phase 2: feature implementation with tests
-- Phase 3: deployment readiness/hardening
-- Phase 4: production rollout
+Interactive mode:
 
-## Applicability by Project Size (Solo + AI Included)
-- Every project (including solo + AI) uses the same core governance baseline.
-- Use `docs/PROJECT_TIER_POLICY.md` to select Tier A/B/C and determine required vs optional controls.
-- For optional controls in the selected tier, keep the doc as `N/A` with a one-line rationale rather than deleting standards.
-- Re-tier when complexity increases (auth, persistence, multi-service, production users, compliance scope).
+```bash
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template
+```
+
+What bootstrap handles:
+1. Applies the core template set.
+2. Adds optional verification assets based on profile.
+3. Prunes assets by tier.
+4. Replaces common placeholders.
+5. Runs the template validator.
+6. Writes readiness and unresolved-placeholder reports.
+
+## Migration Sequence For Existing Projects
+1. Choose a tier and tier profile.
+2. Run bootstrap into the target project.
+3. Resolve remaining placeholders and set real commands.
+4. Wire project-native verify, smoke, lint, and CI commands.
+5. Add or map traceability coverage for Tier B/C projects.
+6. Run validation and fix drift before feature work continues.
 
 ## Hard Standards
-- `AI_AGENT.md` is always the mandatory AI session entrypoint.
-- For Tier B/C, maintain `docs/MASTER_TRACEABILITY_TABLE.md` and ensure every active Path ID has smoke coverage status (`Automated`, `Manual`, or `N/A` with rationale).
-- Behavior changes require targeted tests and changelog updates.
-- Docs are updated in the same change as code/path/command changes.
-- Soft limit: new files <= 400 lines. Hard trigger: refactor at > 500 lines.
-- Verify gate must pass before handoff.
+- `AI_AGENT.md` is the canonical AI session entrypoint.
+- Tier B/C projects require `docs/MASTER_TRACEABILITY_TABLE.md` with smoke coverage per active Path ID.
+- Behavior changes require tests and changelog updates in the same change.
+- Docs must change with commands, runtime paths, workflows, or architecture.
+- Prefer files under 400 lines; refactor aggressively after 500 lines.
+- The verification gate must pass before handoff.
 
-## Recommended Migration Order for Existing Projects
-1. Install governance/docs/templates first.
-2. Add verify tooling and CI.
-3. Normalize tests and workflow matrix.
-4. Refactor oversized modules in isolated passes.
-5. Start feature work only after Phases 0 and 1 are complete.
+## Repository Notes
+- `SERVER_CONTEXT.md` is intentionally sanitized so the repository remains reusable.
+- Keep project-specific hostnames, aliases, remote paths, and secrets in a private operator doc, not in the shared template baseline.
