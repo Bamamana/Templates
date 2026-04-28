@@ -22,6 +22,13 @@ Do not load other docs by default. Use `docs/CONTEXT_ROUTING.md` to decide.
 - Regenerate AI context map if used: `[AI_CONTEXT_COMMAND]`.
 - Tier B/C: update touched Path IDs in `docs/MASTER_TRACEABILITY_TABLE.md` with smoke or contract evidence.
 
+## Plan-Driven Workflow (Vibe Coding)
+The user describes intent; you maintain `docs/GAME_PLAN.md` (or `docs/PROJECT_CANVAS.md` if no game plan exists) as the single source of truth for current phase, milestone, next action, and status. Workflow per task:
+1. Read the plan doc.
+2. Update its "Current Execution State" section and "Active Plan" checklist as work progresses.
+3. Before handoff, run `bash scripts/sync_session_brief.sh` so `docs/SESSION_BRIEF.md` reflects reality. **Never hand-edit `SESSION_BRIEF.md`.**
+4. If the user gives a new directive, update the plan doc first, then act.
+
 ## File Size
 - Target new files ≤ 400 lines. Refactor any source file > 500 lines.
 
@@ -34,7 +41,8 @@ Do not load other docs by default. Use `docs/CONTEXT_ROUTING.md` to decide.
 - [ ] Targeted tests pass
 - [ ] Touched Path IDs updated (Tier B/C)
 - [ ] Verify gate passed
-- [ ] Docs updated
+- [ ] Plan doc (`docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md`) updated
+- [ ] `bash scripts/sync_session_brief.sh` run
 - [ ] Changelog updated
 - [ ] Risks noted (or `None`)
 

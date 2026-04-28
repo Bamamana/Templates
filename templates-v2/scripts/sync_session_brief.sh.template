@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# Auto-generate docs/SESSION_BRIEF.md from a plan doc.
+#
+# Source priority (first one found wins):
+#   1. docs/GAME_PLAN.md
+#   2. docs/PROJECT_CANVAS.md
+#
+# Both formats expect a "## 0) Current Execution State" or "## Current State"
+# section with the bullet fields below. The script extracts them and
+# rewrites SESSION_BRIEF.md.
+#
+# Usage:
+#   bash scripts/sync_session_brief.sh
+#   bash scripts/sync_session_brief.sh --source docs/MY_PLAN.md
+#
+# Designed for vibe coders: you describe the plan, the AI puts it in
+# the plan doc, this script keeps SESSION_BRIEF.md in sync.
+set -euo pipefail
+
+SOURCE=""
+TARGET="docs/SESSION_BRIEF.md"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --source) SOURCE="$2"; shift 2 ;;
+    --target) TARGET="$2"; shift 2 ;;
+    -h|--help) sed -n '2,18p' "$0"; exit 0 ;;
+    *) echo "[sync][FAIL] Unknown arg: $1" >&2; exit 2 ;;
+  esac
+done
+
+if [[ -z "$SOURCE" ]]; then
+  if [[ -f "docs/GAME_PLAN.md" ]]; then
+    SOURCE="docs/GAME_PLAN.md"
+  elif [[ -f "docs/PROJECT_CANVAS.md" ]]; then
+    SOURCE="docs/PROJECT_CANVAS.md"
+  else
+    echo "[sync][FAIL] No plan doc found. Create docs/GAME_PLAN.md or docs/PROJECT_CANVAS.md." >&2
+    exit 1
+  fi
+fi
+
+if [[ ! -f "$SOURCE" ]]; then
+  echo "[sync][FAIL] Source not found: $SOURCE" >&2
+  exit 1
+fi
+
+PROJECT_NAME="$(basename "$PWD")"
+
+python3 - "$SOURCE" "$TARGET" "$PROJECT_NAME" <<'PY'
+import re, sys, pathlib, datetime
+
+source = pathlib.Path(sys.argv[1])
+target = pathlib.Path(sys.argv[2])
+project = sys.argv[3]
+text = source.read_text()
+
+def find(label, default="(not set)"):
+    # Match "- Current phase: X" or "- Phase: X" etc., case-insensitive, tolerate "Current" prefix.
+    pattern = rf"^-\s*(?:Current\s+)?{re.escape(label)}\s*:\s*(.+?)\s*$"
+    m = re.search(pattern, text, re.MULTILINE | re.IGNORECASE)
+    if not m:
+        return default
+    val = m.group(1).strip()
+    # Strip surrounding backticks if present
+    val = val.strip("`")
+    return val if val else default
+
+phase     = find("phase")
+milestone = find("milestone")
+status    = find("status")
+# "Next unchecked checklist item" or "Next item"
+next_item = find("Next unchecked checklist item")
+if next_item == "(not set)":
+    next_item = find("Next item")
+next_cmd  = find("Next command to run")
+if next_cmd == "(not set)":
+    next_cmd = find("Next command")
+last_ver  = find("Last verified at")
+if last_ver == "(not set)":
+    last_ver = find("Last verified")
+
+# Active focus / blocker (best-effort: pull from canvas section if present)
+def section_first_bullet(header):
+    m = re.search(rf"##\s*\d*\)?\s*{re.escape(header)}[^\n]*\n((?:[^\n#]+\n?)+)", text, re.IGNORECASE)
+    if not m:
+        return ""
+    body = m.group(1)
+    bm = re.search(r"^-\s*(.+?)\s*$", body, re.MULTILINE)
+    return bm.group(1).strip() if bm else ""
+
+risk = section_first_bullet("Risk Snapshot") or "(none recorded)"
+
+now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M %Z").strip()
+
+content = f"""# Session Brief ({project})
+
+Read when: always at session start.
+Skip when: never.
+
+> **Auto-generated** from `{source}` by `scripts/sync_session_brief.sh`.
+> Do not hand-edit; edit the source doc and re-run the sync.
+> Last sync: {now}
+
+## Now
+- Phase: {phase}
+- Milestone: {milestone}
+- Status: {status}
+- Next item: {next_item}
+- Next command: {next_cmd}
+- Last verified: {last_ver}
+
+## Focus
+- Active objective: {milestone}
+- In-scope area: see `{source}` section "Scope"
+- Known blocker or risk: {risk}
+
+## Guardrails (Quick Reference)
+- See `AI_AGENT.md` for tier, verify command, and AI context command.
+- Likely-next docs: PROJECT_CANVAS, ENGINEERING_PLAYBOOK (per `docs/CONTEXT_ROUTING.md`)
+
+## Notes For Next Session
+- Update this file by editing `{source}` and running `bash scripts/sync_session_brief.sh`.
+"""
+target.parent.mkdir(parents=True, exist_ok=True)
+target.write_text(content)
+print(f"[sync] wrote {target} from {source}")
+PY

@@ -1,0 +1,49 @@
+# Game Plan ([PROJECT_NAME])
+
+This is the **single planning doc** you and the AI maintain together.
+Tell the AI what you want, the AI writes it here, and `scripts/sync_session_brief.sh` keeps `docs/SESSION_BRIEF.md` in sync automatically.
+
+**You don't fill in `SESSION_BRIEF.md` by hand. Ever.** You only edit this file (or talk to the AI and let it edit this file).
+
+## 0) Current Execution State
+- Current phase: [0/1/2/3/4]
+- Current milestone: [WHAT YOU ARE WORKING ON RIGHT NOW]
+- Current status: [NOT_STARTED/IN_PROGRESS/BLOCKED/DONE]
+- Next unchecked checklist item: [THE LITERAL NEXT THING]
+- Next command to run: [BASH COMMAND OR "n/a"]
+- Last verified at: [YYYY-MM-DD HH:MM]
+
+## 1) What We Are Building
+- Goal:
+- Why now:
+- Who it's for:
+
+## 2) Scope
+### In Scope
+- 
+
+### Not Doing (Yet)
+- 
+
+## 3) Active Plan (Living Checklist)
+- [ ] [first concrete step]
+- [ ] [next concrete step]
+- [ ] [...]
+
+## 4) Open Questions / Decisions Needed
+- 
+
+## 5) Risk Snapshot
+- Top risk:
+- Mitigation:
+- Fallback:
+
+## 6) Notes / Brain Dump
+- 
+
+---
+
+**How to use this file:**
+1. Tell the AI what you want. It updates section 3 (Active Plan) and section 0 (Current State).
+2. The AI runs `bash scripts/sync_session_brief.sh` so the lean startup brief reflects reality.
+3. When something changes, repeat. No SESSION_BRIEF editing required.

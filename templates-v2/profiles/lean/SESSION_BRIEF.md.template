@@ -3,15 +3,20 @@
 Read when: always at session start.
 Skip when: never.
 
-Purpose: current execution state in one short page so the agent can act without loading the full doc set.
+> **This file is auto-generated.** Do not hand-edit.
+> The plan lives in `docs/GAME_PLAN.md` (preferred) or `docs/PROJECT_CANVAS.md`.
+> To refresh after a planning conversation, run:
+> `bash scripts/sync_session_brief.sh`
+>
+> The AI is required to run that command at the end of any task that changes phase, milestone, next action, or status (see `AI_AGENT.md`).
 
 ## Now
-- Phase: [0/1/2/3/4]
-- Milestone: [MILESTONE_NAME]
-- Status: [NOT_STARTED/IN_PROGRESS/BLOCKED/DONE]
-- Next item: [EXACT_ITEM_TEXT]
-- Next command: [NEXT_COMMAND]
-- Last verified: [YYYY-MM-DD HH:MM TZ]
+- Phase: (not set — run sync)
+- Milestone: (not set — run sync)
+- Status: (not set — run sync)
+- Next item: (not set — run sync)
+- Next command: (not set — run sync)
+- Last verified: (not set — run sync)
 
 ## Focus
 - Active objective:
@@ -19,10 +24,8 @@ Purpose: current execution state in one short page so the agent can act without 
 - Known blocker or risk:
 
 ## Guardrails (Quick Reference)
-- Tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
-- Verify: `[VERIFY_COMMAND]`
-- AI context: `[AI_CONTEXT_COMMAND]`
-- Likely-next docs: [PROJECT_CANVAS/ENGINEERING_PLAYBOOK/TECH_STACK/TRACEABILITY/NONE]
+- See `AI_AGENT.md` for tier, verify command, and AI context command.
+- Likely-next docs: PROJECT_CANVAS, ENGINEERING_PLAYBOOK (per `docs/CONTEXT_ROUTING.md`)
 
 ## Notes For Next Session
--
+- Edit `docs/GAME_PLAN.md` (or `docs/PROJECT_CANVAS.md`) then run `bash scripts/sync_session_brief.sh`.

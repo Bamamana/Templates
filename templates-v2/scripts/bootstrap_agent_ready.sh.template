@@ -290,6 +290,19 @@ apply_lean_overlay() {
   SKIP_EXISTING="$prev_skip"
   copy_template "scripts/validate_context_budget.sh.template" "scripts/validate_context_budget.sh"
   copy_template "scripts/report_context_size.sh.template" "scripts/report_context_size.sh"
+  copy_template "scripts/sync_session_brief.sh.template" "scripts/sync_session_brief.sh"
+  # Plan doc: create GAME_PLAN.md unless it already exists. PROJECT_CANVAS.md
+  # is left untouched (it serves a different governance purpose). The sync
+  # script prefers GAME_PLAN.md when both exist.
+  if [[ ! -f "$TARGET_DIR/docs/GAME_PLAN.md" ]]; then
+    copy_template "addons/GAME_PLAN.md.template" "docs/GAME_PLAN.md"
+  fi
+  # Auto-sync SESSION_BRIEF.md from whichever plan doc exists.
+  if [[ -f "$TARGET_DIR/scripts/sync_session_brief.sh" ]]; then
+    chmod +x "$TARGET_DIR/scripts/sync_session_brief.sh" || true
+    ( cd "$TARGET_DIR" && bash scripts/sync_session_brief.sh ) || \
+      echo "[bootstrap][warn] initial session brief sync skipped"
+  fi
 }
 
 apply_ci_variant() { :; }
