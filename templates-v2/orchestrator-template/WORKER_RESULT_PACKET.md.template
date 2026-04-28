@@ -1,0 +1,31 @@
+# Worker Result Packet
+
+Use this document to return a single bounded subtask from the local worker to the orchestrator.
+
+## Header
+- Packet ID: [PACKET_ID]
+- Date: [YYYY-MM-DD]
+- Worker: [WORKER_NAME]
+- Status: [DONE/BLOCKED/PARTIAL]
+
+## Summary
+- Outcome:
+- Scope respected: [YES/NO]
+
+## Files Changed
+- [FILE_PATH]
+
+## Commands Run
+- [COMMAND] -> [RESULT]
+
+## Validation Results
+- [TEST_OR_CHECK] -> [PASS/FAIL]
+
+## Assumptions Made
+- [ASSUMPTION_1]
+
+## Blockers
+- [BLOCKER_OR_NONE]
+
+## Recommended Next Action
+- [NEXT_STEP]

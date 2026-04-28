@@ -1,0 +1,32 @@
+# Tech Stack & Architecture ([PROJECT_NAME] - Lean)
+
+Read when: making architectural decisions, adding dependencies, or changing system boundaries.
+Skip when: task is local and nearby code already answers the question.
+
+Owner: [OWNER]
+Last updated: [YYYY-MM-DD]
+
+## 1) Core Stack
+- Language:
+- Runtime:
+- Framework:
+- Database:
+- Infrastructure:
+
+## 2) Key Decisions
+| Category | Selection | Rationale |
+|---|---|---|
+| Testing | [SELECTION] | [RATIONALE] |
+| Auth | [SELECTION] | [RATIONALE] |
+| State or data access | [SELECTION] | [RATIONALE] |
+
+## 3) Architecture Patterns
+- 
+
+## 4) Boundaries
+- Frontend to backend:
+- Service to service:
+- Storage strategy:
+
+## 5) Migration Or Upgrade Notes
+- 

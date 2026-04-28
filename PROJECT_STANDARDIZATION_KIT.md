@@ -4,6 +4,9 @@ Use this repository to standardize existing or new projects around the `template
 
 `templates-v2` is the canonical source. If this file and `templates-v2/README.md` ever disagree, follow `templates-v2/README.md` and update this guide.
 
+Lean variant note:
+- `templates-lean/` is a separate draft pack for projects that want the same governance model with a smaller default startup context and lower cloud-token usage.
+
 ## Target Outcome
 Every standardized project should have:
 - One canonical AI startup contract: `AI_AGENT.md`

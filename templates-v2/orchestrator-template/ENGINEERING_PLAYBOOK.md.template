@@ -1,0 +1,97 @@
+# Engineering Playbook ([PROJECT_NAME] - Orchestrated Workflow)
+
+Read when: implementing, validating, or coordinating work between orchestrator and worker.
+Skip when: never.
+
+Single source for commands, testing policy, repository structure, and delegated execution rules.
+
+## 1) Commands
+```bash
+# setup
+[SETUP_COMMANDS]
+
+# run or build
+[BUILD_RUN_COMMAND]
+[LOCAL_ONLY_RUN_COMMAND]
+
+# logs or troubleshooting
+[LOGS_COMMAND]
+
+# quality
+[LINT_COMMAND]
+[FORMAT_CHECK_COMMAND]
+[TYPECHECK_COMMAND]
+
+# tests
+[SMOKE_COMMAND]
+[TARGETED_TEST_COMMAND]
+[COVERAGE_COMMAND]
+
+# full validation gate
+[VERIFY_COMMAND]
+```
+
+## 2) Test Policy
+- Every behavior change maps to at least one targeted test.
+- Smoke tests remain fast and run in seconds.
+- Worker packets should prefer targeted validation before the full verify gate.
+- Verify gate is mandatory before final handoff.
+
+## 3) Delegation Policy
+- The orchestrator owns planning, acceptance criteria, and final review.
+- The worker owns bounded implementation and local validation.
+- A worker packet must define allowed files or directories whenever possible.
+- A worker packet must define allowed commands.
+- If the worker needs broader context, it should return a blocker instead of wandering.
+
+## 4) Worker Loop
+1. Read the current `docs/WORKER_TASK_PACKET.md`.
+2. Confirm scope, constraints, and acceptance criteria.
+3. Make the smallest correct change first.
+4. Run the cheapest scoped validation.
+5. Repair local failures inside the same slice.
+6. Run `[VERIFY_COMMAND]` when the packet requires final handoff.
+7. Fill `docs/WORKER_RESULT_PACKET.md`.
+
+## 5) Escalation Triggers
+- Architectural decision required.
+- Ambiguous product rule.
+- Security, privacy, or compliance risk.
+- Repeated validation failure after local repair attempts.
+- Need to touch files outside the approved scope.
+
+## 6) Workflow-to-Test Matrix
+| Workflow | Command | Type | Preferred Role |
+|---|---|---|---|
+| Syntax or build integrity | `[SYNTAX_COMMAND]` | static or smoke | Worker |
+| Startup or load integrity | `[SMOKE_COMMAND]` | smoke | Worker |
+| Core behavior | `[TARGETED_TEST_COMMAND]` | targeted | Worker |
+| Full local validation | `[VERIFY_COMMAND]` | gate | Worker before handoff |
+| Architecture review | `[ARCH_REVIEW_COMMAND_OR_NA]` | review | Orchestrator |
+| Security or release review | `[SECURITY_REVIEW_COMMAND_OR_NA]` | review | Orchestrator |
+
+## 7) Repository Structure Map
+- `AI_AGENT.md` (AI operating contract)
+- `CHANGELOG.md`
+- `docs/PROJECT_CANVAS.md`
+- `docs/ORCHESTRATION_MAP.md`
+- `docs/WORKER_TASK_PACKET.md`
+- `docs/WORKER_RESULT_PACKET.md`
+- `docs/ENGINEERING_PLAYBOOK.md`
+- `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C)
+- `src/...`
+- `tests/...`
+
+## 8) After-Coding Checklist
+- [ ] `CHANGELOG.md` updated
+- [ ] Commands section updated if changed
+- [ ] Delegation policy updated if workflow changed
+- [ ] Traceability rows updated for touched Path IDs (Tier B/C)
+- [ ] Worker result packet completed
+- [ ] Verify gate passed
+
+## 9) Refactor Triggers and Workflow
+- Trigger refactor if any source file exceeds 500 lines.
+- Target <= 400 lines for new files.
+- Extract cohesive modules without changing behavior.
+- Re-run smoke plus targeted tests plus verify gate.

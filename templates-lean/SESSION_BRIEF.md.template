@@ -1,0 +1,28 @@
+# Session Brief ([PROJECT_NAME])
+
+Read when: starting a session or resuming work.
+Skip when: never.
+
+Purpose: compact current state for AI startup without loading the full project doc set.
+
+## Current State
+- Current phase: [0/1/2/3/4]
+- Current milestone: [MILESTONE_NAME]
+- Current status: [NOT_STARTED/IN_PROGRESS/BLOCKED/DONE]
+- Next unchecked item: [EXACT_ITEM_TEXT]
+- Next command: [NEXT_COMMAND]
+- Last verified at: [YYYY-MM-DD HH:MM TZ]
+
+## Current Focus
+- Active objective:
+- In-scope area:
+- Known blocker or risk:
+
+## Guardrails
+- Selected tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
+- Verify gate: `[VERIFY_COMMAND]`
+- AI context command: `[AI_CONTEXT_COMMAND]`
+- Docs that usually matter next: [PROJECT_CANVAS/ENGINEERING_PLAYBOOK/TECH_STACK/TRACEABILITY/NONE]
+
+## Notes For Next Session
+- 

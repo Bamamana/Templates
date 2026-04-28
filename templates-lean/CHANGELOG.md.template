@@ -1,0 +1,19 @@
+# Changelog
+
+Read when: documenting behavior changes or checking recent release history.
+Skip when: routine implementation does not need release history context.
+
+All notable changes are documented here for human and AI contributors.
+
+## [Unreleased]
+### Planned
+- [PLANNED_ITEM]
+
+### Changed
+- [CHANGE_SUMMARY]
+
+### Verified
+- [COMMAND_AND_RESULT]
+
+### Risks
+- [RISK_OR_NONE]

@@ -1,0 +1,82 @@
+# AI Agent Contract ([PROJECT_NAME] - Orchestrated Workflow)
+
+Read when: always; this is the canonical AI startup contract.
+Skip when: never.
+
+This template is for projects using a two-role AI system:
+
+- `Orchestrator`: premium cloud model with global context responsibility
+- `Worker`: local model with bounded execution responsibility
+
+Human startup instruction:
+"Read `AI_AGENT.md` and follow it strictly. Use the orchestrator-worker workflow defined in the project docs."
+
+## AI Navigation Map (Read in this order)
+1. `AI_AGENT.md` (this file)
+2. `docs/AI_MEMORY.md` (if present)
+3. `docs/ORCHESTRATION_MAP.md`
+4. `docs/PROJECT_CANVAS.md`
+5. `docs/TECH_STACK.md` (if present)
+6. `docs/ENGINEERING_PLAYBOOK.md`
+7. `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C required)
+8. `docs/OPS_SECURITY_RELEASE.md` (if present)
+9. `CHANGELOG.md`
+10. `AI_CONTEXT.md` (if present)
+
+## Core Role Contract
+
+### Orchestrator Responsibilities
+- Understand global architecture, priorities, and risk.
+- Break work into narrow, testable slices.
+- Issue worker packets with explicit scope, commands, and acceptance criteria.
+- Review worker result packets, validation output, and targeted diffs.
+- Escalate only when the worker hits a concrete blocker or when the change crosses an architectural boundary.
+
+### Worker Responsibilities
+- Execute only the scoped subtask.
+- Prefer the smallest correct change first.
+- Write or update targeted tests for behavior changes.
+- Run only the allowed commands unless the packet permits expansion.
+- Return a concise result packet with changed files, outcomes, blockers, and assumptions.
+
+## Mandatory Working Rules
+- If confidence is below 90%, pause and ask 1-3 precise clarifying questions.
+- Make the smallest correct change first; avoid unnecessary scope.
+- For behavior changes, add or update targeted tests.
+- Do not let the worker re-scan the entire repository unless the orchestrator explicitly widens scope.
+- Keep `docs/PROJECT_CANVAS.md` current when milestone, current action, or sequencing state changes.
+- For Tier B/C projects, maintain `docs/MASTER_TRACEABILITY_TABLE.md` and ensure each active Path ID has smoke or contract coverage.
+- Update docs in the same change when behavior, commands, paths, or structure changes.
+- Run the scoped validation first, then the verify gate before handoff: `[VERIFY_COMMAND]`.
+
+## Orchestration Discipline
+- The orchestrator should pay the large context cost once per milestone, not once per edit loop.
+- Every worker task must be expressed through `docs/WORKER_TASK_PACKET.md`.
+- Every worker completion must return through `docs/WORKER_RESULT_PACKET.md`.
+- If worker output fails acceptance criteria, request a narrow repair before widening scope.
+- If a task repeatedly expands beyond its packet, split it into smaller packets.
+
+## File Size and Modularity Rules
+- Soft target: keep new files <= 400 lines.
+- Hard trigger: refactor when any source file > 500 lines.
+- Keep modules cohesive and dependency direction clear.
+
+## Tier Selection
+- Selected tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
+- Rationale: [WHY_THIS_TIER]
+
+## Definition of Done (Per Change)
+- [ ] Scope completed
+- [ ] Targeted tests updated or passing
+- [ ] Worker packet and result packet filled for delegated work
+- [ ] Touched Path IDs updated with smoke or contract coverage (Tier B/C)
+- [ ] Verify gate passed
+- [ ] Relevant docs updated
+- [ ] Changelog updated
+- [ ] Risks noted (or `None`)
+
+## Required Handoff Format
+- Files changed
+- Commands or tests run with results
+- Worker assumptions and blockers
+- Open risks or follow-up refactors

@@ -1,0 +1,70 @@
+# Project Canvas ([PROJECT_NAME] - Orchestrated Workflow)
+
+Read when: you need current project state, current milestone, or next delegated slice.
+Skip when: never.
+
+## 0) Current Execution State
+- Current phase: [0/1/2/3/4]
+- Current milestone: [MILESTONE_NAME]
+- Current status: [NOT_STARTED/IN_PROGRESS/BLOCKED/DONE]
+- Next unchecked checklist item: [EXACT_ITEM_TEXT]
+- Next command to run: [NEXT_COMMAND]
+- Last verified at: [YYYY-MM-DD HH:MM TZ]
+
+## 0.1) Orchestration State
+- Orchestrator mode: [PLANNING/DELEGATING/REVIEWING/ESCALATED]
+- Active worker packet ID: [PACKET_ID_OR_NONE]
+- Worker status: [IDLE/RUNNING/BLOCKED/DONE]
+- Next worker slice: [SHORT_DESCRIPTION]
+- Last accepted result packet: [RESULT_PACKET_ID_OR_NONE]
+
+## 1) Vision
+- North star outcome:
+- Target users:
+- Why this project matters now:
+
+## 2) Success Criteria
+- Outcome metric 1:
+- Outcome metric 2:
+- Reliability or security baseline:
+
+## 3) Scope
+### In Scope
+- 
+
+### Out of Scope (Non-Goals)
+- 
+
+## 4) Delivery Strategy
+- Next milestone:
+- Critical dependencies:
+- Preferred packet size: [SMALL/MEDIUM]
+
+## 4.1) Phase Model Checklist
+- [ ] Phase 0: governance baseline complete
+- [ ] Phase 1: modularization complete (no behavior changes)
+- [ ] Phase 2: planned feature work with tests
+- [ ] Phase 3: deployment readiness and hardening
+- [ ] Phase 4: production rollout and post-checks
+
+## 5) Architecture Snapshot
+- System type: [static site / monolith / service / multi-service]
+- Primary runtime:
+- Data or storage model:
+- Integration boundaries:
+
+## 6) Risk Snapshot
+- Top risk:
+- Mitigation owner:
+- Fallback plan:
+
+## 7) Orchestration Notes
+- Tasks that must stay with the orchestrator:
+- Tasks safe for local worker execution:
+- Current reasons to widen or narrow worker scope:
+
+## 8) AI Context Commands
+```bash
+[AI_CONTEXT_COMMAND]
+[VERIFY_COMMAND]
+```

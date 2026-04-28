@@ -1,0 +1,53 @@
+version: v0.1-draft
+purpose: Machine-readable navigation and applicability map for the orchestrator-template variant
+canonical_startup: AI_AGENT.md
+read_order:
+  - AI_AGENT.md
+  - docs/ORCHESTRATION_MAP.md
+  - docs/PROJECT_CANVAS.md
+  - docs/ENGINEERING_PLAYBOOK.md
+  - docs/MASTER_TRACEABILITY_TABLE.md
+  - CHANGELOG.md
+
+core_templates:
+  - template: AI_AGENT.md.template
+    destination: AI_AGENT.md
+    purpose: Canonical AI startup contract for orchestrator-worker projects
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: PROJECT_CANVAS.md.template
+    destination: docs/PROJECT_CANVAS.md
+    purpose: Current project state plus current orchestration state
+    required_by_tier: [A, B, C]
+    read_when: Establishing project state and the next delegated slice
+    skip_when: Never
+
+  - template: ENGINEERING_PLAYBOOK.md.template
+    destination: docs/ENGINEERING_PLAYBOOK.md
+    purpose: Commands, validation policy, and delegation loop rules
+    required_by_tier: [A, B, C]
+    read_when: Implementing, validating, or troubleshooting delegated work
+    skip_when: Never
+
+  - template: ORCHESTRATION_MAP.md.template
+    destination: docs/ORCHESTRATION_MAP.md
+    purpose: Source of truth for role split, token policy, and escalation rules
+    required_by_tier: [A, B, C]
+    read_when: Planning or reviewing orchestrated work
+    skip_when: Never
+
+  - template: WORKER_TASK_PACKET.md.template
+    destination: docs/WORKER_TASK_PACKET.md
+    purpose: Structured handoff from orchestrator to worker
+    required_by_tier: [A, B, C]
+    read_when: Issuing a delegated slice
+    skip_when: Never
+
+  - template: WORKER_RESULT_PACKET.md.template
+    destination: docs/WORKER_RESULT_PACKET.md
+    purpose: Structured result from worker back to orchestrator
+    required_by_tier: [A, B, C]
+    read_when: Reviewing delegated work outcome
+    skip_when: Never

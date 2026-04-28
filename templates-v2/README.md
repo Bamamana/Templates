@@ -3,6 +3,9 @@
 This pack is a clean-slate template system for **solo + AI vibe coding** with the fewest files possible while preserving industry-grade execution.
 It is designed to cover the full intent of V1 with a smaller core and optional add-ons.
 
+## Variant Packs
+- `orchestrator-template/` is a draft variant for cloud-orchestrator plus local-worker workflows. Use it when you want the premium model to hold global context and delegate bounded implementation loops to a local model.
+
 ## Design Principles
 - One canonical AI entrypoint for every session
 - Minimal file count, maximal clarity
@@ -155,6 +158,12 @@ Use this single prompt with any AI agent:
 - **Tier C**: production-critical/regulatory/high-availability
 
 Advanced controls are optional for Tier A and become stricter in Tier B/C.
+
+## Orchestrator Variant Notes
+
+- The base `templates-v2` pack remains the canonical general-purpose template system.
+- The `orchestrator-template` variant is intentionally separate while its delegation protocol is being developed.
+- Its goal is to preserve V2 guardrails while adding worker task packets, result packets, and token-saving orchestration rules.
 
 ## V1 Parity Notes
 - Size limits: soft target <= 400 lines, hard refactor trigger > 500 lines

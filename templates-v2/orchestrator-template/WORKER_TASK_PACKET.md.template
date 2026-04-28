@@ -1,0 +1,45 @@
+# Worker Task Packet
+
+Use this document to hand a single bounded subtask from the orchestrator to the local worker.
+
+## Header
+- Packet ID: [PACKET_ID]
+- Date: [YYYY-MM-DD]
+- Issued by: [ORCHESTRATOR_NAME]
+- Priority: [LOW/MEDIUM/HIGH]
+
+## Goal
+- [ONE_SENTENCE_OBJECTIVE]
+
+## Scope
+- In scope:
+  - [FILE_OR_DIRECTORY]
+- Out of scope:
+  - [FILE_OR_DIRECTORY_OR_RULE]
+
+## Constraints
+- [CONSTRAINT_1]
+- [CONSTRAINT_2]
+- [CONSTRAINT_3]
+
+## Acceptance Criteria
+- [ACCEPTANCE_CRITERION_1]
+- [ACCEPTANCE_CRITERION_2]
+- [ACCEPTANCE_CRITERION_3]
+
+## Allowed Commands
+```bash
+[COMMAND_1]
+[COMMAND_2]
+[COMMAND_3]
+```
+
+## Required Return
+- Fill `docs/WORKER_RESULT_PACKET.md`
+- Return changed files, validation results, assumptions, and blockers
+
+## Escalate If
+- Scope must expand beyond listed files
+- Business rule is unclear
+- Security or compliance concern appears
+- Validation failure suggests architectural mismatch

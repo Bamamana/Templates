@@ -1,0 +1,76 @@
+# Orchestration Map ([PROJECT_NAME])
+
+Read when: assigning work between cloud orchestrator and local worker.
+Skip when: never.
+
+Purpose: define the stable role split, handoff protocol, token-saving policy, and escalation boundaries.
+
+## 1) System Roles
+
+### Orchestrator
+- Holds project-wide context and milestone intent.
+- Reads canonical project docs and current architecture state.
+- Creates worker packets with explicit scope and acceptance criteria.
+- Reviews result packets, targeted diffs, and validation evidence.
+- Decides whether to accept, repair, split, or escalate.
+
+### Worker
+- Performs bounded implementation, refactor, and test work.
+- Stays inside assigned files or directories.
+- Runs the approved command set.
+- Returns evidence instead of long prose.
+
+## 2) Task Routing Rules
+
+### Keep on Orchestrator
+- Architecture and design decisions
+- Cross-module planning
+- Compliance, security, or privacy review
+- Final review for risky changes
+- Ambiguous product or business rules
+
+### Push to Worker
+- Unit tests and smoke tests
+- Narrow feature slices
+- Routine CRUD or UI work
+- Repetitive refactors
+- Lint, typecheck, and test repair loops
+- Docs updates driven by explicit instructions
+
+## 3) Token Budget Policy
+- Read full-project context once per milestone or major escalation.
+- Do not re-read the repository for each worker slice.
+- Pass only the minimum files, commands, constraints, and acceptance criteria needed for the task.
+- Return compact result packets instead of full logs unless a failure requires evidence.
+
+## 4) Worker Packet Requirements
+- `Packet ID`
+- `Goal`
+- `Scope`
+- `Allowed files or directories`
+- `Constraints`
+- `Acceptance criteria`
+- `Allowed commands`
+- `Expected return format`
+
+## 5) Result Packet Requirements
+- `Packet ID`
+- `Status`
+- `Files changed`
+- `Commands run`
+- `Validation results`
+- `Assumptions made`
+- `Blockers`
+- `Recommended next action`
+
+## 6) Drift Prevention Rules
+- No silent scope expansion.
+- No architectural rewrites without orchestration review.
+- If acceptance criteria change, update the packet before coding.
+- Keep project guardrails from `AI_AGENT.md` and `docs/ENGINEERING_PLAYBOOK.md` authoritative.
+
+## 7) Current Project Routing Notes
+- High-risk domains that must stay orchestrator-owned:
+- Known safe worker domains:
+- Current validation bottlenecks:
+- Current token-saving opportunities:

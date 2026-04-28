@@ -1,0 +1,70 @@
+# Lean Template Migration Guide ([PROJECT_NAME])
+
+Read when: applying `templates-lean` to a new project, a non-template project, or a project already using `templates-v2`.
+Skip when: the lean pack is already applied and validated.
+
+## Goal
+
+Preserve the reliability of the existing template model while reducing token usage by shrinking the default startup context.
+
+## Migration Paths
+
+### A. New Project With No Prior Template
+1. Apply the lean pack files.
+2. Choose the correct tier.
+3. Fill `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTING.md` first.
+4. Fill real commands in `docs/ENGINEERING_PLAYBOOK.md`.
+5. Add `docs/MASTER_TRACEABILITY_TABLE.md` if Tier B or C.
+6. Confirm `CHANGELOG.md` contains `Unreleased`.
+7. Validate that startup only needs the three default docs.
+
+### B. Existing Project With No Template
+1. Apply the lean pack files without deleting existing project docs.
+2. Map existing commands into `docs/ENGINEERING_PLAYBOOK.md`.
+3. Summarize current project status into `docs/SESSION_BRIEF.md` and `docs/PROJECT_CANVAS.md`.
+4. Move architecture facts into `docs/TECH_STACK.md`.
+5. Add traceability rows for critical pathways if Tier B or C.
+6. Update human startup instructions to point only to `AI_AGENT.md`.
+7. Stop using ad hoc startup prompts that force full-repo rereads.
+
+### C. Existing Project Already Using `templates-v2`
+1. Keep the existing audit docs unless they are obsolete.
+2. Replace the startup contract with the lean `AI_AGENT.md`.
+3. Add `docs/SESSION_BRIEF.md`.
+4. Add `docs/CONTEXT_ROUTING.md`.
+5. Update `docs/PROJECT_CANVAS.md` so it stays execution-focused rather than becoming the default startup dump.
+6. Keep `docs/TECH_STACK.md`, `docs/OPS_SECURITY_RELEASE.md`, and `docs/MASTER_TRACEABILITY_TABLE.md`, but treat them as conditional reads.
+7. Update any first-session prompt, bootstrap notes, or project instructions so the AI no longer reads all docs by default.
+8. Keep changelog, CI, and verify gate behavior unchanged.
+
+## What Must Change For Lean To Be Effective
+
+### Required Behavioral Changes
+- The AI must stop reading the full document set at startup.
+- The AI must start with `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTING.md` only.
+- Deep docs must be pulled only when the task actually requires them.
+- The session brief must stay current, otherwise the AI will compensate by reading too much.
+
+### Docs That Stay Important
+- `AI_AGENT.md`
+- `docs/SESSION_BRIEF.md`
+- `docs/CONTEXT_ROUTING.md`
+- `docs/PROJECT_CANVAS.md`
+- `docs/ENGINEERING_PLAYBOOK.md`
+- `docs/MASTER_TRACEABILITY_TABLE.md` for Tier B/C
+- `CHANGELOG.md`
+
+### Docs That Change Role
+- `docs/TECH_STACK.md`: from default startup read to architecture-only read
+- `docs/OPS_SECURITY_RELEASE.md`: from default startup read to deploy or security read
+- `CHANGELOG.md`: from routine startup read to documentation and history lookup
+
+## Validation Questions
+
+Use these checks after migration:
+
+1. Can a normal feature task begin with only three startup docs?
+2. Does the AI still know the verify gate and doc update rules without loading the full pack?
+3. Are Tier B/C pathway changes still forcing traceability updates?
+4. Are humans still pointed to one canonical startup file?
+5. Did the migration keep CI, verify, and changelog discipline intact?

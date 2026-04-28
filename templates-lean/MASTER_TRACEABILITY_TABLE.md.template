@@ -1,0 +1,24 @@
+# Master Traceability Table ([PROJECT_NAME] - Lean)
+
+Read when: changing entrypoints, function chains, side effects, or smoke evidence.
+Skip when: routine local edits do not affect pathways.
+
+Purpose: canonical pathway map for Tier B/C reliability without forcing it into every startup read.
+
+## Path ID Format
+- `[TYPE]-[COMPONENT]-[NUMBER]`
+- Types: `UI`, `API-CS`, `API-HT`, `CRON`, `EDIT`, `WEB`, `JOB`
+
+## Traceability Rules
+- Every active entrypoint or pathway must have a Path ID row.
+- Every Path ID must have smoke or contract coverage status:
+  - `Automated`,
+  - `Manual`, or
+  - `N/A` with rationale.
+- Update touched Path IDs in the same change when pathways change.
+
+## Master Traceability Table
+
+| Path ID | Entry Point | Function Chain | Critical Side Effects | Expected Outcome | Smoke Coverage | Smoke Command or Runbook |
+|---|---|---|---|---|---|---|
+| UI-XX-01 | `[ENTRY_FUNCTION]` | `[CHAIN]` | `[WRITE/API/CACHE/TRIGGER/NONE]` | `[ASSERTION]` | `Automated` | `[SMOKE_COMMAND]` |
