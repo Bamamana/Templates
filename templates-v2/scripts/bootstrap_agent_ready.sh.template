@@ -12,6 +12,7 @@ OVERWRITE="skip"
 STRICT_MODE=0
 INTERACTIVE_MODE=0
 TIER_PROFILE="auto"
+LEAN_MODE=0
 
 PROJECT_NAME=""
 TIER="TIER_B_STANDARD"
@@ -36,6 +37,7 @@ Usage:
     [--overwrite skip|overwrite] \
     [--strict] \
     [--interactive] \
+    [--lean] \
     [--project-name "My Project"] \
     [--tier TIER_A_STATIC|TIER_B_STANDARD|TIER_C_PRODUCTION_CRITICAL] \
     [--verify-command "bash scripts/verify.sh"] \
@@ -79,6 +81,10 @@ while [[ $# -gt 0 ]]; do
     --tier-profile)
       TIER_PROFILE="$2"
       shift 2
+      ;;
+    --lean)
+      LEAN_MODE=1
+      shift
       ;;
     --overwrite)
       OVERWRITE="$2"
@@ -272,6 +278,20 @@ apply_core() {
   copy_template "scripts/placeholder_allowlist.txt.template" "scripts/placeholder_allowlist.txt"
 }
 
+apply_lean_overlay() {
+  # Lean profile: replace AI_AGENT.md with the slim variant and add
+  # SESSION_BRIEF.md and CONTEXT_ROUTING.md. Also ship the context-budget
+  # validator so the always-on layer stays small.
+  local prev_skip="$SKIP_EXISTING"
+  SKIP_EXISTING=0
+  copy_template "profiles/lean/AI_AGENT.md.template" "AI_AGENT.md"
+  copy_template "profiles/lean/SESSION_BRIEF.md.template" "docs/SESSION_BRIEF.md"
+  copy_template "profiles/lean/CONTEXT_ROUTING.md.template" "docs/CONTEXT_ROUTING.md"
+  SKIP_EXISTING="$prev_skip"
+  copy_template "scripts/validate_context_budget.sh.template" "scripts/validate_context_budget.sh"
+  copy_template "scripts/report_context_size.sh.template" "scripts/report_context_size.sh"
+}
+
 apply_ci_variant() { :; }
 
 apply_verification_hardening() {
@@ -308,6 +328,7 @@ echo "[bootstrap] CI option:     $CI_OPTION"
 echo "[bootstrap] Overwrite:     $OVERWRITE"
 echo "[bootstrap] Strict mode:   $STRICT_MODE"
 echo "[bootstrap] Tier profile:  $TIER_PROFILE_RESOLVED"
+echo "[bootstrap] Lean mode:     $LEAN_MODE"
 
 apply_core
 apply_ci_variant
@@ -335,6 +356,10 @@ if [[ "$TIER_PROFILE_RESOLVED" == "C" ]]; then
   if [[ "$USER_SET_CI_OPTION" == "0" ]]; then
     CI_OPTION="4"
   fi
+fi
+
+if [[ "$LEAN_MODE" == "1" ]]; then
+  apply_lean_overlay
 fi
 
 PRUNED_COUNT=0
@@ -390,6 +415,12 @@ if [[ -f "$TARGET_DIR/scripts/bootstrap_agent_ready.sh" ]]; then
 fi
 if [[ -f "$TARGET_DIR/scripts/check_template_drift.sh" ]]; then
   chmod +x "$TARGET_DIR/scripts/check_template_drift.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/validate_context_budget.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/validate_context_budget.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/report_context_size.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/report_context_size.sh" || true
 fi
 
 CI_SETUP_COMMANDS_DEFAULT="echo 'Configure runtime and dependencies'"

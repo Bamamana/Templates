@@ -1,0 +1,45 @@
+# AI Agent Contract ([PROJECT_NAME])
+
+Read when: always. This is the canonical AI startup file.
+Skip when: never.
+
+Human startup instruction:
+"Read `AI_AGENT.md` and follow it."
+
+## Startup Reads (Always)
+1. `AI_AGENT.md` (this file)
+2. `docs/SESSION_BRIEF.md` (current execution state)
+3. `docs/CONTEXT_ROUTING.md` (which deeper docs to load when)
+
+Do not load other docs by default. Use `docs/CONTEXT_ROUTING.md` to decide.
+
+## Working Rules
+- If confidence < 90%, ask 1-3 precise clarifying questions before acting.
+- Smallest correct change first. No unrequested scope.
+- Behavior change ⇒ targeted test added or updated.
+- Behavior, command, path, or structure change ⇒ docs updated in same change.
+- Run verify gate before handoff: `[VERIFY_COMMAND]`.
+- Regenerate AI context map if used: `[AI_CONTEXT_COMMAND]`.
+- Tier B/C: update touched Path IDs in `docs/MASTER_TRACEABILITY_TABLE.md` with smoke or contract evidence.
+
+## File Size
+- Target new files ≤ 400 lines. Refactor any source file > 500 lines.
+
+## Tier
+- Selected tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
+- Rationale: [WHY_THIS_TIER]
+
+## Definition of Done
+- [ ] Scope completed
+- [ ] Targeted tests pass
+- [ ] Touched Path IDs updated (Tier B/C)
+- [ ] Verify gate passed
+- [ ] Docs updated
+- [ ] Changelog updated
+- [ ] Risks noted (or `None`)
+
+## Handoff Format
+- Files changed
+- Commands or tests run with results
+- Deeper docs loaded beyond startup set
+- Open risks or follow-ups

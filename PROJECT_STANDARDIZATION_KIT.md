@@ -4,8 +4,13 @@ Use this repository to standardize existing or new projects around the `template
 
 `templates-v2` is the canonical source. If this file and `templates-v2/README.md` ever disagree, follow `templates-v2/README.md` and update this guide.
 
-Lean variant note:
-- `templates-lean/` is a separate draft pack for projects that want the same governance model with a smaller default startup context and lower cloud-token usage.
+## Apply Profiles
+The pack supports two startup-context profiles. Both share the same docs, scripts, CI, and governance:
+
+- **default** — v2 startup behavior. The agent is instructed to read the full navigation chain at session start. Best when token cost is not a constraint.
+- **lean** — same docs in the repo, but the agent reads only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTING.md` by default. Deeper docs load only on triggers defined in `CONTEXT_ROUTING.md`. Apply with `--lean`. Adds `scripts/validate_context_budget.sh` to keep the always-on layer under budget in CI.
+
+The lean profile lives at `templates-v2/profiles/lean/` and is applied as an overlay by the same bootstrap script. The previous `templates-lean/` pack has been retired to prevent drift.
 
 ## Target Outcome
 Every standardized project should have:
@@ -69,11 +74,18 @@ Verification and bootstrap scripts:
 - `templates-v2/scripts/refresh_snapshot_baseline.sh.template`
 - `templates-v2/scripts/refactor-contracts/masterapi-slice1.json.template`
 - `templates-v2/scripts/refactor-contracts/enginepath-slice1.json.template`
+- `templates-v2/scripts/validate_context_budget.sh.template` (lean budget gate)
+- `templates-v2/scripts/report_context_size.sh.template` (lean size report)
+
+Lean profile overlay:
+- `templates-v2/profiles/lean/AI_AGENT.md.template` -> `AI_AGENT.md` (replaces default)
+- `templates-v2/profiles/lean/SESSION_BRIEF.md.template` -> `docs/SESSION_BRIEF.md`
+- `templates-v2/profiles/lean/CONTEXT_ROUTING.md.template` -> `docs/CONTEXT_ROUTING.md`
 
 ## Recommended Apply Path
 Use the bootstrap script instead of manually copying files whenever possible.
 
-Non-interactive example:
+Non-interactive example (default profile):
 
 ```bash
 bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
@@ -83,6 +95,43 @@ bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
   --tier-profile auto \
   --strict
 ```
+
+Non-interactive example (lean profile):
+
+```bash
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "My Project" \
+  --tier TIER_B_STANDARD \
+  --lean \
+  --strict
+```
+
+## Retrofit An Existing v2 Project To Lean
+
+Safe on any project already standardized with v2 (e.g. Carlson Law, Visual Planner). The `--lean` overlay only force-overwrites the three startup-context files; everything else you have already filled in is preserved.
+
+```bash
+bash /home/mamana/private-repos/Templates/templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/existing-project \
+  --tier TIER_B_STANDARD \
+  --lean
+```
+
+What changes: `AI_AGENT.md` is replaced; `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md`, `scripts/validate_context_budget.sh`, and `scripts/report_context_size.sh` are added.
+
+What does not change: every other v2 doc, every script, every addon, all your filled-in placeholders and history.
+
+Copy-paste AI prompt to perform the retrofit autonomously in an existing v2 project:
+
+> "This project uses `templates-v2`. Apply the lean profile from `Templates/templates-v2/profiles/lean/` by running:
+> `bash /home/mamana/private-repos/Templates/templates-v2/scripts/bootstrap_agent_ready.sh.template --target . --tier <tier> --lean`
+> Then populate `docs/SESSION_BRIEF.md` from the current state of `docs/PROJECT_CANVAS.md` and `CHANGELOG.md`.
+> Then run `bash scripts/validate_context_budget.sh` and confirm it passes.
+> Then update `CHANGELOG.md` under `[Unreleased]` to record the migration to the lean startup profile.
+> Do not modify any other v2 files."
+
+After retrofit, the human startup prompt becomes simply: *"Read `AI_AGENT.md` and follow it."*
 
 Interactive mode:
 
