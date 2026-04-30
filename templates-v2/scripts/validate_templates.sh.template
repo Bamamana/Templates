@@ -26,6 +26,7 @@ pass() {
 
 required_files=(
   "AI_AGENT.md"
+  "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md"
   "docs/AI_MEMORY.md"
   "docs/PROJECT_CANVAS.md"
   "docs/TECH_STACK.md"
@@ -56,6 +57,7 @@ fi
 
 scan_paths=(
   "AI_AGENT.md"
+  "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md"
   "docs/AI_MEMORY.md"
   "docs/PROJECT_CANVAS.md"
   "docs/TECH_STACK.md"
@@ -77,6 +79,17 @@ fi
 
 if [[ -f "docs/MASTER_TRACEABILITY_TABLE.md" ]]; then
   scan_paths+=("docs/MASTER_TRACEABILITY_TABLE.md")
+fi
+
+if [[ -f "docs/CONTEXT_ROUTING.md" ]]; then
+  scan_paths+=("docs/CONTEXT_ROUTING.md")
+fi
+
+if [[ -f "docs/SESSION_BRIEF.md" || -f "docs/CONTEXT_ROUTING.md" ]]; then
+  [[ -f "docs/SESSION_BRIEF.md" ]] || fail "Routed startup profile requires docs/SESSION_BRIEF.md"
+  [[ -f "docs/CONTEXT_ROUTING.md" ]] || fail "Routed startup profile requires docs/CONTEXT_ROUTING.md"
+  grep -q "## Event Triggers" "docs/CONTEXT_ROUTING.md" || fail "docs/CONTEXT_ROUTING.md must include an ## Event Triggers section"
+  pass "Routed startup docs present"
 fi
 
 placeholder_hits_file="$(mktemp)"

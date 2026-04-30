@@ -13,7 +13,7 @@ Skip when: routine feature work after adoption is fully green.
 >
 > This walkthrough checks "do you have each **capability** the template provides, AND has the AI been told how to discover it?" Adoption isn't done until every capability box is checked OR explicitly marked N/A with rationale.
 
-The known failure mode this prevents: AI partially adopts a template (copies the docs, skips the scripts and CI), and on later sessions silently ignores capabilities that exist but were never wired up. The bottom of every section says exactly which trigger to register in `docs/CONTEXT_ROUTING.md` so future sessions discover the capability without burning startup tokens reading it.
+The known failure mode this prevents: AI partially adopts a template (copies the docs, skips the scripts and CI), and on later sessions silently ignores capabilities that exist but were never wired up. For projects that use routed startup docs (for example the lean profile), the bottom of every section says which trigger to register in `docs/CONTEXT_ROUTING.md` so future sessions discover the capability without burning startup tokens reading it.
 
 ---
 
@@ -23,7 +23,7 @@ The known failure mode this prevents: AI partially adopts a template (copies the
 2. For each capability:
    - Check whether it's present in the project.
    - If missing, copy from the listed source path.
-   - Register the listed trigger in `docs/CONTEXT_ROUTING.md` § Event Triggers.
+   - If the project uses `docs/CONTEXT_ROUTING.md`, register the listed trigger there under `§ Event Triggers`; otherwise mark the trigger step `N/A` with rationale.
    - Run the listed proof command and confirm exit 0.
 3. Mark each box `[x]` only when proof passed.
 4. Marking `N/A` requires a one-line rationale next to the box.
@@ -179,16 +179,17 @@ Notes / SHA:
 
 ---
 
-## 7) Triggers Registered
+## 7) Triggers Registered (Routed Startup Profiles Only)
 
-**Purpose:** every capability above ends with a trigger row. Confirm they all exist now in one place.
+**Purpose:** if this project uses `docs/CONTEXT_ROUTING.md`, every capability above ends with a trigger row. Confirm they all exist now in one place.
 
-- [ ] `docs/CONTEXT_ROUTING.md` has an `## Event Triggers` section
-- [ ] Every applicable trigger from §2–§6 above is listed there
-- [ ] Each trigger row has the form: `<event in plain English>` → `<file or script path>`
-- [ ] Section ends with: "If an event is not listed here and the AI is unsure, surface to user; do not improvise."
+- [ ] If `docs/CONTEXT_ROUTING.md` is used: it has an `## Event Triggers` section
+- [ ] If `docs/CONTEXT_ROUTING.md` is used: every applicable trigger from §2–§6 above is listed there
+- [ ] If `docs/CONTEXT_ROUTING.md` is used: each trigger row has the form: `<event in plain English>` → `<file or script path>`
+- [ ] If `docs/CONTEXT_ROUTING.md` is used: the section ends with: "If an event is not listed here and the AI is unsure, surface to user; do not improvise."
+- [ ] If the project does not use `docs/CONTEXT_ROUTING.md`: this entire section is marked `N/A` with rationale
 
-**Proves it works:** `grep -c '→' docs/CONTEXT_ROUTING.md` returns the expected count.
+**Proves it works:** if `docs/CONTEXT_ROUTING.md` is used, `grep -c '→' docs/CONTEXT_ROUTING.md` returns the expected count.
 - [ ] Done.
 
 ---

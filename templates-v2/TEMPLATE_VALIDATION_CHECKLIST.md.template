@@ -5,6 +5,7 @@ Skip when: never.
 
 ## Core Presence
 - [ ] `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` exists and every section is checked or marked N/A with rationale
+- [ ] If routed startup docs are used (for example `docs/SESSION_BRIEF.md` exists), `docs/CONTEXT_ROUTING.md` exists and includes `## Event Triggers`
 - [ ] `AI_AGENT.md` exists and is used as mandatory startup file
 - [ ] `docs/AI_MEMORY.md` exists
 - [ ] `docs/MASTER_TRACEABILITY_TABLE.md` exists for Tier B/C (or Tier A has N/A rationale)

@@ -257,6 +257,7 @@ copy_template() {
 }
 
 apply_core() {
+  copy_template "TEMPLATE_ADOPTION_WALKTHROUGH.md.template" "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md"
   copy_template "AI_AGENT.md.template" "AI_AGENT.md"
   copy_template "AI_MEMORY.md.template" "docs/AI_MEMORY.md"
   copy_template "MASTER_TRACEABILITY_TABLE.md.template" "docs/MASTER_TRACEABILITY_TABLE.md"
@@ -459,6 +460,8 @@ PLACEHOLDER_FILES=(
   "CHANGELOG.md"
   "README.md"
   "AI_OPERATING_CONTRACT.md"
+  "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md"
+  "docs/CONTEXT_ROUTING.md"
   "docs/AI_MEMORY.md"
   "docs/MASTER_TRACEABILITY_TABLE.md"
   "docs/PROJECT_CANVAS.md"
@@ -584,7 +587,7 @@ if [[ -f "$TARGET_DIR/scripts/validate_templates.sh" ]]; then
     echo "[bootstrap] Validation passed"
   else
     VALIDATION_STATUS="fail"
-    echo "[bootstrap][WARN] Validation failed (see $TARGET_DIR/$VALIDATION_LOG)"
+    echo "[bootstrap][FAIL] Validation failed (see $TARGET_DIR/$VALIDATION_LOG)"
   fi
 fi
 
@@ -701,6 +704,10 @@ EOF
 
 echo "[bootstrap] Readiness report written: $REPORT_FILE"
 echo "[bootstrap] Unresolved placeholder lines: $UNRESOLVED_COUNT"
+
+if [[ "$VALIDATION_STATUS" == "fail" ]]; then
+  exit 1
+fi
 
 if [[ "$STRICT_MODE" == "1" && "$UNRESOLVED_COUNT" -gt 0 ]]; then
   echo "[bootstrap][FAIL] Strict mode enabled and unresolved placeholders remain"

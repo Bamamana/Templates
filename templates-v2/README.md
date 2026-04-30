@@ -14,7 +14,7 @@ It is designed to cover the full intent of V1 with a smaller core and optional a
 - Human and AI both follow explicit checklists
 
 ## First-Time Adoption
-Before copying anything, open `TEMPLATE_ADOPTION_WALKTHROUGH.md.template` (destination: `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md`). It is a capability-by-capability checklist (core docs, scripts, CI/CD, testing, worker/orchestrator pattern, version management) that prevents the most common failure mode: partially adopting the template, skipping the scripts and CI, then having the AI silently ignore capabilities that exist but were never wired up. It also tells you which **event triggers** to register in `docs/CONTEXT_ROUTING.md` so future sessions auto-discover capabilities without burning startup tokens.
+Before copying anything, open `TEMPLATE_ADOPTION_WALKTHROUGH.md.template` (destination: `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md`). It is a capability-by-capability checklist (core docs, scripts, CI/CD, testing, worker/orchestrator pattern, version management) that prevents the most common failure mode: partially adopting the template, skipping the scripts and CI, then having the AI silently ignore capabilities that exist but were never wired up. For routed startup profiles such as lean, it also tells you which **event triggers** to register in `docs/CONTEXT_ROUTING.md` so future sessions auto-discover capabilities without burning startup tokens.
 
 `APPLY_CHECKLIST.md` (file copy) and `TEMPLATE_VALIDATION_CHECKLIST.md` (post-validation) are still used; the adoption walkthrough is the umbrella.
 
