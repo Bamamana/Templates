@@ -12,13 +12,14 @@ Human startup instruction:
 1. `AI_AGENT.md` (this file)
 2. `docs/AI_MEMORY.md` (user preferences & lessons)
 3. `docs/TEMPLATE_INDEX.yaml` (if present)
-4. `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C required)
-5. `docs/PROJECT_CANVAS.md`
-6. `docs/TECH_STACK.md`
-7. `docs/ENGINEERING_PLAYBOOK.md`
-8. `docs/OPS_SECURITY_RELEASE.md`
-9. `CHANGELOG.md`
-10. `AI_CONTEXT.md` (if present)
+4. `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` (only if any § box is unchecked — partial adoption is a hard signal to stop and finish adoption first)
+5. `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C required)
+6. `docs/PROJECT_CANVAS.md`
+7. `docs/TECH_STACK.md`
+8. `docs/ENGINEERING_PLAYBOOK.md`
+9. `docs/OPS_SECURITY_RELEASE.md`
+10. `CHANGELOG.md`
+11. `AI_CONTEXT.md` (if present)
 
 ## Mandatory Working Rules
 - If confidence is below 90%, pause and ask 1-3 precise clarifying questions.

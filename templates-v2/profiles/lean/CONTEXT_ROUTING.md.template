@@ -8,7 +8,7 @@ Purpose: which docs to load beyond the startup set, and when.
 ## Default
 Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md`. Pull deeper docs only on the triggers below.
 
-## Triggers
+## Doc Triggers (Topic-Based)
 
 | Doc | Load when |
 |---|---|
@@ -21,6 +21,30 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md
 | `AI_CONTEXT.md` | nearby code reads are insufficient and a generated map exists |
 | `docs/AI_MEMORY.md` | recurring preferences or prior lessons matter |
 | `docs/QUICKSTART_5_MIN.md` | first-time setup of this project |
+| `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` | first install OR retrofitting templates-v2 into an existing project OR something feels "missing" / AI keeps ignoring a script that exists |
+
+## Event Triggers (Action-Based)
+
+These fire when the AI is *about to do* a specific kind of action. Same purpose as Doc Triggers, but keyed off an event in the work, not a topic in the user's question. Populated during adoption per `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §2–§6.
+
+| Event | Load / Run |
+|---|---|
+| About to bump or compare versions, OR versions look out of sync, OR about to release | `scripts/bump_version.sh` (run; never hand-edit version strings in individual files) |
+| About to merge to `main` | `scripts/predeploy_full_suite.sh` and `docs/POST_CODING_CHECKS.md` |
+| Behavior change without doc update suspected | `scripts/enforce_doc_updates.sh` |
+| Template pack version bump | `scripts/check_template_drift.sh` and `docs/UPGRADE_GUIDE.md` |
+| About to add or change a CI job | `.github/workflows/ci.yml` and `docs/ENGINEERING_PLAYBOOK.md` |
+| CI red after the worker reported DONE | `docs/POST_CODING_CHECKS.md` (the orchestrator review missed something) |
+| About to add a new entrypoint or workflow | `docs/MASTER_TRACEABILITY_TABLE.md` and `docs/WORKFLOW_TEST_MATRIX.md` |
+| About to add a new smoke test | `docs/SMOKE_TEST_CATALOG.md` |
+| BUGFIX packet in flight | `docs/ENGINEERING_PLAYBOOK.md` §3e regression accretion rule |
+| Test file modified | `docs/POST_CODING_CHECKS.md` §3 test-honesty spot-check |
+| Issuing a worker packet | `docs/WORKER_TASK_PACKET.md` |
+| Worker returned DONE | `docs/POST_CODING_CHECKS.md` (mandatory review) |
+| Worker returned BLOCKED twice on the same Path ID | `docs/INVESTIGATOR_PROTOCOL.md` |
+| About to run unattended overnight | `AI_AGENT.md` § Unattended Run Rules |
+
+If an event is not listed here and the AI is unsure, surface to user; do not improvise.
 
 ## Skip Rules
 - Skip `CHANGELOG.md` for routine implementation unless documenting the change.

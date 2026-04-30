@@ -3,7 +3,10 @@
 Read when: applying/migrating templates into a project.
 Skip when: templates are already applied and validated.
 
+> **Before this file:** open `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md`. It is the capability-level walkthrough (scripts? CI? versioning? worker pattern?) that wraps this checklist and prevents the partial-adoption failure mode.
+
 ## 1) Apply Files (Only)
+- [ ] `TEMPLATE_ADOPTION_WALKTHROUGH.md.template` copied to `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` **(run first)**
 - [ ] `AI_AGENT.md.template` copied to `AI_AGENT.md`
 - [ ] `AI_MEMORY.md.template` copied to `docs/AI_MEMORY.md`
 - [ ] `MASTER_TRACEABILITY_TABLE.md.template` copied to `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C required; Tier A optional)

@@ -104,6 +104,13 @@ core_templates:
     read_when: Initial template install/migration
     skip_when: Ongoing feature work after setup
 
+  - template: TEMPLATE_ADOPTION_WALKTHROUGH.md.template
+    destination: docs/TEMPLATE_ADOPTION_WALKTHROUGH.md
+    purpose: Capability-by-capability adoption walkthrough (core docs, scripts, CI/CD, testing, worker/orchestrator pattern, version management); prevents partial adoption and ensures every capability has a registered event trigger in CONTEXT_ROUTING
+    required_by_tier: [A, B, C]
+    read_when: First install OR retrofit OR something feels missing / AI keeps ignoring a script that exists
+    skip_when: Routine feature work after adoption is fully green
+
   - template: .github/workflows/ci.yml.template
     destination: .github/workflows/ci.yml
     purpose: Baseline CI quality and security checks

@@ -1,0 +1,209 @@
+# Template Adoption Walkthrough ([PROJECT_NAME])
+
+Read when:
+- First time installing templates-v2 into a project.
+- Adopting templates-v2 into a project that already exists ("retrofit").
+- Re-checking adoption completeness when something feels missing ("AI keeps not using script X").
+
+Skip when: routine feature work after adoption is fully green.
+
+> This file is **distinct** from:
+> - `docs/APPLY_CHECKLIST.md` — only checks "did you copy the files."
+> - `docs/TEMPLATE_VALIDATION_CHECKLIST.md` — checks "did the files validate."
+>
+> This walkthrough checks "do you have each **capability** the template provides, AND has the AI been told how to discover it?" Adoption isn't done until every capability box is checked OR explicitly marked N/A with rationale.
+
+The known failure mode this prevents: AI partially adopts a template (copies the docs, skips the scripts and CI), and on later sessions silently ignores capabilities that exist but were never wired up. The bottom of every section says exactly which trigger to register in `docs/CONTEXT_ROUTING.md` so future sessions discover the capability without burning startup tokens reading it.
+
+---
+
+## How to Use This Walkthrough
+
+1. Work top to bottom. Do not skip sections.
+2. For each capability:
+   - Check whether it's present in the project.
+   - If missing, copy from the listed source path.
+   - Register the listed trigger in `docs/CONTEXT_ROUTING.md` § Event Triggers.
+   - Run the listed proof command and confirm exit 0.
+3. Mark each box `[x]` only when proof passed.
+4. Marking `N/A` requires a one-line rationale next to the box.
+5. At the end, run the final gate command. If green, adoption is complete.
+
+---
+
+## 0) Pre-flight
+
+- [ ] Project tier selected (TIER_A_STATIC / TIER_B_STANDARD / TIER_C_PRODUCTION_CRITICAL) and recorded in `AI_AGENT.md`
+- [ ] Project name placeholder resolved everywhere (`grep -r '\[PROJECT_NAME\]'` returns 0 outside the placeholder reference doc)
+- [ ] Existing project? Snapshot a baseline before any change: `git status` clean, current commit SHA recorded in this section
+
+Notes / SHA:
+
+---
+
+## 1) Core Docs Capability
+
+**Purpose:** the AI has a canonical startup contract and discoverable knowledge surface.
+
+**You should have:**
+- `AI_AGENT.md` (root)
+- `docs/AI_MEMORY.md`
+- `docs/PROJECT_CANVAS.md`
+- `docs/TECH_STACK.md`
+- `docs/ENGINEERING_PLAYBOOK.md`
+- `docs/OPS_SECURITY_RELEASE.md`
+- `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C; Tier A may mark N/A)
+- `docs/PLACEHOLDER_REFERENCE.md`
+- `docs/UPGRADE_GUIDE.md`
+- `docs/QUICKSTART_5_MIN.md`
+- `docs/TEMPLATE_INDEX.yaml`
+- `docs/TEMPLATE_VERSION.md`
+- `CHANGELOG.md` (with `Unreleased`)
+
+**Copy from:** `templates-v2/*.template` per `APPLY_CHECKLIST.md` § 1.
+**Trigger registered (already default):** present in `docs/CONTEXT_ROUTING.md` § Doc Triggers.
+**Proves it works:** `ls AI_AGENT.md docs/AI_MEMORY.md docs/PROJECT_CANVAS.md docs/ENGINEERING_PLAYBOOK.md CHANGELOG.md`
+- [ ] All present, or N/A:
+
+---
+
+## 2) Scripts Capability
+
+**Purpose:** repeatable verification, drift detection, doc enforcement, and (for orchestrator-pattern repos) session-brief sync. **This is the section most often skipped during retrofits.**
+
+**You should have** (copy any that match your project's needs):
+
+| Script | Purpose | Copy from |
+|---|---|---|
+| `scripts/verify.sh` | The repo's canonical verify gate (handoff signal) | (project-specific; create if missing) |
+| `scripts/check_template_drift.sh` | Detects drift between applied templates and the source pack | `templates-v2/scripts/check_template_drift.sh.template` |
+| `scripts/enforce_doc_updates.sh` | Fails CI when behavior changed without doc updates | `templates-v2/scripts/enforce_doc_updates.sh.template` |
+| `scripts/predeploy_full_suite.sh` | Composite pre-deploy gate | `templates-v2/scripts/predeploy_full_suite.sh.template` |
+| `scripts/validate_context_budget.sh` | Keeps the AI startup context under budget | `templates-v2/scripts/validate_context_budget.sh.template` |
+| `scripts/validate_templates.sh` | Validates placeholders, presence, drift in one call | `templates-v2/scripts/validate_templates.sh.template` |
+| `scripts/sync_session_brief.sh` | Regenerates `docs/SESSION_BRIEF.md` (lean profile only) | `templates-v2/scripts/sync_session_brief.sh.template` |
+| `scripts/bump_version.sh` | Single-source-of-truth version bump (if project has versions) | (project-specific; if it exists in the project, register it as a trigger below) |
+
+**Triggers to register in `docs/CONTEXT_ROUTING.md` § Event Triggers:**
+- "About to bump or compare versions" → `scripts/bump_version.sh` (fail loudly if missing — see §6)
+- "About to merge to main" → `scripts/predeploy_full_suite.sh`
+- "Behavior change without doc update suspected" → `scripts/enforce_doc_updates.sh`
+- "Template version bump" → `scripts/check_template_drift.sh` and `docs/UPGRADE_GUIDE.md`
+
+**Proves it works:** `ls scripts/ && bash scripts/verify.sh`
+- [ ] All applicable scripts present and executable (`chmod +x scripts/*.sh`), triggers registered, or N/A:
+
+---
+
+## 3) CI/CD Capability
+
+**Purpose:** the canonical verification surface runs on every push/PR. Catches what local missed.
+
+**You should have:**
+- `.github/workflows/ci.yml` from `templates-v2/.github/workflows/ci.yml.template`
+- Workflow runs lint, typecheck, smoke, and the project's verify gate
+- Workflow runs `scripts/check_template_drift.sh` (recommended)
+- Workflow runs `scripts/enforce_doc_updates.sh` (recommended)
+
+**Trigger to register in `docs/CONTEXT_ROUTING.md` § Event Triggers:**
+- "About to add or change a CI job" → `.github/workflows/ci.yml` and `docs/ENGINEERING_PLAYBOOK.md`
+- "CI red after worker DONE" → `docs/POST_CODING_CHECKS.md` (the orchestrator review missed something)
+
+**Proves it works:** locally — `gh workflow list` (or open Actions tab); commit a no-op change and confirm CI runs.
+- [ ] CI present, runs on push, runs on PR, or N/A:
+
+---
+
+## 4) Testing Capability
+
+**Purpose:** the regression suite grows organically and runs on every loop iteration locally (free) and in CI (canonical).
+
+**You should have:**
+- A test suite location (e.g. `tests/`) and a runner command (e.g. `pytest -q`).
+- `scripts/test_smoke.sh` and `scripts/test_targeted.sh` (or project equivalents) referenced from `AI_AGENT.md`.
+- `docs/SMOKE_TEST_CATALOG.md` (orchestrator-pattern repos) — named smoke registry.
+- `docs/WORKFLOW_TEST_MATRIX.md` (orchestrator-pattern repos) — named-workflow → command map.
+
+**Triggers to register in `docs/CONTEXT_ROUTING.md` § Event Triggers:**
+- "About to add a new entrypoint or workflow" → `docs/MASTER_TRACEABILITY_TABLE.md` and `docs/WORKFLOW_TEST_MATRIX.md`
+- "About to add a new smoke test" → `docs/SMOKE_TEST_CATALOG.md`
+- "BUGFIX packet in flight" → `docs/ENGINEERING_PLAYBOOK.md` § 3e (regression accretion rule — must add a test that would have caught the bug)
+- "Test was modified" → `docs/POST_CODING_CHECKS.md` § 3 (test-honesty spot-check)
+
+**Proves it works:** run the project's targeted test command and confirm exit 0.
+- [ ] Suite location set, runner verified, smoke + workflow matrix present, or N/A:
+
+---
+
+## 5) Worker / Orchestrator Pattern (if adopted)
+
+**Purpose:** cloud orchestrator + local worker + cloud investigator three-role flow. Skip this entire section if the project is not using the orchestrator pattern.
+
+**You should have:**
+- `docs/ORCHESTRATION_MAP.md` — three-role split
+- `docs/ENGINEERING_PLAYBOOK.md` — 9-step worker loop, MAX_ITERATIONS by Packet Class
+- `docs/WORKER_TASK_PACKET.md` — packet template with Packet Class + Concreteness Tier
+- `docs/WORKER_RESULT_PACKET.md` — result template with self-review + regression-accretion fields
+- `docs/APPLY_CHECKLIST.md` — worker pre-return ritual (do not confuse with the *template* `APPLY_CHECKLIST.md`)
+- `docs/POST_CODING_CHECKS.md` — mandatory cloud-orchestrator review of every DONE packet
+- `docs/INVESTIGATOR_PROTOCOL.md` — escalation role
+- `AI_AGENT.md` § Orchestrator Rails populated (10 hard rules, decision tree, unattended run rules)
+
+**Copy from:** the asus repo (`/home/mamana/private-repos/asus/docs/`) is the reference implementation; or a known-good orchestrator-pattern project.
+
+**Triggers to register in `docs/CONTEXT_ROUTING.md` § Event Triggers:**
+- "Issuing a worker packet" → `docs/WORKER_TASK_PACKET.md`
+- "Worker returned DONE" → `docs/POST_CODING_CHECKS.md` (mandatory review)
+- "Worker returned BLOCKED twice on same Path ID" → `docs/INVESTIGATOR_PROTOCOL.md`
+- "About to run unattended overnight" → `AI_AGENT.md` § Unattended Run Rules
+
+**Proves it works:** dry-run a packet end-to-end on a trivial change.
+- [ ] All docs present, rails populated, triggers registered, or N/A:
+
+---
+
+## 6) Version Management Capability
+
+**Purpose:** every version-bearing artifact (package.json, pyproject.toml, manifest.json, docker-compose tags, docs version stamp, CHANGELOG header) advances together. **Drift here is the SmartCampus failure mode** — a script existed, the AI didn't know to use it, versions diverged silently.
+
+**You should have:**
+- A canonical version source (e.g. `VERSION` file, `pyproject.toml`, `package.json`).
+- A bump script (e.g. `scripts/bump_version.sh`) that updates **every** version-bearing artifact in one call. If absent, write one before adopting templates here.
+- `docs/TEMPLATE_VERSION.md` stamp matches the applied template pack version.
+
+**Trigger to register in `docs/CONTEXT_ROUTING.md` § Event Triggers (the most important one in this whole doc):**
+- "Versions look out of sync" OR "About to release" OR "About to bump version" → `scripts/bump_version.sh` (run it; never hand-edit individual version strings)
+
+**Proves it works:** `bash scripts/bump_version.sh --dry-run` (or equivalent) reports every artifact it would touch.
+- [ ] Version source canonical, bump script present and registered as trigger, or N/A:
+
+---
+
+## 7) Triggers Registered
+
+**Purpose:** every capability above ends with a trigger row. Confirm they all exist now in one place.
+
+- [ ] `docs/CONTEXT_ROUTING.md` has an `## Event Triggers` section
+- [ ] Every applicable trigger from §2–§6 above is listed there
+- [ ] Each trigger row has the form: `<event in plain English>` → `<file or script path>`
+- [ ] Section ends with: "If an event is not listed here and the AI is unsure, surface to user; do not improvise."
+
+**Proves it works:** `grep -c '→' docs/CONTEXT_ROUTING.md` returns the expected count.
+- [ ] Done.
+
+---
+
+## 8) Final Adoption Gate
+
+Run in order; all must pass:
+
+1. `bash scripts/verify.sh` (or project verify gate) — exit 0
+2. `bash scripts/check_template_drift.sh . path/to/templates-v2` — exit 0
+3. `scripts/validate_templates.sh` (if present) — exit 0
+4. Complete `docs/TEMPLATE_VALIDATION_CHECKLIST.md` — every box checked
+5. Push a no-op commit; confirm CI green
+6. Update `CHANGELOG.md` `Unreleased`: "Adopted templates-v2 vN.N via TEMPLATE_ADOPTION_WALKTHROUGH; sections completed: ..."
+
+- [ ] All six pass.
+
+Adoption is complete when this box is checked. Until then, the AI should treat the project as *partially adopted* and surface unchecked sections at the start of every session.
