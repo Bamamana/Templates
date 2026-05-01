@@ -81,6 +81,18 @@ Traceability coverage standard:
 
 Use `bootstrap_agent_ready` as the single apply engine (non-interactive or interactive).
 
+For the orchestrator variant, use the same engine with `--orchestrator`:
+
+```bash
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+	--target /path/to/target-project \
+	--project-name "My Project" \
+	--tier TIER_B_STANDARD \
+	--tier-profile auto \
+	--orchestrator \
+	--strict
+```
+
 ## One-Command Bootstrap (Biggest Upgrade)
 
 ```bash
@@ -169,7 +181,7 @@ Advanced controls are optional for Tier A and become stricter in Tier B/C.
 
 - The base `templates-v2` pack remains the canonical general-purpose template system.
 - The `orchestrator-template` variant is intentionally separate while the delegation protocol is proven in real projects.
-- It preserves V2 lean startup, validation, changelog, traceability, and adoption discipline while adding worker task packets, result packets, mandatory cloud review, investigator escalation, state ledgers, rollback fields, and token-saving orchestration rules.
+- It preserves V2 lean startup, validation, changelog, traceability, and adoption discipline while adding worker task packets, result packets, mandatory cloud review, investigator escalation, state ledgers, rollback fields, test-bloat safeguards, and token-saving orchestration rules.
 
 ## V1 Parity Notes
 - Size limits: soft target <= 400 lines, hard refactor trigger > 500 lines

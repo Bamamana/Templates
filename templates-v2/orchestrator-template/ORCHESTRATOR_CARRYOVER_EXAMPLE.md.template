@@ -1,0 +1,124 @@
+# Orchestrator Carryover Example ([PROJECT_NAME])
+
+Read when: upgrading an existing lean/v2 project to the orchestrator pattern.
+Skip when: the project is already fully orchestrator-adopted and the dry-run packet has passed.
+
+Purpose: a concrete example of the carryover workflow so future AI sessions update projects from Templates instead of copying ASUS or improvising.
+
+## Scenario
+
+Existing project state:
+- Lean startup docs already exist: `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md`.
+- The project has a verify gate, but not yet worker packets, packet ledgers, post-coding review, or operator dashboard.
+- Goal is to adopt the reusable orchestrator base from `templates-v2/orchestrator-template/`.
+
+## 1) Preflight
+
+```bash
+git status --short
+bash scripts/verify.sh
+```
+
+Record the current commit SHA and any dirty files in the active plan or changelog before applying the overlay.
+
+## 2) Apply From Templates
+
+```bash
+bash /path/to/Templates/templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "[PROJECT_NAME]" \
+  --tier TIER_B_STANDARD \
+  --tier-profile auto \
+  --orchestrator \
+  --strict
+```
+
+If the project is Tier A, use `--tier TIER_A_STATIC`. If it touches auth, privacy, production data, deployments, or persistent data, use Tier B or C.
+
+## 3) Resolve Project-Specific Values
+
+Update these first:
+- `AI_AGENT.md`: tier rationale, verify command, local-worker availability.
+- `docs/GAME_PLAN.md`: phase, milestone, next unchecked item, stop conditions.
+- `docs/ORCHESTRATION_MAP.md`: safe worker domains, high-risk cloud-owned domains, validation bottlenecks.
+- `docs/MASTER_TRACEABILITY_TABLE.md`: real Path IDs and smoke evidence.
+- `docs/OPERATOR_DASHBOARD.md`: rollback command, current status, next safe action.
+- `docs/state/session_budget.json`: budget ceilings and execution mode.
+
+Then sync startup state:
+
+```bash
+bash scripts/sync_session_brief.sh
+python3 scripts/orchestrator_state.py init
+python3 scripts/orchestrator_state.py validate
+```
+
+## 4) Dry-Run Packet
+
+Use a doc-only packet before local-worker implementation is allowed.
+
+Example task:
+- Packet ID: `P-YYYY-MM-DD-01`
+- Goal: update one sentence in `docs/GAME_PLAN.md` to prove the packet lifecycle.
+- Allowed files: `docs/GAME_PLAN.md`, `docs/WORKER_RESULT_PACKET.md`
+- Allowed commands: `bash scripts/sync_session_brief.sh`, `python3 scripts/orchestrator_state.py validate`, `bash scripts/verify.sh`
+- Acceptance criteria: docs changed only in allowed files, result packet filled, final verify green.
+
+Record issue:
+
+```bash
+python3 scripts/orchestrator_state.py issue \
+  --packet-id P-YYYY-MM-DD-01 \
+  --path-ids CLI-VERIFY-01 \
+  --notes "doc-only orchestrator carryover dry run"
+```
+
+After result packet returns:
+
+```bash
+python3 scripts/orchestrator_state.py record-result \
+  --packet-id P-YYYY-MM-DD-01 \
+  --status DONE
+```
+
+After cloud review passes:
+
+```bash
+python3 scripts/orchestrator_state.py review \
+  --packet-id P-YYYY-MM-DD-01 \
+  --outcome ACCEPT
+```
+
+## 5) Final Carryover Gate
+
+```bash
+python3 scripts/orchestrator_state.py validate
+bash scripts/validate_templates.sh .
+bash scripts/validate_context_budget.sh
+bash scripts/verify.sh
+```
+
+Run `docs/CLOSING_CHECKLIST.md` before telling the operator the carryover is complete.
+
+## 6) Completion Record
+
+Add a changelog or plan note:
+
+```markdown
+### Orchestrator Carryover YYYY-MM-DD
+- Applied Templates orchestrator overlay from `templates-v2/orchestrator-template/`.
+- Completed doc-only packet dry run: P-YYYY-MM-DD-01.
+- State validation: PASS.
+- Template validation: PASS.
+- Verify gate: PASS.
+- Local-worker implementation packets allowed: YES / NO.
+```
+
+## Stop Conditions
+
+Return BLOCKED instead of proceeding if:
+- Verify gate is red before carryover.
+- `docs/MASTER_TRACEABILITY_TABLE.md` has unresolved `Coverage pending` rows for active pathways.
+- Packet state validation fails.
+- The local worker is unavailable and the session is unattended.
+- A high-risk domain appears without Level 1 cloud orchestration.

@@ -1,12 +1,14 @@
-version: v0.2-orchestrator-draft
+version: v0.4-orchestrator-draft
 purpose: Machine-readable navigation and applicability map for the cloud-orchestrator plus local-worker template variant
 canonical_startup: AI_AGENT.md
+destination_when_applied: docs/ORCHESTRATOR_TEMPLATE_INDEX.yaml
 read_order:
   - AI_AGENT.md
   - docs/SESSION_BRIEF.md
   - docs/CONTEXT_ROUTING.md
   - docs/GAME_PLAN.md
   - docs/SCENARIO_PLAYBOOK.md
+  - docs/ORCHESTRATOR_CARRYOVER_EXAMPLE.md
   - docs/CLOSING_CHECKLIST.md
   - docs/ORCHESTRATION_MAP.md
   - docs/PROJECT_CANVAS.md
@@ -15,6 +17,8 @@ read_order:
   - docs/WORKER_TASK_PACKET.md
   - docs/WORKER_RESULT_PACKET.md
   - docs/POST_CODING_CHECKS.md
+  - docs/TEST_BLOAT_SWEEP.md
+  - docs/LOCAL_WORKER_HEALTH.md
   - CHANGELOG.md
 
 core_templates:
@@ -74,6 +78,13 @@ core_templates:
     read_when: Choosing workflow mode or planning a known scenario
     skip_when: Packet mode and gates are already defined
 
+  - template: ORCHESTRATOR_CARRYOVER_EXAMPLE.md.template
+    destination: docs/ORCHESTRATOR_CARRYOVER_EXAMPLE.md
+    purpose: Worked example for upgrading an existing lean/v2 project into the orchestrator pattern
+    required_by_tier: [A, B, C]
+    read_when: Running the orchestrator carryover checklist on an existing project
+    skip_when: Project is already fully orchestrator-adopted and dry-run packet passed
+
   - template: CLOSING_CHECKLIST.md.template
     destination: docs/CLOSING_CHECKLIST.md
     purpose: Final closeout gate for operator handoff; forces PASS/FAIL/N/A on plan, tests, verify, docs, risk, and remaining work
@@ -116,6 +127,13 @@ core_templates:
     read_when: Escalation trigger fires
     skip_when: Routine packet flow
 
+  - template: TEST_BLOAT_SWEEP.md.template
+    destination: docs/TEST_BLOAT_SWEEP.md
+    purpose: Test-suite bloat prevention with per-packet new-test justification and periodic sweep rules
+    required_by_tier: [B, C]
+    read_when: Session-start bloat trigger fires, tests feel slow/bloated, or operator asks for a sweep
+    skip_when: No trigger fired and current packet is not test-suite maintenance
+
   - template: MASTER_TRACEABILITY_TABLE.md.template
     destination: docs/MASTER_TRACEABILITY_TABLE.md
     purpose: Path ID and smoke/contract evidence map
@@ -151,6 +169,13 @@ core_templates:
     read_when: Issuing, returning, reviewing, escalating, cancelling, or abandoning packets
     skip_when: Non-delegated work
 
+  - template: LOCAL_WORKER_HEALTH.md.template
+    destination: docs/LOCAL_WORKER_HEALTH.md
+    purpose: Generic local-worker readiness, endpoint/tool validation, and degraded/offline rules
+    required_by_tier: [A, B, C]
+    read_when: Configuring, validating, or troubleshooting the local worker lane
+    skip_when: Project is cloud-only or local-worker delegation is disabled
+
   - template: packet_ledger.json.template
     destination: docs/state/packet_ledger.json
     purpose: Starter packet ledger
@@ -164,6 +189,13 @@ core_templates:
     required_by_tier: [A, B, C]
     read_when: Session budget or execution mode changes
     skip_when: Non-delegated work
+
+  - template: ../scripts/orchestrator_state.py.template
+    destination: scripts/orchestrator_state.py
+    purpose: Initialize packet folders, record packet lifecycle events, and validate orchestrator state
+    required_by_tier: [A, B, C]
+    read_when: Issuing, returning, reviewing, cancelling, abandoning, or validating packets
+    skip_when: Project does not use orchestrator state ledgers
 
   - template: OPERATOR_DASHBOARD.md.template
     destination: docs/OPERATOR_DASHBOARD.md

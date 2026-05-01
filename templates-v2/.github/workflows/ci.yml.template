@@ -39,6 +39,39 @@ jobs:
             [[ -f "$OUT_DIR/$rel" ]] || { echo "[ci][FAIL] Missing fixture output: $rel"; exit 1; }
           done < "$EXPECTED"
 
+      - name: Bootstrap orchestrator fixture project
+        run: |
+          set -euo pipefail
+          OUT_DIR="/tmp/templates-v2-orchestrator-fixture"
+          rm -rf "$OUT_DIR"
+          bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+            --target "$OUT_DIR" \
+            --template-root templates-v2 \
+            --project-name "Orchestrator Fixture" \
+            --tier TIER_B_STANDARD \
+            --profile 2 \
+            --ci 1 \
+            --overwrite overwrite \
+            --orchestrator \
+            --strict
+
+      - name: Verify orchestrator fixture outputs
+        run: |
+          set -euo pipefail
+          OUT_DIR="/tmp/templates-v2-orchestrator-fixture"
+          EXPECTED="templates-v2/tests-fixture/expected_files_orchestrator_tier_b.txt"
+          while IFS= read -r rel; do
+            [[ -z "$rel" ]] && continue
+            [[ "$rel" =~ ^# ]] && continue
+            [[ -f "$OUT_DIR/$rel" ]] || { echo "[ci][FAIL] Missing orchestrator fixture output: $rel"; exit 1; }
+          done < "$EXPECTED"
+          cd "$OUT_DIR"
+          python3 scripts/orchestrator_state.py issue --packet-id P-2026-05-01-01 --path-ids CLI-VERIFY-01 --notes "ci lifecycle smoke"
+          python3 scripts/orchestrator_state.py record-result --packet-id P-2026-05-01-01 --status DONE
+          python3 scripts/orchestrator_state.py review --packet-id P-2026-05-01-01 --outcome ACCEPT
+          python3 scripts/orchestrator_state.py validate
+          bash scripts/validate_templates.sh .
+
   validate:
     runs-on: ubuntu-latest
     steps:

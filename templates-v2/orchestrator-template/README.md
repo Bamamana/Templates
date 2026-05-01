@@ -27,6 +27,7 @@ It is intended for the workflow we have been discussing:
 - `SESSION_BRIEF.md.template` -> lean startup current-state snapshot
 - `CONTEXT_ROUTING.md.template` -> event/doc trigger map so the AI loads deeper docs only when needed
 - `SCENARIO_PLAYBOOK.md.template` -> Level 1/2/3 decision guide for template retrofit, cloud-to-local migration, and overnight local-agent work
+- `ORCHESTRATOR_CARRYOVER_EXAMPLE.md.template` -> worked existing-project upgrade example for the carryover checklist
 - `CLOSING_CHECKLIST.md.template` -> final operator closeout gate before handoff
 - `GAME_PLAN.md.template` -> live execution checklist for vibe-coding sessions
 - `PROJECT_CANVAS.md.template` -> project purpose and higher-level state
@@ -37,15 +38,18 @@ It is intended for the workflow we have been discussing:
 - `APPLY_CHECKLIST.md.template` -> worker pre-return gate
 - `POST_CODING_CHECKS.md.template` -> mandatory cloud review gate for every DONE packet
 - `INVESTIGATOR_PROTOCOL.md.template` -> escalation role protocol
+- `TEST_BLOAT_SWEEP.md.template` -> ASUS-proven test-suite bloat prevention, generalized for any orchestrator project
 - `MASTER_TRACEABILITY_TABLE.md.template` -> Path ID and smoke evidence map
 - `SMOKE_TEST_CATALOG.md.template` -> smoke registry
 - `WORKFLOW_TEST_MATRIX.md.template` -> workflow-to-command verification map
 - `FEATURE_SPEC_TEMPLATE.md.template` -> spec before packet decomposition
 - `STATE_LEDGER_PROTOCOL.md.template` -> packet/session state protocol
+- `LOCAL_WORKER_HEALTH.md.template` -> generic local-worker readiness and degraded/offline rules
 - `packet_ledger.json.template` -> starter packet ledger
 - `session_budget.json.template` -> starter session budget
 - `OPERATOR_DASHBOARD.md.template` -> plain-English operator control surface
-- `TEMPLATE_INDEX.yaml.template` -> machine-readable navigation map for this variant
+- `TEMPLATE_INDEX.yaml.template` -> `docs/ORCHESTRATOR_TEMPLATE_INDEX.yaml`, machine-readable navigation map for this variant
+- `scripts/orchestrator_state.py.template` -> packet folder initialization, ledger lifecycle updates, and orchestrator-state validation
 
 ## Intended Operating Model
 
@@ -59,6 +63,24 @@ It is intended for the workflow we have been discussing:
 8. AI runs `CLOSING_CHECKLIST` before final handoff.
 9. Human approves a reviewed outcome, not raw code.
 
+## Apply To A Project
+
+Use the v2 bootstrap script with the orchestrator overlay so Templates remains the source of authority:
+
+```bash
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+	--target /path/to/project \
+	--project-name "My Project" \
+	--tier TIER_B_STANDARD \
+	--tier-profile auto \
+	--orchestrator \
+	--strict
+```
+
+For existing lean/v2 projects, run `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` section 5 and the lean audit before allowing local-worker implementation packets.
+
+`--orchestrator` also installs `scripts/orchestrator_state.py` and creates persisted packet directories under `docs/packets/` so packet state is not hand-edited from memory.
+
 ## Token Control Rules
 
 - The orchestrator should not re-read the full project for every subtask.
@@ -68,6 +90,6 @@ It is intended for the workflow we have been discussing:
 
 ## Status
 
-This variant is the v3-style orchestrator reference inside `templates-v2`. It is still separate from the main bootstrap script, but the file set now reflects the stronger ASUS-derived three-role workflow rather than the older two-role draft.
+This variant is the v3-style orchestrator reference inside `templates-v2`. It is the source of authority for future project implementation; ASUS remains the Z13 hardware/runtime proving-ground repo.
 
 Use this as the source to apply the orchestrator model to future projects after the local-worker flow has been proven in practice.

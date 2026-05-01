@@ -13,6 +13,7 @@ STRICT_MODE=0
 INTERACTIVE_MODE=0
 TIER_PROFILE="auto"
 LEAN_MODE=0
+ORCHESTRATOR_MODE=0
 
 PROJECT_NAME=""
 TIER="TIER_B_STANDARD"
@@ -38,6 +39,7 @@ Usage:
     [--strict] \
     [--interactive] \
     [--lean] \
+    [--orchestrator] \
     [--project-name "My Project"] \
     [--tier TIER_A_STATIC|TIER_B_STANDARD|TIER_C_PRODUCTION_CRITICAL] \
     [--verify-command "bash scripts/verify.sh"] \
@@ -56,6 +58,7 @@ Description:
 Notes:
   - If --target is omitted, interactive mode is used.
   - CI options select setup command presets inside one canonical ci.yml template.
+  - --orchestrator applies the reusable cloud-orchestrator/local-worker variant.
 EOF
 }
 
@@ -84,6 +87,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --lean)
       LEAN_MODE=1
+      shift
+      ;;
+    --orchestrator)
+      ORCHESTRATOR_MODE=1
       shift
       ;;
     --overwrite)
@@ -289,6 +296,7 @@ apply_lean_overlay() {
   copy_template "profiles/lean/SESSION_BRIEF.md.template" "docs/SESSION_BRIEF.md"
   copy_template "profiles/lean/CONTEXT_ROUTING.md.template" "docs/CONTEXT_ROUTING.md"
   copy_template "orchestrator-template/SCENARIO_PLAYBOOK.md.template" "docs/SCENARIO_PLAYBOOK.md"
+  copy_template "orchestrator-template/ORCHESTRATOR_CARRYOVER_EXAMPLE.md.template" "docs/ORCHESTRATOR_CARRYOVER_EXAMPLE.md"
   copy_template "orchestrator-template/CLOSING_CHECKLIST.md.template" "docs/CLOSING_CHECKLIST.md"
   SKIP_EXISTING="$prev_skip"
   copy_template "scripts/validate_context_budget.sh.template" "scripts/validate_context_budget.sh"
@@ -301,6 +309,48 @@ apply_lean_overlay() {
     copy_template "addons/GAME_PLAN.md.template" "docs/GAME_PLAN.md"
   fi
   # Auto-sync SESSION_BRIEF.md from whichever plan doc exists.
+  if [[ -f "$TARGET_DIR/scripts/sync_session_brief.sh" ]]; then
+    chmod +x "$TARGET_DIR/scripts/sync_session_brief.sh" || true
+    ( cd "$TARGET_DIR" && bash scripts/sync_session_brief.sh ) || \
+      echo "[bootstrap][warn] initial session brief sync skipped"
+  fi
+}
+
+apply_orchestrator_overlay() {
+  # Orchestrator profile: replace the base startup/engineering docs with the
+  # reusable cloud-orchestrator/local-worker contract and add packet ledgers.
+  local prev_skip="$SKIP_EXISTING"
+  SKIP_EXISTING=0
+  copy_template "orchestrator-template/AI_AGENT.md.template" "AI_AGENT.md"
+  copy_template "orchestrator-template/SESSION_BRIEF.md.template" "docs/SESSION_BRIEF.md"
+  copy_template "orchestrator-template/CONTEXT_ROUTING.md.template" "docs/CONTEXT_ROUTING.md"
+  copy_template "orchestrator-template/GAME_PLAN.md.template" "docs/GAME_PLAN.md"
+  copy_template "orchestrator-template/PROJECT_CANVAS.md.template" "docs/PROJECT_CANVAS.md"
+  copy_template "orchestrator-template/ENGINEERING_PLAYBOOK.md.template" "docs/ENGINEERING_PLAYBOOK.md"
+  copy_template "orchestrator-template/APPLY_CHECKLIST.md.template" "docs/APPLY_CHECKLIST.md"
+  copy_template "orchestrator-template/SCENARIO_PLAYBOOK.md.template" "docs/SCENARIO_PLAYBOOK.md"
+  copy_template "orchestrator-template/CLOSING_CHECKLIST.md.template" "docs/CLOSING_CHECKLIST.md"
+  copy_template "orchestrator-template/ORCHESTRATION_MAP.md.template" "docs/ORCHESTRATION_MAP.md"
+  copy_template "orchestrator-template/WORKER_TASK_PACKET.md.template" "docs/WORKER_TASK_PACKET.md"
+  copy_template "orchestrator-template/WORKER_RESULT_PACKET.md.template" "docs/WORKER_RESULT_PACKET.md"
+  copy_template "orchestrator-template/POST_CODING_CHECKS.md.template" "docs/POST_CODING_CHECKS.md"
+  copy_template "orchestrator-template/INVESTIGATOR_PROTOCOL.md.template" "docs/INVESTIGATOR_PROTOCOL.md"
+  copy_template "orchestrator-template/MASTER_TRACEABILITY_TABLE.md.template" "docs/MASTER_TRACEABILITY_TABLE.md"
+  copy_template "orchestrator-template/SMOKE_TEST_CATALOG.md.template" "docs/SMOKE_TEST_CATALOG.md"
+  copy_template "orchestrator-template/WORKFLOW_TEST_MATRIX.md.template" "docs/WORKFLOW_TEST_MATRIX.md"
+  copy_template "orchestrator-template/FEATURE_SPEC_TEMPLATE.md.template" "docs/FEATURE_SPEC_TEMPLATE.md"
+  copy_template "orchestrator-template/STATE_LEDGER_PROTOCOL.md.template" "docs/STATE_LEDGER_PROTOCOL.md"
+  copy_template "orchestrator-template/LOCAL_WORKER_HEALTH.md.template" "docs/LOCAL_WORKER_HEALTH.md"
+  copy_template "orchestrator-template/TEST_BLOAT_SWEEP.md.template" "docs/TEST_BLOAT_SWEEP.md"
+  copy_template "orchestrator-template/OPERATOR_DASHBOARD.md.template" "docs/OPERATOR_DASHBOARD.md"
+  copy_template "orchestrator-template/TEMPLATE_INDEX.yaml.template" "docs/ORCHESTRATOR_TEMPLATE_INDEX.yaml"
+  copy_template "orchestrator-template/packet_ledger.json.template" "docs/state/packet_ledger.json"
+  copy_template "orchestrator-template/session_budget.json.template" "docs/state/session_budget.json"
+  SKIP_EXISTING="$prev_skip"
+  copy_template "scripts/orchestrator_state.py.template" "scripts/orchestrator_state.py"
+  copy_template "scripts/validate_context_budget.sh.template" "scripts/validate_context_budget.sh"
+  copy_template "scripts/report_context_size.sh.template" "scripts/report_context_size.sh"
+  copy_template "scripts/sync_session_brief.sh.template" "scripts/sync_session_brief.sh"
   if [[ -f "$TARGET_DIR/scripts/sync_session_brief.sh" ]]; then
     chmod +x "$TARGET_DIR/scripts/sync_session_brief.sh" || true
     ( cd "$TARGET_DIR" && bash scripts/sync_session_brief.sh ) || \
@@ -345,6 +395,7 @@ echo "[bootstrap] Overwrite:     $OVERWRITE"
 echo "[bootstrap] Strict mode:   $STRICT_MODE"
 echo "[bootstrap] Tier profile:  $TIER_PROFILE_RESOLVED"
 echo "[bootstrap] Lean mode:     $LEAN_MODE"
+echo "[bootstrap] Orchestrator:  $ORCHESTRATOR_MODE"
 
 apply_core
 apply_ci_variant
@@ -376,6 +427,10 @@ fi
 
 if [[ "$LEAN_MODE" == "1" ]]; then
   apply_lean_overlay
+fi
+
+if [[ "$ORCHESTRATOR_MODE" == "1" ]]; then
+  apply_orchestrator_overlay
 fi
 
 PRUNED_COUNT=0
@@ -438,6 +493,14 @@ fi
 if [[ -f "$TARGET_DIR/scripts/report_context_size.sh" ]]; then
   chmod +x "$TARGET_DIR/scripts/report_context_size.sh" || true
 fi
+if [[ -f "$TARGET_DIR/scripts/orchestrator_state.py" ]]; then
+  chmod +x "$TARGET_DIR/scripts/orchestrator_state.py" || true
+fi
+
+if [[ "$ORCHESTRATOR_MODE" == "1" && -f "$TARGET_DIR/scripts/orchestrator_state.py" ]]; then
+  ( cd "$TARGET_DIR" && python3 scripts/orchestrator_state.py init ) || \
+    echo "[bootstrap][warn] orchestrator state init skipped"
+fi
 
 CI_SETUP_COMMANDS_DEFAULT="echo 'Configure runtime and dependencies'"
 case "$CI_OPTION" in
@@ -476,6 +539,27 @@ PLACEHOLDER_FILES=(
   "docs/TEMPLATE_VALIDATION_CHECKLIST.md"
   "docs/APPLY_CHECKLIST.md"
   "docs/TEMPLATE_INDEX.yaml"
+  "docs/ORCHESTRATOR_TEMPLATE_INDEX.yaml"
+  "docs/SESSION_BRIEF.md"
+  "docs/CONTEXT_ROUTING.md"
+  "docs/GAME_PLAN.md"
+  "docs/SCENARIO_PLAYBOOK.md"
+  "docs/ORCHESTRATOR_CARRYOVER_EXAMPLE.md"
+  "docs/CLOSING_CHECKLIST.md"
+  "docs/ORCHESTRATION_MAP.md"
+  "docs/WORKER_TASK_PACKET.md"
+  "docs/WORKER_RESULT_PACKET.md"
+  "docs/POST_CODING_CHECKS.md"
+  "docs/INVESTIGATOR_PROTOCOL.md"
+  "docs/SMOKE_TEST_CATALOG.md"
+  "docs/WORKFLOW_TEST_MATRIX.md"
+  "docs/FEATURE_SPEC_TEMPLATE.md"
+  "docs/STATE_LEDGER_PROTOCOL.md"
+  "docs/LOCAL_WORKER_HEALTH.md"
+  "docs/TEST_BLOAT_SWEEP.md"
+  "docs/OPERATOR_DASHBOARD.md"
+  "docs/state/packet_ledger.json"
+  "docs/state/session_budget.json"
   "docs/ADVANCED_VERIFICATION_PLAYBOOK.md"
   ".github/workflows/ci.yml"
 )
@@ -541,8 +625,12 @@ replacements = {
     "[RISK_OR_NONE]": "None",
     "[YYYY-MM-DD]": "2026-03-01",
     "[MILESTONE]": "Initial Bootstrap",
+    "[PHASE]": "Initial Bootstrap",
     "[MILESTONE_NAME]": "Initial Bootstrap",
     "[EXACT_ITEM_TEXT]": "Populate project-specific docs and commands",
+    "[PACKET_ID_OR_NONE]": "none",
+    "[RESULT_PACKET_ID_OR_NONE]": "none",
+    "[SHORT_DESCRIPTION]": "Initial template specialization",
     "[NEXT_COMMAND]": verify_command,
     "[CANARY_PERCENT_OR_SEGMENT]": "10%",
     "[ERROR_RATE_THRESHOLD]": "<1%",

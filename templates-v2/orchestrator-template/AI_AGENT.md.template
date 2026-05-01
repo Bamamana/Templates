@@ -45,6 +45,8 @@ These rules exist because the operator may not be able to read code or judge dif
 9. **Doc updates ride with the work.** Behavior, path, command, workflow, or architecture change => update traceability, smoke/workflow docs, and changelog as applicable.
 10. **Verify gate before handoff.** `[VERIFY_COMMAND]` must pass before declaring the session done unless the task is explicitly blocked.
 11. **When confused, return to the plan.** If next action is unclear after reading the startup docs and plan doc, update open questions and hand control back to the user.
+12. **Test bloat watch is automatic when adopted.** If `docs/TEST_BLOAT_SWEEP.md` exists, check its session-start triggers before implementation work. Surface a triggered sweep for operator approval; do not delete tests automatically.
+13. **Tier C needs a real sandbox.** For production-critical, regulated, or sensitive-data work, do not issue local-worker implementation packets unless the worker sandbox and secret-exclusion model are documented in `docs/ORCHESTRATION_MAP.md` or `docs/LOCAL_WORKER_HEALTH.md`.
 
 ## Decision Tree
 

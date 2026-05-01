@@ -1,0 +1,404 @@
+#!/usr/bin/env python3
+"""Manage orchestrator packet state for templates-v2 projects.
+
+This helper keeps the cloud-orchestrator/local-worker rails visible in repo
+state. It intentionally uses plain JSON and markdown files so any AI agent can
+inspect or repair state without a service dependency.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+PACKET_DIRS = (
+    "docs/packets/issued",
+    "docs/packets/results",
+    "docs/packets/reviewed",
+    "docs/packets/archived",
+)
+
+REQUIRED_DOCS = (
+    "AI_AGENT.md",
+    "docs/SESSION_BRIEF.md",
+    "docs/CONTEXT_ROUTING.md",
+    "docs/GAME_PLAN.md",
+    "docs/SCENARIO_PLAYBOOK.md",
+    "docs/CLOSING_CHECKLIST.md",
+    "docs/ORCHESTRATION_MAP.md",
+    "docs/ENGINEERING_PLAYBOOK.md",
+    "docs/WORKER_TASK_PACKET.md",
+    "docs/WORKER_RESULT_PACKET.md",
+    "docs/APPLY_CHECKLIST.md",
+    "docs/POST_CODING_CHECKS.md",
+    "docs/INVESTIGATOR_PROTOCOL.md",
+    "docs/STATE_LEDGER_PROTOCOL.md",
+    "docs/LOCAL_WORKER_HEALTH.md",
+    "docs/OPERATOR_DASHBOARD.md",
+)
+
+REQUIRED_TRIGGER_SNIPPETS = (
+    "Before choosing Level 1/2/3 AI workflow mode",
+    "Issuing a worker packet",
+    "Worker returned DONE",
+    "Worker returned BLOCKED twice on same Path ID",
+    "Before final handoff",
+)
+
+ALLOWED_LIFECYCLE = {
+    "ISSUED",
+    "RESULT_RETURNED",
+    "POST_CHECKED",
+    "ACCEPTED",
+    "REJECTED",
+    "ESCALATED",
+    "CANCELLED",
+    "ABANDONED",
+}
+
+ALLOWED_WORKER_STATUS = {"NONE", "DONE", "PARTIAL", "BLOCKED"}
+ALLOWED_EXECUTION_MODE = {"HYBRID", "CLOUD_ONLY_TEMPORARY", "HALTED"}
+ALLOWED_SESSION_STATUS = {"ACTIVE", "HALTED", "CLOSED"}
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def load_json(path: Path, default: dict) -> dict:
+    if not path.exists():
+        return default
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"[orchestrator][FAIL] Invalid JSON in {path}: {exc}") from exc
+
+
+def write_json(path: Path, data: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data["last_updated"] = utc_now()
+    path.write_text(json.dumps(data, indent=2, sort_keys=False) + "\n", encoding="utf-8")
+
+
+def ledger_default() -> dict:
+    return {"schema_version": 1, "last_updated": utc_now(), "packets": []}
+
+
+def budget_default() -> dict:
+    return {
+        "schema_version": 1,
+        "last_updated": utc_now(),
+        "current_session": {
+            "session_id": "initial-session",
+            "status": "ACTIVE",
+            "execution_mode": "HYBRID",
+            "cloud_spend_usd": 0.0,
+            "worker_packets_issued": 0,
+            "investigator_invocations": 0,
+            "done_packets_reviewed": 0,
+            "limits": {
+                "cloud_spend_usd": 5.0,
+                "worker_packets_issued": 10,
+                "investigator_invocations": 2,
+            },
+            "assumptions": {
+                "done_packet_review_cost_usd": 0.1,
+                "investigator_cost_tracking": "manual until provider-side or proxy accounting exists",
+            },
+            "packet_ledger_path": "docs/state/packet_ledger.json",
+        },
+    }
+
+
+def init_state(root: Path) -> None:
+    for rel in PACKET_DIRS:
+        path = root / rel
+        path.mkdir(parents=True, exist_ok=True)
+        keep = path / ".gitkeep"
+        if not keep.exists():
+            keep.write_text("", encoding="utf-8")
+
+    ledger_path = root / "docs/state/packet_ledger.json"
+    budget_path = root / "docs/state/session_budget.json"
+    if not ledger_path.exists():
+        write_json(ledger_path, ledger_default())
+    if not budget_path.exists():
+        write_json(budget_path, budget_default())
+    print("[orchestrator][PASS] initialized packet state")
+
+
+def load_state(root: Path) -> tuple[Path, dict, Path, dict]:
+    ledger_path = root / "docs/state/packet_ledger.json"
+    budget_path = root / "docs/state/session_budget.json"
+    ledger = load_json(ledger_path, ledger_default())
+    budget = load_json(budget_path, budget_default())
+    return ledger_path, ledger, budget_path, budget
+
+
+def find_packet(ledger: dict, packet_id: str) -> dict | None:
+    for packet in ledger.get("packets", []):
+        if packet.get("packet_id") == packet_id:
+            return packet
+    return None
+
+
+def current_session_id(budget: dict, fallback: str = "initial-session") -> str:
+    return budget.get("current_session", {}).get("session_id") or fallback
+
+
+def increment_budget(budget: dict, key: str, amount: int = 1) -> None:
+    session = budget.setdefault("current_session", budget_default()["current_session"])
+    session[key] = int(session.get(key, 0)) + amount
+
+
+def command_issue(args: argparse.Namespace) -> None:
+    root = Path(args.root)
+    init_state(root)
+    ledger_path, ledger, budget_path, budget = load_state(root)
+    if find_packet(ledger, args.packet_id):
+        raise SystemExit(f"[orchestrator][FAIL] Packet already exists: {args.packet_id}")
+
+    path_ids = [item.strip() for item in args.path_ids.split(",") if item.strip()]
+    now = utc_now()
+    packet_file = args.packet_file or f"docs/packets/issued/{args.packet_id}.md"
+    entry = {
+        "packet_id": args.packet_id,
+        "session_id": args.session_id or current_session_id(budget),
+        "path_ids": path_ids,
+        "lifecycle_state": "ISSUED",
+        "worker_result_status": "NONE",
+        "issued_at": now,
+        "last_event_at": now,
+        "timeout_minutes": args.timeout_minutes,
+        "packet_file": packet_file,
+        "result_file": None,
+        "review_file": None,
+        "post_coding_review": {"completed": False, "outcome": "NONE"},
+        "investigator": {"invoked": False},
+        "notes": args.notes or "",
+    }
+    ledger.setdefault("packets", []).append(entry)
+    increment_budget(budget, "worker_packets_issued")
+    write_json(ledger_path, ledger)
+    write_json(budget_path, budget)
+    print(f"[orchestrator][PASS] issued {args.packet_id}")
+
+
+def command_result(args: argparse.Namespace) -> None:
+    root = Path(args.root)
+    ledger_path, ledger, budget_path, budget = load_state(root)
+    packet = find_packet(ledger, args.packet_id)
+    if not packet:
+        raise SystemExit(f"[orchestrator][FAIL] Unknown packet: {args.packet_id}")
+    packet["worker_result_status"] = args.status
+    packet["lifecycle_state"] = "RESULT_RETURNED"
+    packet["last_event_at"] = utc_now()
+    packet["result_file"] = args.result_file or f"docs/packets/results/{args.packet_id}.md"
+    if args.notes:
+        packet["notes"] = args.notes
+    write_json(ledger_path, ledger)
+    write_json(budget_path, budget)
+    print(f"[orchestrator][PASS] recorded {args.status} for {args.packet_id}")
+
+
+def command_review(args: argparse.Namespace) -> None:
+    root = Path(args.root)
+    ledger_path, ledger, budget_path, budget = load_state(root)
+    packet = find_packet(ledger, args.packet_id)
+    if not packet:
+        raise SystemExit(f"[orchestrator][FAIL] Unknown packet: {args.packet_id}")
+
+    outcome_to_state = {
+        "ACCEPT": "ACCEPTED",
+        "REPAIR": "POST_CHECKED",
+        "REJECT": "REJECTED",
+        "ESCALATE": "ESCALATED",
+    }
+    packet["lifecycle_state"] = outcome_to_state[args.outcome]
+    packet["last_event_at"] = utc_now()
+    packet["review_file"] = args.review_file or f"docs/packets/reviewed/{args.packet_id}.md"
+    packet["post_coding_review"] = {"completed": True, "outcome": args.outcome}
+    if args.outcome == "ESCALATE":
+        packet["investigator"] = {"invoked": True}
+        increment_budget(budget, "investigator_invocations")
+    if packet.get("worker_result_status") == "DONE":
+        increment_budget(budget, "done_packets_reviewed")
+    if args.notes:
+        packet["notes"] = args.notes
+    write_json(ledger_path, ledger)
+    write_json(budget_path, budget)
+    print(f"[orchestrator][PASS] reviewed {args.packet_id}: {args.outcome}")
+
+
+def command_close(args: argparse.Namespace) -> None:
+    root = Path(args.root)
+    ledger_path, ledger, budget_path, budget = load_state(root)
+    packet = find_packet(ledger, args.packet_id)
+    if not packet:
+        raise SystemExit(f"[orchestrator][FAIL] Unknown packet: {args.packet_id}")
+    packet["lifecycle_state"] = args.state
+    packet["last_event_at"] = utc_now()
+    if args.notes:
+        packet["notes"] = args.notes
+    write_json(ledger_path, ledger)
+    write_json(budget_path, budget)
+    print(f"[orchestrator][PASS] {args.state.lower()} {args.packet_id}")
+
+
+def validate(root: Path) -> list[str]:
+    errors: list[str] = []
+
+    for rel in REQUIRED_DOCS:
+        if not (root / rel).is_file():
+            errors.append(f"missing required orchestrator doc: {rel}")
+
+    for rel in PACKET_DIRS:
+        if not (root / rel).is_dir():
+            errors.append(f"missing packet directory: {rel}; run scripts/orchestrator_state.py init")
+
+    routing = root / "docs/CONTEXT_ROUTING.md"
+    if routing.exists():
+        text = routing.read_text(encoding="utf-8")
+        for snippet in REQUIRED_TRIGGER_SNIPPETS:
+            if snippet not in text:
+                errors.append(f"missing orchestrator trigger in docs/CONTEXT_ROUTING.md: {snippet}")
+
+    post_checks = root / "docs/POST_CODING_CHECKS.md"
+    if post_checks.exists():
+        text = post_checks.read_text(encoding="utf-8")
+        for snippet in ("mandatory", "DONE", "Test Honesty", "New-Test Justification"):
+            if snippet not in text:
+                errors.append(f"docs/POST_CODING_CHECKS.md missing review safeguard: {snippet}")
+
+    ledger_path, ledger, _budget_path, budget = load_state(root)
+    if not ledger_path.exists():
+        errors.append("missing docs/state/packet_ledger.json")
+    if not isinstance(ledger.get("packets"), list):
+        errors.append("packet_ledger.json must contain a packets list")
+
+    packet_ids: set[str] = set()
+    active_count = 0
+    for idx, packet in enumerate(ledger.get("packets", [])):
+        prefix = f"packet[{idx}]"
+        packet_id = packet.get("packet_id")
+        if not packet_id:
+            errors.append(f"{prefix}: missing packet_id")
+            continue
+        if packet_id in packet_ids:
+            errors.append(f"{prefix}: duplicate packet_id {packet_id}")
+        packet_ids.add(packet_id)
+
+        lifecycle = packet.get("lifecycle_state")
+        if lifecycle not in ALLOWED_LIFECYCLE:
+            errors.append(f"{packet_id}: invalid lifecycle_state {lifecycle!r}")
+        if lifecycle in {"ISSUED", "RESULT_RETURNED"}:
+            active_count += 1
+            for required in ("issued_at", "last_event_at", "timeout_minutes"):
+                if required not in packet:
+                    errors.append(f"{packet_id}: active packet missing {required}")
+
+        status = packet.get("worker_result_status", "NONE")
+        if status not in ALLOWED_WORKER_STATUS:
+            errors.append(f"{packet_id}: invalid worker_result_status {status!r}")
+        review = packet.get("post_coding_review", {})
+        review_done = bool(review.get("completed"))
+        if lifecycle == "ACCEPTED" and not review_done:
+            errors.append(f"{packet_id}: accepted without completed post-coding review")
+        if lifecycle == "ACCEPTED" and status != "DONE":
+            errors.append(f"{packet_id}: accepted packet must have worker_result_status DONE")
+        if status == "DONE" and lifecycle in {"ISSUED", "RESULT_RETURNED"}:
+            errors.append(f"{packet_id}: DONE result is still awaiting post-coding review")
+
+    session = budget.get("current_session")
+    if not isinstance(session, dict):
+        errors.append("session_budget.json missing current_session object")
+        return errors
+
+    if session.get("status") not in ALLOWED_SESSION_STATUS:
+        errors.append(f"invalid session status: {session.get('status')!r}")
+    if session.get("execution_mode") not in ALLOWED_EXECUTION_MODE:
+        errors.append(f"invalid execution_mode: {session.get('execution_mode')!r}")
+
+    limits = session.get("limits", {})
+    for key in ("cloud_spend_usd", "worker_packets_issued", "investigator_invocations"):
+        value = session.get(key, 0)
+        limit = limits.get(key)
+        if limit is not None and value > limit:
+            errors.append(f"session budget exceeded: {key}={value} limit={limit}")
+
+    if active_count > 1:
+        errors.append(f"more than one active packet found: {active_count}")
+
+    return errors
+
+
+def command_validate(args: argparse.Namespace) -> None:
+    errors = validate(Path(args.root))
+    if errors:
+        print("[orchestrator][FAIL] state validation failed:")
+        for error in errors:
+            print(f" - {error}")
+        raise SystemExit(1)
+    print("[orchestrator][PASS] state validation passed")
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Manage orchestrator packet state")
+    parser.add_argument("--root", default=".", help="Project root")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    sub.add_parser("init", help="Create packet folders and starter ledgers")
+    sub.add_parser("validate", help="Validate orchestrator docs, packet folders, ledgers, and budgets")
+
+    issue = sub.add_parser("issue", help="Record an issued worker packet")
+    issue.add_argument("--packet-id", required=True)
+    issue.add_argument("--session-id")
+    issue.add_argument("--path-ids", default="")
+    issue.add_argument("--packet-file")
+    issue.add_argument("--timeout-minutes", type=int, default=15)
+    issue.add_argument("--notes")
+
+    result = sub.add_parser("record-result", help="Record a worker result")
+    result.add_argument("--packet-id", required=True)
+    result.add_argument("--status", required=True, choices=sorted(ALLOWED_WORKER_STATUS - {"NONE"}))
+    result.add_argument("--result-file")
+    result.add_argument("--notes")
+
+    review = sub.add_parser("review", help="Record post-coding review outcome")
+    review.add_argument("--packet-id", required=True)
+    review.add_argument("--outcome", required=True, choices=("ACCEPT", "REPAIR", "REJECT", "ESCALATE"))
+    review.add_argument("--review-file")
+    review.add_argument("--notes")
+
+    close = sub.add_parser("close", help="Cancel or abandon a packet")
+    close.add_argument("--packet-id", required=True)
+    close.add_argument("--state", required=True, choices=("CANCELLED", "ABANDONED"))
+    close.add_argument("--notes")
+
+    return parser
+
+
+def main() -> None:
+    args = build_parser().parse_args()
+    if args.command == "init":
+        init_state(Path(args.root))
+    elif args.command == "validate":
+        command_validate(args)
+    elif args.command == "issue":
+        command_issue(args)
+    elif args.command == "record-result":
+        command_result(args)
+    elif args.command == "review":
+        command_review(args)
+    elif args.command == "close":
+        command_close(args)
+    else:
+        raise SystemExit(f"unknown command: {args.command}")
+
+
+if __name__ == "__main__":
+    main()

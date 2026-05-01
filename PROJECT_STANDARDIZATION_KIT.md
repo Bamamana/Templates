@@ -59,7 +59,7 @@ Optional add-ons:
 - `templates-v2/addons/AI_OPERATING_CONTRACT.md.template` -> `AI_OPERATING_CONTRACT.md`
 
 Orchestrator variant:
-- `templates-v2/orchestrator-template/` -> reusable cloud-mastermind/local-worker pattern for projects where a local LLM does most bounded code creation and a premium model plans, reviews, and escalates. This variant is separate from the default bootstrap path until proven and wired into automation.
+- `templates-v2/orchestrator-template/` -> reusable cloud-mastermind/local-worker pattern for projects where a local LLM does most bounded code creation and a premium model plans, reviews, and escalates. Apply with `--orchestrator`; this folder is the source of authority for future project implementation.
 
 Verification and bootstrap scripts:
 - `templates-v2/scripts/bootstrap_agent_ready.sh.template`

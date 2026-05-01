@@ -35,6 +35,12 @@ If any test file changed:
 - [ ] BUGFIX regression test would have failed against unfixed behavior
 - [ ] New assertions are not tautologies such as checking only that a mocked call, variable, or function exists
 
+## 3.5) New-Test Justification
+For every new test added in this packet:
+- [ ] Test satisfies at least one rule in `docs/TEST_BLOAT_SWEEP.md` § Test Justification Rubric: smoke coverage, bug regression, smoke catalog, workflow target, or contract.
+- [ ] If no rule fits, reject the packet or require the worker to add the missing traceability/catalog/workflow/contract evidence in the same packet.
+- [ ] Operator keep overrides for old tests are not used as justification for adding new tests.
+
 ## 4) Traceability Evidence
 - [ ] Every Path ID listed in result has updated row or N/A rationale
 - [ ] Required smoke command/runbook evidence exists

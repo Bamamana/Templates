@@ -178,6 +178,7 @@ If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINE
 **You should have:**
 - `docs/ORCHESTRATION_MAP.md` — three-role split
 - `docs/SCENARIO_PLAYBOOK.md` — Level 1/2/3 scenario guide before selecting cloud/local responsibilities
+- `docs/ORCHESTRATOR_CARRYOVER_EXAMPLE.md` — worked example for upgrading an existing lean/v2 project into orchestrator mode
 - `docs/CLOSING_CHECKLIST.md` — final closeout gate for operator handoff
 - `docs/ENGINEERING_PLAYBOOK.md` — 9-step worker loop, MAX_ITERATIONS by Packet Class
 - `docs/WORKER_TASK_PACKET.md` — packet template with Packet Class + Concreteness Tier
@@ -185,10 +186,23 @@ If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINE
 - `docs/APPLY_CHECKLIST.md` — worker pre-return ritual (do not confuse with the *template* `APPLY_CHECKLIST.md`)
 - `docs/POST_CODING_CHECKS.md` — mandatory cloud-orchestrator review of every DONE packet
 - `docs/INVESTIGATOR_PROTOCOL.md` — escalation role
+- `docs/LOCAL_WORKER_HEALTH.md` — local worker readiness, endpoint/tool smoke, and degraded/offline rules
 - `docs/OPERATOR_DASHBOARD.md` — plain-English operator choices, rollback, and tie-breaker options
 - `AI_AGENT.md` § Orchestrator Rails populated (10 hard rules, decision tree, unattended run rules)
 
-**Copy from:** the asus repo (`/home/mamana/private-repos/asus/docs/`) is the reference implementation; or a known-good orchestrator-pattern project.
+**Copy from:** `templates-v2/orchestrator-template/`. ASUS is a hardware/runtime proving-ground example, not the source for future project implementation.
+
+**One-command apply path:**
+
+```bash
+bash templates-v2/scripts/bootstrap_agent_ready.sh.template \
+   --target /path/to/project \
+   --project-name "My Project" \
+   --tier TIER_B_STANDARD \
+   --tier-profile auto \
+   --orchestrator \
+   --strict
+```
 
 **Triggers to register in `docs/CONTEXT_ROUTING.md` § Event Triggers:**
 - "Before choosing Level 1/2/3 AI workflow mode" → `docs/SCENARIO_PLAYBOOK.md`
@@ -200,6 +214,7 @@ If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINE
 - "Worker returned DONE" → `docs/POST_CODING_CHECKS.md` (mandatory review)
 - "Worker returned BLOCKED twice on same Path ID" → `docs/INVESTIGATOR_PROTOCOL.md`
 - "About to run unattended overnight" → `AI_AGENT.md` § Unattended Run Rules
+- "Session-start test bloat trigger fired" OR "run the bloat sweep" → `docs/TEST_BLOAT_SWEEP.md`
 
 **Proves it works:** dry-run a packet end-to-end on a trivial change.
 - [ ] All docs present, rails populated, triggers registered, or N/A:
@@ -218,6 +233,23 @@ If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINE
 - [ ] Operator dashboard or handoff format gives the non-coder operator decisions and evidence, not raw diff interpretation.
 - [ ] Operator dashboard includes data snapshot/restore fields and three plain-English tie-breaker choices.
 - [ ] Closing checklist is present, routed, and required before final handoff.
+- [ ] Test bloat sweep is present or explicitly N/A, and new-test justification is enforced by `docs/POST_CODING_CHECKS.md`.
+- [ ] Local worker health is documented or explicitly disabled before issuing implementation packets.
+- [ ] Provider-side budget backstop is documented or explicitly unavailable, and repo-visible budget ceilings are set.
+- [ ] Tier C/sensitive projects document worker sandboxing and secret exclusion before local-worker implementation packets.
+
+**Orchestrator carryover checklist:** use this when upgrading an existing lean/v2 project into the orchestrator pattern.
+
+1. Run §7.5 Lean Project Audit first; record findings in the active plan or changelog.
+   Use `docs/ORCHESTRATOR_CARRYOVER_EXAMPLE.md` as the concrete walkthrough.
+2. Apply the orchestrator overlay from Templates, not ASUS.
+3. Resolve project-specific placeholders in startup docs, commands, Path IDs, and budget limits.
+4. Register every orchestrator event trigger in `docs/CONTEXT_ROUTING.md`.
+5. Run `python3 scripts/orchestrator_state.py init` and verify `docs/state/packet_ledger.json`, `docs/state/session_budget.json`, and `docs/packets/{issued,results,reviewed,archived}/` exist.
+6. Dry-run one doc-only packet end to end: issue task packet, return result packet, run post-coding review, update ledger with `scripts/orchestrator_state.py`, run closing checklist.
+7. Only after the dry run is green, allow local-worker implementation packets.
+
+- [ ] Carryover checklist completed, dry-run packet reviewed, and ledger/session-budget state verified.
 
 ---
 

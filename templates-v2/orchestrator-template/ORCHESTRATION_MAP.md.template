@@ -68,6 +68,16 @@ This orchestrator-template is the reusable base for future projects. Project-spe
 - Pass only the minimum files, commands, constraints, and acceptance criteria needed for the task.
 - Return compact result packets instead of full logs unless a failure requires evidence.
 - Prefer Path IDs, Smoke IDs, and command names over pasted file dumps.
+- Treat `docs/state/session_budget.json` as the repo-visible budget ledger, not the final billing source.
+- When provider-side limits, proxy accounting, or extension-level budgets exist, set those limits outside the repo and record the non-secret policy here.
+- If repo-visible counters and provider/accounting counters disagree, use the higher-cost reading and stop when a ceiling may be exceeded.
+
+## 3a) Worker Sandbox Policy
+- Tier A/B default: worker is constrained by Allowed Files, Allowed Commands, no secret access, and packet timeout.
+- Tier C or sensitive-data work: worker must run in a dedicated branch/worktree or disposable checkout with secrets unavailable by default.
+- Tier C packets must list data snapshot/restore commands before any persistent mutation.
+- Worker must not push, deploy, migrate, or rotate secrets unless the packet explicitly authorizes that exact command and the cloud orchestrator reviewed the plan first.
+- If sandboxing cannot be verified for Tier C work, use Level 1 cloud orchestration or halt for operator approval.
 
 ## 4) Bad-State Recovery
 - Local-worker outage means the runtime is down, model is loading/downloading, network path is unreachable, or result artifact is malformed.
@@ -116,3 +126,5 @@ This orchestrator-template is the reusable base for future projects. Project-spe
 - Known safe worker domains:
 - Current validation bottlenecks:
 - Current token-saving opportunities:
+- Provider-side budget backstop:
+- Worker sandbox mode:

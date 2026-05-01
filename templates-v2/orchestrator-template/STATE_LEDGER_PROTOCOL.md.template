@@ -8,6 +8,12 @@ Purpose: make orchestration rails observable in repo-visible state instead of tr
 ## Artifacts
 - `docs/state/packet_ledger.json` — one row-equivalent per issued packet.
 - `docs/state/session_budget.json` — current session counters and configured ceilings.
+- `docs/packets/issued/` — persisted task packets sent to the worker.
+- `docs/packets/results/` — persisted result packets returned by the worker.
+- `docs/packets/reviewed/` — persisted post-coding review notes.
+- `docs/packets/archived/` — optional closed-packet archive.
+
+Use `python3 scripts/orchestrator_state.py init` to create starter ledgers and packet directories. Use `python3 scripts/orchestrator_state.py validate` before handoff.
 
 ## Packet Lifecycle
 Allowed `lifecycle_state` values:
@@ -68,3 +74,21 @@ Allowed `execution_mode` values:
 - Timeout or malformed result must not remain active.
 - Investigator usage increments session budget.
 - Spend counters are only as trustworthy as the updater; prefer scripts or provider-side limits where possible.
+
+## Helper Commands
+
+```bash
+# Initialize state in a newly adopted project
+python3 scripts/orchestrator_state.py init
+
+# Record packet lifecycle
+python3 scripts/orchestrator_state.py issue --packet-id P-YYYY-MM-DD-01 --path-ids UI-EXAMPLE-01
+python3 scripts/orchestrator_state.py record-result --packet-id P-YYYY-MM-DD-01 --status DONE
+python3 scripts/orchestrator_state.py review --packet-id P-YYYY-MM-DD-01 --outcome ACCEPT
+
+# Timeout / malformed recovery
+python3 scripts/orchestrator_state.py close --packet-id P-YYYY-MM-DD-01 --state ABANDONED --notes "timeout"
+
+# Pre-handoff proof
+python3 scripts/orchestrator_state.py validate
+```

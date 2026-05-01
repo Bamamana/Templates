@@ -23,11 +23,13 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTIN
 | `docs/APPLY_CHECKLIST.md` | worker preparing to return DONE |
 | `docs/POST_CODING_CHECKS.md` | cloud orchestrator reviewing a DONE result packet |
 | `docs/INVESTIGATOR_PROTOCOL.md` | repeated BLOCKED, test-honesty failure, production regression, or architecture unknown |
+| `docs/TEST_BLOAT_SWEEP.md` | session-start bloat trigger fires, test suite feels slow/bloated, or operator asks for a bloat sweep |
 | `docs/MASTER_TRACEABILITY_TABLE.md` | entrypoint, Path ID, workflow, side-effect, or smoke evidence changes |
 | `docs/SMOKE_TEST_CATALOG.md` | adding or referencing smoke tests |
 | `docs/WORKFLOW_TEST_MATRIX.md` | adding or changing workflow verification |
 | `docs/FEATURE_SPEC_TEMPLATE.md` | designing a non-trivial feature before packet decomposition |
 | `docs/STATE_LEDGER_PROTOCOL.md` | packet state, review evidence, budget, or investigator counts need checking/updating |
+| `docs/LOCAL_WORKER_HEALTH.md` | configuring, validating, or troubleshooting the local worker lane |
 | `docs/TECH_STACK.md` | architecture, dependency, runtime, or integration boundary decisions |
 | `docs/OPS_SECURITY_RELEASE.md` | deploy, rollback, secrets, auth, logging, data handling, or release path changes |
 | `CHANGELOG.md` | documenting a behavior or operating-model change |
@@ -42,12 +44,15 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTIN
 | Starting template retrofit on an existing project | `docs/SCENARIO_PLAYBOOK.md` and `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` |
 | Migrating Firebase/cloud app to local server | `docs/SCENARIO_PLAYBOOK.md`, `docs/FEATURE_SPEC_TEMPLATE.md`, `docs/OPS_SECURITY_RELEASE.md`, and `docs/MASTER_TRACEABILITY_TABLE.md` |
 | Planning overnight local-agent run | `docs/SCENARIO_PLAYBOOK.md`, `docs/WORKER_TASK_PACKET.md`, and `docs/STATE_LEDGER_PROTOCOL.md` |
+| Local worker route changed OR local worker seems degraded/offline | `docs/LOCAL_WORKER_HEALTH.md` and `docs/STATE_LEDGER_PROTOCOL.md` |
 | Issuing a worker packet | `docs/WORKER_TASK_PACKET.md` and `docs/STATE_LEDGER_PROTOCOL.md` |
 | Worker returned DONE | `docs/POST_CODING_CHECKS.md` mandatory review |
 | Worker returned PARTIAL or BLOCKED | `docs/WORKER_RESULT_PACKET.md`, then corrected packet or investigator path |
 | Worker returned BLOCKED twice on same Path ID | `docs/INVESTIGATOR_PROTOCOL.md` |
 | Active packet times out or returns malformed artifact | `docs/STATE_LEDGER_PROTOCOL.md`; mark `ABANDONED` or `CANCELLED` |
 | Test file modified | `docs/POST_CODING_CHECKS.md` test-honesty spot-check |
+| New test added | `docs/POST_CODING_CHECKS.md` and `docs/TEST_BLOAT_SWEEP.md` test justification rubric |
+| Session-start test bloat trigger fired OR operator says "run the bloat sweep" | `docs/TEST_BLOAT_SWEEP.md` |
 | BUGFIX packet in flight | `docs/ENGINEERING_PLAYBOOK.md` regression accretion rule |
 | New entrypoint or workflow added | `docs/MASTER_TRACEABILITY_TABLE.md` and `docs/WORKFLOW_TEST_MATRIX.md` |
 | New smoke test added | `docs/SMOKE_TEST_CATALOG.md` |

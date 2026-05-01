@@ -1,0 +1,82 @@
+# Test Bloat Sweep ([PROJECT_NAME])
+
+Read when:
+- Session-start bloat trigger fires.
+- The test suite feels slow, brittle, or much larger than the production surface.
+- The operator says "run the bloat sweep."
+
+Skip when: no trigger fired and the current packet is not test-suite maintenance.
+
+Purpose: prevent AI-added tests from accumulating without evidence value. The local worker may generate candidate lists, but the cloud orchestrator reviews them and the operator approves deletions.
+
+## 1) Trigger Conditions
+
+Run the sweep approval prompt when any condition is true:
+
+- >= 50 accepted worker packets since the last recorded sweep.
+- Test lines exceed production-code lines by more than 2.0x.
+- Full local regression suite takes longer than 5 minutes.
+- The operator explicitly asks for a sweep.
+
+If triggered, surface this before new implementation work. Do not delete tests automatically.
+
+## 2) Sweep Procedure
+
+### Step 1: Local Candidate Report
+Issue a GREEN-SUITE worker packet that writes `docs/test-sweep-candidates.md` with:
+
+- KEEP: maps to a Path ID, Smoke ID, workflow matrix row, contract, or bug regression.
+- REVIEW: intent is plausible but not proven by current docs.
+- CANDIDATE-DELETE: no traceability value and no known recent failure signal.
+
+The worker does not delete tests in this step.
+
+### Step 2: Cloud Review
+The cloud orchestrator reviews the report, spot-checks classifications, resolves REVIEW rows, and writes a final proposed deletion list.
+
+### Step 3: Operator Approval
+Show the operator a short approval summary:
+
+```text
+Bloat sweep ready. Proposed deletions: N tests. Top examples: <name>, <name>, <name>. Approve / reject / show full list.
+```
+
+### Step 4: Deletion Packet
+If approved, issue a separate BUGFIX or GREEN-SUITE packet to delete only approved tests. Acceptance criteria must include the full verify gate passing after deletion.
+
+### Step 5: Record The Sweep
+Update `CHANGELOG.md` or the active plan doc:
+
+```markdown
+### Test Bloat Sweep YYYY-MM-DD
+- Tests reviewed: N
+- Tests deleted: M
+- Suite duration before: <duration-or-N/A>
+- Suite duration after: <duration-or-N/A>
+- Next sweep trigger reset
+```
+
+## 3) Test Justification Rubric
+
+A test is justified when it satisfies at least one rule:
+
+| Rule | Meaning | Proof |
+|---|---|---|
+| R1 | Smoke coverage | Test appears in `docs/MASTER_TRACEABILITY_TABLE.md` smoke/runbook evidence |
+| R2 | Bug regression | Test traces to a BUGFIX packet, bug entry, or changelog note |
+| R3 | Smoke catalog | Test or command appears in `docs/SMOKE_TEST_CATALOG.md` |
+| R4 | Workflow target | Test command appears in `docs/WORKFLOW_TEST_MATRIX.md` |
+| R5 | Contract | Test enforces public API/schema/format contract and is named or tagged accordingly |
+
+Existing tests may also be retained by explicit operator override, but that override is not valid justification for adding a new test.
+
+## 4) Per-Packet Write-Time Rule
+
+Every NEW test added by a worker packet must satisfy R1-R5 before the packet can be accepted. If it does not, the orchestrator rejects the packet or requires the missing traceability row/catalog/workflow entry in the same packet.
+
+## 5) What This Does Not Do
+
+- It does not delete tests without operator approval.
+- It does not run inside unrelated feature packets.
+- It does not replace test-honesty checks in `docs/POST_CODING_CHECKS.md`.
+- It does not justify weak, tautological, or implementation-only assertions.

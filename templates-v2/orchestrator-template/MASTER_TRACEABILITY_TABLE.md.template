@@ -38,7 +38,7 @@ Rules:
 
 | Location | Function | Mutation Type | Affected Data |
 |---|---|---|---|
-| TBD | TBD | READ / WRITE / DELETE | TBD |
+| N/A | No mutating runtime path recorded yet | N/A | N/A |
 
 ## Coverage Completion Checklist
 - [ ] Every touched Path ID appears in the table

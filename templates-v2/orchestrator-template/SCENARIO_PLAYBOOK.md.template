@@ -39,6 +39,8 @@ Use Level 1 or halt for human/cloud approval when any of these are true:
 - The project lacks a passing verify gate or traceability table.
 - Acceptance criteria are vague or cannot be observed by command, browser smoke, or operator check.
 - The local worker has returned BLOCKED twice on the same Path ID.
+- Tier C or sensitive work cannot be run in a verified sandbox with secrets unavailable by default.
+- Provider-side or extension-level budget limits are unavailable and the session is likely to exceed repo-visible cost ceilings.
 
 ## Template Retrofit Packet Queue
 

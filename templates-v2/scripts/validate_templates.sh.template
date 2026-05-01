@@ -85,6 +85,10 @@ if [[ -f "docs/CONTEXT_ROUTING.md" ]]; then
   scan_paths+=("docs/CONTEXT_ROUTING.md")
 fi
 
+if [[ -f "docs/ORCHESTRATOR_TEMPLATE_INDEX.yaml" ]]; then
+  scan_paths+=("docs/ORCHESTRATOR_TEMPLATE_INDEX.yaml")
+fi
+
 if [[ -f "docs/SESSION_BRIEF.md" || -f "docs/CONTEXT_ROUTING.md" ]]; then
   [[ -f "docs/SESSION_BRIEF.md" ]] || fail "Routed startup profile requires docs/SESSION_BRIEF.md"
   [[ -f "docs/CONTEXT_ROUTING.md" ]] || fail "Routed startup profile requires docs/CONTEXT_ROUTING.md"
@@ -354,6 +358,14 @@ if errors:
 
 print(f"[PASS] State Mutation Index semantic check passed ({row_count} checked rows)")
 PY
+fi
+
+if [[ -f "docs/ORCHESTRATION_MAP.md" ]]; then
+  if [[ -f "scripts/orchestrator_state.py" ]]; then
+    python3 scripts/orchestrator_state.py validate
+  else
+    fail "Orchestrator project missing scripts/orchestrator_state.py"
+  fi
 fi
 
 if command -v bash >/dev/null 2>&1; then
