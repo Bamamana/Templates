@@ -1,0 +1,36 @@
+# Master Traceability Table
+
+Read when: a packet touches an entrypoint, workflow, side effect, data path, or behavior pathway.
+Skip when: Tier A doc-only work with no runtime behavior.
+
+Purpose: anti-drift mechanism. Every runtime pathway has a Path ID row, every row demands smoke or contract evidence.
+
+## Path ID Format
+- `<TYPE>-<SCOPE>-<NN>` such as `API-AUTH-01`, `UI-DASH-02`, `JOB-SYNC-01`
+- Common types: `UI`, `API`, `CRON`, `JOB`, `CLI`, `WORKER`, `DB`, `WEB`
+
+## Rules
+1. Every active entrypoint or behavior pathway has exactly one Path ID row.
+2. Every row has Smoke Coverage: `Automated`, `Manual`, or `N/A` with rationale.
+3. A worker packet touching a Path ID cannot return DONE until evidence is updated.
+4. New behavior adds a Path ID row in the same packet.
+5. Removed behavior is marked retired in `CHANGELOG.md`.
+6. Cloud review verifies the rows claimed in the result packet.
+
+## Master Traceability Table
+
+| Path ID | Entry Point | Function Chain | Side Effects | Expected Outcome | Smoke Coverage | Smoke Command / Runbook |
+|---|---|---|---|---|---|---|
+| CLI-VERIFY-01 | `[VERIFY_COMMAND]` | verify gate | none | Project validation exits 0 | Automated | `[VERIFY_COMMAND]` |
+
+## State Mutation Index
+
+| Location | Function | Mutation Type | Affected Data |
+|---|---|---|---|
+| TBD | TBD | READ / WRITE / DELETE | TBD |
+
+## Coverage Completion Checklist
+- [ ] Every touched Path ID appears in the table
+- [ ] Every touched row has Smoke Coverage status
+- [ ] Smoke command/runbook evidence recorded
+- [ ] Retired pathways noted in `CHANGELOG.md`

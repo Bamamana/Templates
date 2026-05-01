@@ -1,0 +1,57 @@
+# Post-Coding Checks (Cloud Orchestrator Review Gate)
+
+Read when: a worker has returned a result packet with status DONE.
+Skip when: status is BLOCKED; use `docs/INVESTIGATOR_PROTOCOL.md` after repeated BLOCKED.
+
+Purpose: mandatory cloud review of every DONE packet. This substitutes for the operator reading code.
+
+## Review Inputs
+1. Original `docs/WORKER_TASK_PACKET.md`
+2. Returned `docs/WORKER_RESULT_PACKET.md`
+3. `git diff --stat` from the result packet
+4. Full diff only when test honesty, scope, security, or evidence requires it
+5. Touched rows of `docs/MASTER_TRACEABILITY_TABLE.md`
+
+## 1) Scope Verification
+- [ ] Every changed file appears in Allowed Files
+- [ ] No source file > 500 lines unless packet authorized refactor
+- [ ] Iteration count <= Packet Class max
+- [ ] Packet Class matches observed change shape
+- [ ] Branch / rollback fields are filled for non-trivial work
+
+## 2) Acceptance Criteria
+- [ ] Every PASS has an evidence pointer
+- [ ] Every FAIL uses PARTIAL or BLOCKED, not DONE
+- [ ] Spot-check at least one evidence pointer against actual command/log/test output
+
+## 3) Test Honesty Spot-Check
+If any test file changed:
+- [ ] Pull full diff for test changes
+- [ ] Assertions are at least as strict as before, or justification is credible
+- [ ] No deleted/skipped tests without explicit authorization
+- [ ] No `skip`, `xfail`, `it.skip`, or equivalent without justification
+- [ ] New FEATURE / BUGFIX tests include RED evidence
+- [ ] BUGFIX regression test would have failed against unfixed behavior
+
+## 4) Traceability Evidence
+- [ ] Every Path ID listed in result has updated row or N/A rationale
+- [ ] Required smoke command/runbook evidence exists
+- [ ] New workflows update `docs/WORKFLOW_TEST_MATRIX.md`
+- [ ] New smokes update `docs/SMOKE_TEST_CATALOG.md`
+
+## 5) Security / Privacy / Data Quick Pass
+- [ ] No secret literals in source, docs, logs, or packet evidence
+- [ ] No new public endpoint without auth note
+- [ ] No new file-write path outside documented data directories
+- [ ] No migration/data-loss risk without rollback note
+
+## 6) Decision
+
+| Outcome | Trigger | Action |
+|---|---|---|
+| ACCEPT | All sections pass | Approve reviewed outcome and record ledger result |
+| REPAIR | One narrow gap | Issue small follow-up packet only for that gap |
+| REJECT | Multiple gaps or test-honesty failure | Reissue corrected packet from PLAN step |
+| ESCALATE | Root cause unclear or repeated failure | Use `docs/INVESTIGATOR_PROTOCOL.md` |
+
+After decision, update `docs/state/packet_ledger.json` and `docs/state/session_budget.json` if this project uses state ledgers.

@@ -1,31 +1,108 @@
 # Worker Result Packet
 
-Use this document to return a single bounded subtask from the local worker to the orchestrator.
+Use this document to return one bounded subtask from the local worker to the cloud orchestrator.
+
+The orchestrator reviews every DONE result through `docs/POST_CODING_CHECKS.md`. Body target: <= 200 lines. Diff stats by default; full diff only if requested.
 
 ## Header
-- Packet ID: [PACKET_ID]
-- Date: [YYYY-MM-DD]
-- Worker: [WORKER_NAME]
-- Status: [DONE/BLOCKED/PARTIAL]
+- Packet ID:           `P-YYYY-MM-DD-NN`
+- Spec ID:             `SPEC-NN-name` or `none`
+- Date:
+- Worker:              local-coder
+- Packet Class:        FEATURE / BUGFIX / GREEN-SUITE / REFACTOR
+- Status:              DONE / PARTIAL / BLOCKED
+- Iterations used:     N / MAX
 
 ## Summary
-- Outcome:
-- Scope respected: [YES/NO]
+- Outcome (<= 2 lines):
+- Scope respected: YES / NO (NO must come with BLOCKED or PARTIAL)
+
+## Acceptance Criteria Result
+| # | Criterion | Result | Evidence pointer |
+|---|---|---|---|
+| 1 |  | PASS / FAIL | command + exit code, test ID, or file:line ref |
+| 2 |  | PASS / FAIL |  |
+| 3 |  | PASS / FAIL |  |
+
+## Path IDs Updated
+| Path ID | Row updated? | Smoke command run | Smoke result |
+|---|---|---|---|
+| `XXX-YYY-NN` | YES / NO / N/A | `SMOKE-XXX-NN` | exit 0 |
 
 ## Files Changed
-- [FILE_PATH]
+```bash
+git diff --stat output here
+```
 
 ## Commands Run
-- [COMMAND] -> [RESULT]
+| # | Command | Exit | Notes |
+|---|---|---|---|
+| 1 |  | 0 |  |
+| 2 |  | 0 |  |
 
-## Validation Results
-- [TEST_OR_CHECK] -> [PASS/FAIL]
+## Apply Checklist Result
+- [ ] Scope discipline
+- [ ] Path ID evidence
+- [ ] Validation commands
+- [ ] Test honesty
+- [ ] Documentation sync
+- [ ] Result packet filled
+- [ ] Local self-review
+
+If any unchecked: status MUST be PARTIAL or BLOCKED, never DONE.
+
+## Test Honesty Self-Attestation
+- Did this packet modify any test file? YES / NO
+- If YES, were any assertions weakened? YES / NO
+- If YES, were any tests deleted or skipped? YES / NO + justification:
+- If YES, do new tests fail against the original buggy code? YES / N/A
+
+## Test-First Evidence (FEATURE / BUGFIX Only)
+- Base revision tested before the fix:
+- Test added or extended in RED step:
+- RED command and observed failure message:
+	```bash
+	# command and 1-2 line failure
+	```
+- RED evidence artifact or transcript path:
+- GREEN confirmation after implementation:
+
+## Regression Accretion (BUGFIX Only)
+- New regression test:
+- Confirmed RED against unfixed code? YES / NO
+- Lives in committed test suite? YES / NO
+- Bug description it covers:
+
+## Local Self-Review
+- Self-review run? YES / NO
+- Sections passed:
+- Sections flagged + disposition:
+- Looped back to repair once? YES / NO
+
+## Branch / Rollback Safety
+- Branch:
+- Before commit:
+- After commit:
+- Rollback command:
+- Data loss risk: NONE / POSSIBLE + note
+
+## Iteration Log (Compact; Omit When Iterations = 1)
+- Iter 1:
+- Iter 2:
+
+## Final Verify
+- Command:
+- Result: PASS / FAIL
+- Duration:
 
 ## Assumptions Made
-- [ASSUMPTION_1]
+- or `None`
 
 ## Blockers
-- [BLOCKER_OR_NONE]
+- or `None`
 
 ## Recommended Next Action
-- [NEXT_STEP]
+- One concrete next step for the orchestrator.
+
+## Full Diff (Only If Requested)
+Omit unless task packet had `Full diff requested? YES`.

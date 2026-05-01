@@ -1,0 +1,60 @@
+# Operator Dashboard ([PROJECT_NAME])
+
+Read when: the human asks "what now?", before approving reviewed work, or when the project feels confusing.
+Skip when: never for non-coder operator handoff.
+
+Purpose: plain-English control panel for a non-coder operator. This file summarizes outcomes and safe choices; it is not a replacement for technical docs.
+
+## Current Status
+- Project state: GREEN / YELLOW / RED
+- Current milestone:
+- Active packet: none / P-YYYY-MM-DD-NN
+- Last verified:
+- Local worker health: OK / DEGRADED / OFFLINE / UNKNOWN
+- Cloud review status: none / pending / accepted / rejected / escalated
+
+## Next Safe Action
+- Recommended action:
+- Why this is safe:
+- Command to run, if any:
+  ```bash
+  [NEXT_COMMAND]
+  ```
+
+## What Pass Looks Like
+-
+
+## What Fail Means
+-
+
+## Operator Decision Menu
+Choose one. Do not approve raw code.
+
+| Choice | Meaning |
+|---|---|
+| accept reviewed result | Cloud review passed; verify gate passed; rollback known |
+| ask for repair | One narrow issue remains; issue follow-up worker packet |
+| escalate to investigator | Root cause unclear or repeated worker failure |
+| rollback | Restore last known-good state |
+| stop | Halt until the question is answered |
+
+## Rollback
+- Last known-good commit:
+- Current branch:
+- Rollback command:
+  ```bash
+  git revert <commit-or-range>
+  ```
+- Data rollback needed? NO / YES + notes:
+
+## Do-Not-Touch Areas
+-
+
+## Open Decisions For Human
+-
+
+## Recent Evidence
+- Verify gate:
+- Targeted tests:
+- Smoke tests:
+- Cloud review:

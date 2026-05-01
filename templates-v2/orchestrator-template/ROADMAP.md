@@ -4,7 +4,7 @@ This file is the working map for evolving the `orchestrator-template` draft into
 
 ## Goal
 
-Create a template variant that lets a premium cloud model keep the whole-project mental model while delegating narrow coding and test loops to a local model, with less token burn and less code drift.
+Create a template variant that lets a premium cloud model act as mastermind/checker while a local LLM performs most bounded code creation, test loops, refactors, docs work, and validation.
 
 ## What This Variant Must Preserve From V2
 
@@ -17,41 +17,59 @@ Create a template variant that lets a premium cloud model keep the whole-project
 
 ## New Behavior This Variant Must Add
 
-- Explicit role split between orchestrator and worker
+- Explicit three-role split: cloud orchestrator, local worker, cloud investigator
 - Structured handoff packet for delegated subtasks
 - Structured result packet for review and acceptance
+- 9-step local test-first loop with Packet Class iteration ceilings
+- Mandatory cloud review of every DONE packet
+- Traceability, smoke catalog, workflow matrix, and rollback evidence
 - Token-saving policy that discourages repeated full-repo rereads
-- Clear escalation triggers when work stops being a bounded slice
+- Clear halt/escalation triggers when work stops being a bounded slice
 
 ## Current Draft Contents
 
 - `AI_AGENT.md.template`
+- `SESSION_BRIEF.md.template`
+- `CONTEXT_ROUTING.md.template`
+- `GAME_PLAN.md.template`
 - `PROJECT_CANVAS.md.template`
 - `ENGINEERING_PLAYBOOK.md.template`
 - `ORCHESTRATION_MAP.md.template`
 - `WORKER_TASK_PACKET.md.template`
 - `WORKER_RESULT_PACKET.md.template`
+- `APPLY_CHECKLIST.md.template`
+- `POST_CODING_CHECKS.md.template`
+- `INVESTIGATOR_PROTOCOL.md.template`
+- `MASTER_TRACEABILITY_TABLE.md.template`
+- `SMOKE_TEST_CATALOG.md.template`
+- `WORKFLOW_TEST_MATRIX.md.template`
+- `FEATURE_SPEC_TEMPLATE.md.template`
+- `STATE_LEDGER_PROTOCOL.md.template`
+- `packet_ledger.json.template`
+- `session_budget.json.template`
+- `OPERATOR_DASHBOARD.md.template`
 - `TEMPLATE_INDEX.yaml.template`
 
 ## Next Build Steps
 
-1. Decide whether this stays a separate variant pack or folds back into `templates-v2` as an optional profile.
-2. Add orchestrator-aware versions of `AI_MEMORY`, `TECH_STACK`, and `OPS_SECURITY_RELEASE` only if they need role-specific rules.
-3. Define bootstrap behavior for applying this variant into real projects.
-4. Add a validation script that checks for required orchestration docs and packet structure.
-5. Add one worked example based on a real project like the law firm app or Visual Planner server.
-6. Decide how much of the result packet should be human-facing versus agent-facing.
+1. Prove the ASUS/local-worker flow with real packets before making this the default bootstrap path.
+2. Define bootstrap behavior for applying this variant into real projects.
+3. Add a validation script that checks required orchestration docs, packet structure, and starter ledgers.
+4. Add one worked example based on a real personal project.
+5. Add CLI helpers for packet issue/return/review so ledgers are not hand-edited.
+6. Decide whether this becomes `templates-v3/orchestrator` or remains a `templates-v2` variant.
 
 ## Open Questions
 
-1. Should the worker packet live as a persistent doc in the repo, or as an ephemeral prompt artifact generated per task?
-2. Should the orchestrator be required to approve every worker result, or only risky slices?
+1. Should packets be persisted as files under `docs/packets/` or treated as ephemeral prompts with ledger records only?
+2. What provider-side budget mechanism should backstop the session budget JSON?
 3. Should bootstrap stamp different defaults for local-only, hybrid, and privacy-sensitive projects?
-4. Should Tier C projects require stronger worker restrictions by default?
+4. Should Tier C projects require stricter worker sandboxing by default?
 
 ## Initial Success Criteria
 
 - A project can apply this variant without ambiguity.
 - The orchestrator can issue bounded work without re-reading the full repo each time.
-- The worker can execute common tasks like smoke tests, narrow refactors, and routine feature slices.
-- The final review still respects the existing V2 quality and documentation standards.
+- The worker can execute smoke tests, narrow refactors, docs updates, and routine feature slices.
+- The cloud review catches weak tests, scope creep, and fake evidence before the operator approves.
+- The operator dashboard exposes safe choices without requiring code-reading skill.

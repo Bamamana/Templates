@@ -1,45 +1,102 @@
 # Worker Task Packet
 
-Use this document to hand a single bounded subtask from the orchestrator to the local worker.
+Use this document to hand one bounded subtask from the cloud orchestrator to the local worker.
+
+The orchestrator creates or updates the packet's ledger entry when issuing this packet. The worker runs the 9-step test-first loop in `docs/ENGINEERING_PLAYBOOK.md` and returns `docs/WORKER_RESULT_PACKET.md`.
 
 ## Header
-- Packet ID: [PACKET_ID]
-- Date: [YYYY-MM-DD]
-- Issued by: [ORCHESTRATOR_NAME]
-- Priority: [LOW/MEDIUM/HIGH]
+- Packet ID:           `P-YYYY-MM-DD-NN`
+- Date:
+- Issued by:           cloud-orchestrator
+- Spec ID:             `SPEC-NN-name` or `none`
+- Target worker:       local-coder
+- Priority:            LOW / MEDIUM / HIGH
+- Packet Class:        FEATURE / BUGFIX / GREEN-SUITE / REFACTOR
+- Packet Class Rationale: one line explaining why this class matches the change shape
+- Concreteness Tier:   1 (exact files/tests/signatures) / 2 (sketch) / 3 (open-ended; discouraged)
+- Max iterations:      FEATURE 3, BUGFIX 5, GREEN-SUITE 10, REFACTOR 3
 
 ## Goal
-- [ONE_SENTENCE_OBJECTIVE]
+- One-sentence objective:
+
+## Concrete Plan (Tier 1 Packets Only)
+- Test file(s) to add or modify: `tests/...`
+- Exact test name(s) to add:
+- Production file(s) to add or modify: `src/...`
+- Function / method signatures, if new:
+- Data shape changes:
+
+## Test-First Direction (FEATURE and BUGFIX)
+- Worker MUST follow RED -> GREEN before implementation is considered valid.
+- BUGFIX packets must add or preserve a regression test that would have caught the bug.
+- Required test type: unit / integration / smoke / property / N/A
 
 ## Scope
-- In scope:
-  - [FILE_OR_DIRECTORY]
-- Out of scope:
-  - [FILE_OR_DIRECTORY_OR_RULE]
+
+### Allowed Files (worker may read and modify)
+- `path/one`
+- `path/two`
+
+### Reference Files (worker may read, not modify)
+- `path/three`
+
+### Out Of Scope
+-
+
+## Path IDs Touched
+| Path ID | Action | Notes |
+|---|---|---|
+| `XXX-YYY-NN` | NEW / MODIFY / RETIRE |  |
 
 ## Constraints
-- [CONSTRAINT_1]
-- [CONSTRAINT_2]
-- [CONSTRAINT_3]
+- Smallest correct change. No unrequested scope.
+- Stay inside Allowed Files. Return BLOCKED before broadening.
+- No assertion weakening. No test deletion or skip without explicit packet authorization.
+- GREEN-SUITE and REFACTOR packets must not smuggle in behavior changes.
+- No new file > 400 lines. No existing source file pushed > 500 lines.
+- Worker runs locally only. Do not push to remote until Final Verify is green.
 
 ## Acceptance Criteria
-- [ACCEPTANCE_CRITERION_1]
-- [ACCEPTANCE_CRITERION_2]
-- [ACCEPTANCE_CRITERION_3]
+Each gets PASS / FAIL with evidence pointer in the result packet.
+- [ ] AC-1:
+- [ ] AC-2:
+- [ ] AC-3:
 
 ## Allowed Commands
+The worker may run only these. Anything else requires a new packet or a BLOCKED return.
 ```bash
-[COMMAND_1]
-[COMMAND_2]
-[COMMAND_3]
+# fill exactly for this packet
+[LINT_COMMAND]
+[TYPECHECK_COMMAND]
+[TARGETED_TEST_COMMAND]
+[SMOKE_COMMAND]
+[VERIFY_COMMAND]
 ```
 
-## Required Return
-- Fill `docs/WORKER_RESULT_PACKET.md`
-- Return changed files, validation results, assumptions, and blockers
+## Required Smoke Tests
+- `SMOKE-XXX-NN`
+- or `none` for doc-only changes
 
-## Escalate If
-- Scope must expand beyond listed files
-- Business rule is unclear
-- Security or compliance concern appears
-- Validation failure suggests architectural mismatch
+## Final Verify Command
+```bash
+[VERIFY_COMMAND]
+```
+
+## Apply Checklist Required
+- [ ] Worker must complete `docs/APPLY_CHECKLIST.md` before returning DONE.
+- [ ] Result packet must explicitly confirm checklist status.
+
+## Required Return
+- Fill `docs/WORKER_RESULT_PACKET.md`.
+- Include PASS/FAIL per criterion, iteration count, diff stats, commands with exit codes, Path ID evidence, blockers.
+- Body target <= 200 lines.
+- Full diff requested? NO
+
+## Escalate If (Return BLOCKED)
+- Scope must expand beyond Allowed Files.
+- Business/product rule is unclear.
+- Security or privacy concern appears.
+- Acceptance criterion appears wrong or unreachable.
+- Allowed Commands are insufficient.
+- Iteration count would exceed Max iterations.
+- Refactor needed before safe completion.

@@ -1,75 +1,114 @@
 # Orchestration Map ([PROJECT_NAME])
 
-Read when: assigning work between cloud orchestrator and local worker.
+Read when: assigning work between the premium cloud mastermind and the local code worker.
 Skip when: never.
 
 Purpose: define the stable role split, handoff protocol, token-saving policy, and escalation boundaries.
 
+## Rollout Model
+- Phase 1: one premium cloud orchestrator plus one local worker.
+- Phase 2: add specialized local lanes only after Phase 1 proves valuable.
+
 ## 1) System Roles
 
-### Orchestrator
+### Cloud Orchestrator
 - Holds project-wide context and milestone intent.
-- Reads canonical project docs and current architecture state.
-- Creates worker packets with explicit scope and acceptance criteria.
-- Reviews result packets, targeted diffs, and validation evidence.
-- Decides whether to accept, repair, split, or escalate.
+- Writes feature specs for non-trivial work.
+- Decomposes specs into worker packets.
+- Reviews every DONE packet against `docs/POST_CODING_CHECKS.md` before merge or acceptance.
+- Decides accept / repair / reject / escalate.
+- Owns traceability integrity; worker fills evidence, orchestrator verifies it.
 
-### Worker
-- Performs bounded implementation, refactor, and test work.
-- Stays inside assigned files or directories.
-- Runs the approved command set.
-- Returns evidence instead of long prose.
+### Local Worker
+- Performs bounded implementation, refactor, retrieval, docs, and test work inside `Allowed Files`.
+- Runs only the `Allowed Commands` set.
+- Runs the 9-step test-first loop locally; cloud tokens are not spent inside the loop.
+- Completes `docs/APPLY_CHECKLIST.md` before returning DONE.
+- Returns evidence per Path ID in the result packet, not broad prose.
+- Returns BLOCKED rather than guessing or expanding scope.
+
+### Cloud Investigator
+- Escape hatch for repeated BLOCKED, test-honesty failures, production regressions, or architectural unknowns.
+- May load wider repo context than the orchestrator normally uses.
+- Returns root cause, corrected packet, direct fix, or spec amendment.
+- Used sparingly; frequent investigator use means the local-worker setup needs tuning.
+
+## Phase 1 Default Flow
+1. Premium orchestrator classifies the task.
+2. Premium orchestrator writes one bounded worker packet.
+3. Local worker executes the packet and returns a result packet.
+4. Premium orchestrator performs mandatory post-coding review.
+5. Operator approves the reviewed outcome, not the raw diff.
 
 ## 2) Task Routing Rules
 
-### Keep on Orchestrator
+### Keep On Cloud Orchestrator
 - Architecture and design decisions
-- Cross-module planning
-- Compliance, security, or privacy review
+- Ambiguous debugging
+- Security and privacy review
+- Cross-project planning
 - Final review for risky changes
-- Ambiguous product or business rules
+- Conflicting or underspecified requirements
 
-### Push to Worker
-- Unit tests and smoke tests
-- Narrow feature slices
-- Routine CRUD or UI work
-- Repetitive refactors
-- Lint, typecheck, and test repair loops
-- Docs updates driven by explicit instructions
+### Push To Local Worker
+- Repo indexing and summarization
+- Bulk code transforms
+- First-pass refactors
+- Test drafting and repair loops
+- Log triage and failure summarization
+- Documentation extraction
+- Narrow implementation slices with clear acceptance criteria
 
 ## 3) Token Budget Policy
 - Read full-project context once per milestone or major escalation.
 - Do not re-read the repository for each worker slice.
 - Pass only the minimum files, commands, constraints, and acceptance criteria needed for the task.
 - Return compact result packets instead of full logs unless a failure requires evidence.
+- Prefer Path IDs, Smoke IDs, and command names over pasted file dumps.
 
-## 4) Worker Packet Requirements
-- `Packet ID`
+## 4) Bad-State Recovery
+- Local-worker outage means the runtime is down, model is loading/downloading, network path is unreachable, or result artifact is malformed.
+- Do not spend investigator budget on infrastructure outage.
+- Attended sessions may use one bounded cloud-only fallback slice when already in plan and surfaced to the user.
+- Unattended sessions halt instead of silently falling back to cloud-only.
+- Timeout or malformed result moves the packet out of active state before recovery begins.
+
+## 5) Worker Packet Requirements
+- `Packet ID` (`P-YYYY-MM-DD-NN`, never reused)
 - `Goal`
-- `Scope`
-- `Allowed files or directories`
+- `Packet Class` and class rationale
+- `Concreteness Tier`
+- `Scope` with Allowed Files and Reference Files
+- `Path IDs Touched`
 - `Constraints`
-- `Acceptance criteria`
-- `Allowed commands`
-- `Expected return format`
+- `Acceptance Criteria`
+- `Allowed Commands`
+- `Required Smoke Tests`
+- `Final Verify Command`
+- `Expected Return Format`
 
-## 5) Result Packet Requirements
-- `Packet ID`
-- `Status`
-- `Files changed`
-- `Commands run`
-- `Validation results`
-- `Assumptions made`
-- `Blockers`
-- `Recommended next action`
+## 6) Result Packet Requirements
+- `Packet ID` echoes the task
+- `Status` = DONE / PARTIAL / BLOCKED
+- `Iterations used`
+- `Files changed` as diff stats by default
+- `Commands run` with exit codes
+- `Acceptance criteria results`
+- `Path IDs updated`
+- `Test-first evidence` for FEATURE / BUGFIX work
+- `Regression accretion` for BUGFIX work
+- `Local self-review`
+- `Final verify result`
+- `Assumptions`, blockers, and recommended next action
 
-## 6) Drift Prevention Rules
+## 7) Drift Prevention Rules
 - No silent scope expansion.
 - No architectural rewrites without orchestration review.
 - If acceptance criteria change, update the packet before coding.
-- Keep project guardrails from `AI_AGENT.md` and `docs/ENGINEERING_PLAYBOOK.md` authoritative.
+- Keep `AI_AGENT.md`, `docs/ENGINEERING_PLAYBOOK.md`, and this map aligned.
+- Behavior changes update tests and docs in the same packet.
 
-## 7) Current Project Routing Notes
+## 8) Current Project Routing Notes
 - High-risk domains that must stay orchestrator-owned:
 - Known safe worker domains:
 - Current validation bottlenecks:

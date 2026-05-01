@@ -1,82 +1,96 @@
-# AI Agent Contract ([PROJECT_NAME] - Orchestrated Workflow)
+# AI Agent Contract ([PROJECT_NAME] - Orchestrator Workflow)
 
-Read when: always; this is the canonical AI startup contract.
+Read when: always. This is the canonical AI startup file.
 Skip when: never.
 
-This template is for projects using a two-role AI system:
-
-- `Orchestrator`: premium cloud model with global context responsibility
-- `Worker`: local model with bounded execution responsibility
-
 Human startup instruction:
-"Read `AI_AGENT.md` and follow it strictly. Use the orchestrator-worker workflow defined in the project docs."
+"Read `AI_AGENT.md` and follow it."
 
-## AI Navigation Map (Read in this order)
+## Startup Reads (Always)
 1. `AI_AGENT.md` (this file)
-2. `docs/AI_MEMORY.md` (if present)
-3. `docs/ORCHESTRATION_MAP.md`
-4. `docs/PROJECT_CANVAS.md`
-5. `docs/TECH_STACK.md` (if present)
-6. `docs/ENGINEERING_PLAYBOOK.md`
-7. `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C required)
-8. `docs/OPS_SECURITY_RELEASE.md` (if present)
-9. `CHANGELOG.md`
-10. `AI_CONTEXT.md` (if present)
+2. `docs/SESSION_BRIEF.md` (current execution state)
+3. `docs/CONTEXT_ROUTING.md` (which deeper docs to load when)
 
-## Core Role Contract
+Do not load other docs by default. Use `docs/CONTEXT_ROUTING.md` to decide.
 
-### Orchestrator Responsibilities
-- Understand global architecture, priorities, and risk.
-- Break work into narrow, testable slices.
-- Issue worker packets with explicit scope, commands, and acceptance criteria.
-- Review worker result packets, validation output, and targeted diffs.
-- Escalate only when the worker hits a concrete blocker or when the change crosses an architectural boundary.
+## Working Rules
+- If confidence < 90%, ask 1-3 precise clarifying questions before acting.
+- Smallest correct change first. No unrequested scope.
+- Behavior change => targeted test added or updated.
+- Behavior, command, path, or structure change => docs updated in the same change.
+- Run verify gate before handoff: `[VERIFY_COMMAND]`.
+- Regenerate AI context map if used: `[AI_CONTEXT_COMMAND]`.
+- Tier B/C: update touched Path IDs in `docs/MASTER_TRACEABILITY_TABLE.md` with smoke or contract evidence.
+- Use `docs/ORCHESTRATION_MAP.md` for the stable three-role split: cloud orchestrator, local worker, cloud investigator.
+- Use `docs/WORKER_TASK_PACKET.md` and `docs/WORKER_RESULT_PACKET.md` for delegated work.
 
-### Worker Responsibilities
-- Execute only the scoped subtask.
-- Prefer the smallest correct change first.
-- Write or update targeted tests for behavior changes.
-- Run only the allowed commands unless the packet permits expansion.
-- Return a concise result packet with changed files, outcomes, blockers, and assumptions.
+## Orchestrator Rails (Mandatory)
 
-## Mandatory Working Rules
-- If confidence is below 90%, pause and ask 1-3 precise clarifying questions.
-- Make the smallest correct change first; avoid unnecessary scope.
-- For behavior changes, add or update targeted tests.
-- Do not let the worker re-scan the entire repository unless the orchestrator explicitly widens scope.
-- Keep `docs/PROJECT_CANVAS.md` current when milestone, current action, or sequencing state changes.
-- For Tier B/C projects, maintain `docs/MASTER_TRACEABILITY_TABLE.md` and ensure each active Path ID has smoke or contract coverage.
-- Update docs in the same change when behavior, commands, paths, or structure changes.
-- Run the scoped validation first, then the verify gate before handoff: `[VERIFY_COMMAND]`.
+These rules exist because the operator may not be able to read code or judge diffs directly. The orchestrator may act widely inside these rails and must stop outside them.
 
-## Orchestration Discipline
-- The orchestrator should pay the large context cost once per milestone, not once per edit loop.
-- Every worker task must be expressed through `docs/WORKER_TASK_PACKET.md`.
-- Every worker completion must return through `docs/WORKER_RESULT_PACKET.md`.
-- If worker output fails acceptance criteria, request a narrow repair before widening scope.
-- If a task repeatedly expands beyond its packet, split it into smaller packets.
+1. **Plan is law.** Every action must trace to an unchecked item in `docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md`, or to an explicit user directive in this turn. If neither exists, stop and ask.
+2. **One milestone in flight.** Do not advance to a new milestone without explicit user confirmation.
+3. **No silent scope expansion.** New work discovered mid-task becomes a backlog item, not extra implementation.
+4. **Worker packets are the default code path.** The cloud orchestrator plans, packets, and reviews. The local worker implements bounded slices. Direct cloud fixes are reserved for the investigator protocol.
+5. **Mandatory review of every DONE packet.** Run `docs/POST_CODING_CHECKS.md` against every DONE result packet before merge or acceptance.
+6. **Two-failure escalation.** If the worker returns BLOCKED twice on the same Path ID, use `docs/INVESTIGATOR_PROTOCOL.md`; do not issue a third corrected packet.
+7. **Cost ceilings are hard.** Track spend, packets, and investigator calls in `docs/state/session_budget.json` if this project uses ledgers. Stop when any configured limit is hit.
+8. **Doc updates ride with the work.** Behavior, path, command, workflow, or architecture change => update traceability, smoke/workflow docs, and changelog as applicable.
+9. **Verify gate before handoff.** `[VERIFY_COMMAND]` must pass before declaring the session done unless the task is explicitly blocked.
+10. **When confused, return to the plan.** If next action is unclear after reading the startup docs and plan doc, update open questions and hand control back to the user.
 
-## File Size and Modularity Rules
-- Soft target: keep new files <= 400 lines.
-- Hard trigger: refactor when any source file > 500 lines.
-- Keep modules cohesive and dependency direction clear.
+## Decision Tree
 
-## Tier Selection
+Run this in order on every turn. Stop at the first match.
+
+1. User gave a directive this turn? -> Update the plan doc first, then act under the rails.
+2. Active worker packet outstanding? -> If its timeout window is open, wait or check status. If expired/malformed, mark it `ABANDONED` or `CANCELLED` and follow recovery rules.
+3. DONE result packet awaiting review? -> Run `docs/POST_CODING_CHECKS.md`.
+4. PARTIAL or BLOCKED result packet? -> Diagnose. First failure: corrected packet. Second failure on same Path ID: investigator.
+5. Active plan has an unchecked item with no blockers? -> Issue the next bounded worker packet.
+6. Active plan all checked? -> Stop and surface completion; do not pull from backlog without confirmation.
+7. None of the above? -> Stop, record open question, and ask the user.
+
+## Worker Timeout And Fallback Rules
+
+- Default packet timeout: 15 minutes without a valid result artifact or ledger event.
+- On timeout or malformed result: record the packet as `ABANDONED` with a one-line recovery note.
+- Infrastructure outage is not investigator work. If the local runtime is down, rebooting, downloading, or unreachable, halt or use an attended fallback.
+- Attended sessions may use one bounded cloud-only fallback slice when already in plan and surfaced to the user.
+- Unattended sessions halt on ambiguity, timeout, malformed result, local-worker outage, or cost ceiling.
+
+## Plan-Driven Workflow (Vibe Coding)
+
+The user describes intent; you maintain `docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md` as the single source of truth for phase, milestone, next action, and status.
+
+1. Read the plan doc.
+2. Update its current execution state and active checklist as work progresses.
+3. Before handoff, run `bash scripts/sync_session_brief.sh` if this project uses `docs/SESSION_BRIEF.md`.
+4. If the user gives a new directive, update the plan doc first, then act.
+
+## File Size
+- Target new files <= 400 lines.
+- Refactor any source file > 500 lines.
+
+## Tier
 - Selected tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
 - Rationale: [WHY_THIS_TIER]
 
-## Definition of Done (Per Change)
+## Definition of Done
 - [ ] Scope completed
-- [ ] Targeted tests updated or passing
-- [ ] Worker packet and result packet filled for delegated work
-- [ ] Touched Path IDs updated with smoke or contract coverage (Tier B/C)
+- [ ] Targeted tests pass
+- [ ] Worker packet/result packet completed for delegated work
+- [ ] DONE packet reviewed through `docs/POST_CODING_CHECKS.md`
+- [ ] Touched Path IDs updated (Tier B/C)
 - [ ] Verify gate passed
-- [ ] Relevant docs updated
+- [ ] Plan doc updated
+- [ ] Session brief synced if used
 - [ ] Changelog updated
 - [ ] Risks noted (or `None`)
 
-## Required Handoff Format
+## Handoff Format
 - Files changed
-- Commands or tests run with results
-- Worker assumptions and blockers
-- Open risks or follow-up refactors
+- Commands/tests run with results
+- Worker packets issued/reviewed
+- Deeper docs loaded beyond startup set
+- Open risks or follow-ups

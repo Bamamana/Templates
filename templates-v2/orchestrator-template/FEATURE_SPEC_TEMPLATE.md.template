@@ -1,0 +1,53 @@
+# Feature Spec Template
+
+Use this before decomposing non-trivial work into worker packets.
+
+## Header
+- Spec ID: `SPEC-NN-name`
+- Date:
+- Owner: cloud-orchestrator
+- Status: DRAFT / APPROVED / PACKETIZED / SUPERSEDED
+
+## Problem
+- What problem are we solving?
+- Who benefits?
+- What fails or stays painful if we do nothing?
+
+## Scope
+### In Scope
+-
+
+### Out Of Scope
+-
+
+## Acceptance Criteria
+- [ ] AC-1:
+- [ ] AC-2:
+- [ ] AC-3:
+
+## Path IDs / Workflows
+| Path ID / Workflow ID | New / Existing | Expected Evidence |
+|---|---|---|
+| `XXX-YYY-NN` | NEW / EXISTING | smoke / targeted / manual |
+
+## Security / Data / Privacy
+- Secrets touched? YES / NO
+- User data touched? YES / NO
+- Auth/permission change? YES / NO
+- File write/delete behavior? YES / NO
+- Notes:
+
+## Rollback Plan
+For a non-coder operator, rollback must be plain and executable.
+- Branch:
+- Before commit:
+- Rollback command:
+- Data rollback needed? NO / YES + steps
+
+## Packet Decomposition
+| Packet ID | Packet Class | Goal | Allowed Files | Notes |
+|---|---|---|---|---|
+| P-YYYY-MM-DD-01 | FEATURE / BUGFIX / GREEN-SUITE / REFACTOR |  |  |  |
+
+## Open Questions
+-

@@ -1,0 +1,56 @@
+# Investigator Protocol
+
+Read when: worker returned BLOCKED twice on the same Path ID, cloud review hits ESCALATE, test honesty failed, or a shipped packet caused a visible regression.
+Skip when: regular DONE review, first BLOCKED, or routine lint/test repair.
+
+Purpose: higher-tier cloud debugging role for problems the orchestrator + local worker cannot resolve safely.
+
+## When To Invoke
+- Worker returned BLOCKED >= 2 times on same Path ID
+- Root cause unclear after post-coding review
+- Test-honesty failure detected
+- Production or real-use regression after acceptance
+- Architectural decision required that was not in the spec
+
+Do not invoke for:
+- First BLOCKED
+- Routine DONE acceptance
+- Formatting/lint/type cleanup
+- Local runtime outage, model download, reboot, or unreachable local worker
+
+## Investigator Packet
+```text
+INVESTIGATOR PACKET
+- Origin Packet ID: P-YYYY-MM-DD-NN
+- Spec ID: SPEC-NN-name or none
+- Failure Mode: REPEATED-BLOCKED | TEST-HONESTY | PROD-REGRESSION | ARCH-UNCLEAR
+- Path IDs in scope:
+- Files investigator may read:
+- Files investigator may modify: none | listed files | direct-fix allowed
+- Question to answer:
+- Required output: ROOT-CAUSE | NEW-WORKER-PACKET | DIRECT-FIX | SPEC-AMENDMENT
+```
+
+## Output Modes
+
+### ROOT-CAUSE
+Return analysis plus corrected worker packet. Normal flow resumes.
+
+### NEW-WORKER-PACKET
+Decompose into smaller packets. Worker runs them sequentially.
+
+### DIRECT-FIX
+Cloud investigator makes the change directly only when:
+- fix is small,
+- local worker has failed at this category,
+- direct fix is cheaper/safer than another worker loop.
+
+Still update traceability and run apply/review gates.
+
+### SPEC-AMENDMENT
+Original feature/spec was wrong. Return amended spec and restart decomposition.
+
+## Cost And Use Limits
+- Track every invocation in ledger/session budget if enabled.
+- If investigator use becomes frequent, stop and retune packet quality or local-worker model.
+- Do not use investigator to debug infrastructure outage.

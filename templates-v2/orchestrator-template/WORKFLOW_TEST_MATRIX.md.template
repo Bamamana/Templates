@@ -1,0 +1,18 @@
+# Workflow Test Matrix
+
+Read when: adding, changing, or retiring a user-visible workflow or automated job.
+Skip when: no workflow behavior changes.
+
+Purpose: map workflows to the commands that prove them. This keeps local-worker packets and cloud review grounded in named evidence.
+
+## Matrix
+
+| Workflow ID | Workflow | Path IDs | Required Command(s) | Evidence Type | Owner |
+|---|---|---|---|---|---|
+| WF-VERIFY-01 | Project verify gate | CLI-VERIFY-01 | `[VERIFY_COMMAND]` | automated | worker |
+
+## Rules
+- New behavior should add or update a workflow row when it creates a new user path, API path, job, or operational routine.
+- Every row should reference Path IDs from `docs/MASTER_TRACEABILITY_TABLE.md`.
+- Commands here must be runnable locally by the worker or explicitly marked manual.
+- Cloud review can reject DONE packets when the matrix is stale.

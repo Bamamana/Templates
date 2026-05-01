@@ -1,0 +1,27 @@
+# Smoke Test Catalog
+
+Read when: adding a new workflow that needs smoke coverage, or a packet references a Smoke ID.
+Skip when: no smoke surface is touched.
+
+Purpose: registry of smoke tests by ID so packets and traceability rows can reference stable names instead of duplicating commands.
+
+## Rules
+- Every core workflow requires at least one smoke or documented N/A rationale.
+- Smoke tests should run in seconds.
+- New smoke test rows are added in the same packet that introduces the workflow.
+- Path ID rows reference Smoke IDs or smoke commands.
+
+## Naming
+- `SMOKE-<SCOPE>-<NN>` such as `SMOKE-AUTH-01`, `SMOKE-CLI-01`
+
+## Current Smoke Tests
+
+| Smoke ID | Test File / Step | Purpose | Trigger Command |
+|---|---|---|---|
+| SMOKE-VERIFY-01 | verify gate | Project invariants | `[VERIFY_COMMAND]` |
+
+## Adding A New Smoke Test
+1. Write a fast pass/fail check.
+2. Add a row above.
+3. Reference it from affected Path IDs.
+4. Worker runs it before returning DONE.

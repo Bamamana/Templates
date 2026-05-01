@@ -1,0 +1,39 @@
+# Session Brief ([PROJECT_NAME])
+
+Read when: always at session start.
+Skip when: never.
+
+> Auto-generated or manually refreshed from `docs/GAME_PLAN.md` / `docs/PROJECT_CANVAS.md`.
+> Do not treat this as the source of truth; update the plan doc, then sync this file.
+
+## Now
+- Phase: [PHASE]
+- Milestone: [MILESTONE]
+- Status: [ACTIVE/IN_PROGRESS/BLOCKED/DONE]
+- Next item: [EXACT_ITEM_TEXT]
+- Next command: [NEXT_COMMAND]
+- Last verified: [YYYY-MM-DD]
+
+## Orchestration State
+- Execution mode: HYBRID / CLOUD_ONLY_TEMPORARY / HALTED
+- Active packet: none / P-YYYY-MM-DD-NN
+- DONE packet awaiting review: none / P-YYYY-MM-DD-NN
+- Current local worker: local-coder
+- Current cloud checker/mastermind: cloud-orchestrator
+
+## Focus
+- Active objective:
+- In-scope area:
+- Known blocker or risk:
+
+## Guardrails Quick Reference
+- Use `AI_AGENT.md` for rails and decision tree.
+- Use `docs/CONTEXT_ROUTING.md` before loading deeper docs.
+- Use worker packets for code creation unless the user explicitly asks for direct cloud-only work.
+- Every DONE worker packet receives cloud review before acceptance.
+
+## Likely Next Docs
+- `docs/GAME_PLAN.md`
+- `docs/ORCHESTRATION_MAP.md`
+- `docs/WORKER_TASK_PACKET.md`
+- `docs/POST_CODING_CHECKS.md`

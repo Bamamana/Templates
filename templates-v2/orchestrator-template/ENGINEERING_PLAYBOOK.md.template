@@ -1,20 +1,20 @@
-# Engineering Playbook ([PROJECT_NAME] - Orchestrated Workflow)
+# Engineering Playbook ([PROJECT_NAME] Orchestrator Pattern)
 
-Read when: implementing, validating, or coordinating work between orchestrator and worker.
-Skip when: never.
+Read when: designing or running delegated work between the cloud orchestrator and the local worker.
+Skip when: pure planning with no code, tests, or verification impact.
 
-Single source for commands, testing policy, repository structure, and delegated execution rules.
+This playbook is the operational contract for the cloud-mastermind plus local-code-worker pattern.
 
 ## 1) Commands
 ```bash
 # setup
 [SETUP_COMMANDS]
 
-# run or build
+# run/build
 [BUILD_RUN_COMMAND]
 [LOCAL_ONLY_RUN_COMMAND]
 
-# logs or troubleshooting
+# logs/troubleshooting
 [LOGS_COMMAND]
 
 # quality
@@ -31,67 +31,90 @@ Single source for commands, testing policy, repository structure, and delegated 
 [VERIFY_COMMAND]
 ```
 
-## 2) Test Policy
-- Every behavior change maps to at least one targeted test.
-- Smoke tests remain fast and run in seconds.
-- Worker packets should prefer targeted validation before the full verify gate.
-- Verify gate is mandatory before final handoff.
+## 2) Roles In One Line
+- **Cloud orchestrator** — plans, writes specs, writes packets, reviews every DONE packet, makes architecture calls.
+- **Local worker** — implements bounded slices, runs the iterative test loop locally, returns evidence.
+- **Cloud investigator** — escalation role for repeated BLOCKED, test-honesty failures, production regressions, or architectural unknowns.
 
-## 3) Delegation Policy
-- The orchestrator owns planning, acceptance criteria, and final review.
-- The worker owns bounded implementation and local validation.
-- A worker packet must define allowed files or directories whenever possible.
-- A worker packet must define allowed commands.
-- If the worker needs broader context, it should return a blocker instead of wandering.
+## 3) Where The Loop Runs
 
-## 4) Worker Loop
-1. Read the current `docs/WORKER_TASK_PACKET.md`.
-2. Confirm scope, constraints, and acceptance criteria.
-3. Make the smallest correct change first.
-4. Run the cheapest scoped validation.
-5. Repair local failures inside the same slice.
-6. Run `[VERIFY_COMMAND]` when the packet requires final handoff.
-7. Fill `docs/WORKER_RESULT_PACKET.md`.
+All iteration happens locally. CI is final verification, not the inner debug loop.
 
-## 5) Escalation Triggers
-- Architectural decision required.
-- Ambiguous product rule.
-- Security, privacy, or compliance risk.
-- Repeated validation failure after local repair attempts.
-- Need to touch files outside the approved scope.
+| Stage | Owner | Where |
+|---|---|---|
+| Code edit | Worker | Local machine / local LLM |
+| Lint / typecheck | Worker | Local |
+| Unit + smoke tests | Worker | Local |
+| Full verify gate | Worker final step | Local |
+| Mandatory review | Orchestrator | Cloud |
+| Canonical CI | Orchestrator/owner | GitHub or project CI |
 
-## 6) Workflow-to-Test Matrix
-| Workflow | Command | Type | Preferred Role |
-|---|---|---|---|
-| Syntax or build integrity | `[SYNTAX_COMMAND]` | static or smoke | Worker |
-| Startup or load integrity | `[SMOKE_COMMAND]` | smoke | Worker |
-| Core behavior | `[TARGETED_TEST_COMMAND]` | targeted | Worker |
-| Full local validation | `[VERIFY_COMMAND]` | gate | Worker before handoff |
-| Architecture review | `[ARCH_REVIEW_COMMAND_OR_NA]` | review | Orchestrator |
-| Security or release review | `[SECURITY_REVIEW_COMMAND_OR_NA]` | review | Orchestrator |
+## 4) The 9-Step Worker Loop
 
-## 7) Repository Structure Map
-- `AI_AGENT.md` (AI operating contract)
-- `CHANGELOG.md`
-- `docs/PROJECT_CANVAS.md`
-- `docs/ORCHESTRATION_MAP.md`
-- `docs/WORKER_TASK_PACKET.md`
-- `docs/WORKER_RESULT_PACKET.md`
-- `docs/ENGINEERING_PLAYBOOK.md`
-- `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C)
-- `src/...`
-- `tests/...`
+1. **READ** — Read the task packet. Confirm Packet ID, scope, allowed files, allowed commands, acceptance criteria, Packet Class, and Concreteness Tier.
+2. **PLAN** — Write a 2-5 line internal plan naming test files and production files. If confidence < 90%, return BLOCKED with one clarifying question.
+3. **RED** — For FEATURE and BUGFIX packets, write or extend the test first and confirm it fails for the right reason.
+4. **GREEN** — Write the smallest production change inside allowed files to make the test pass.
+5. **VALIDATE** — Run the scoped check ladder: lint, typecheck, targeted tests, required smoke IDs, full local regression.
+6. **REPAIR** — Fix failures inside scope up to the Packet Class iteration ceiling. Do not weaken assertions, skip tests, or broaden scope.
+7. **VERIFY** — Complete `docs/APPLY_CHECKLIST.md`, then run the packet's final verify command.
+8. **SELF-REVIEW** — With fresh local context, grade the draft result packet against the task packet and apply checklist. One loop-back to repair is allowed.
+9. **RETURN** — Fill `docs/WORKER_RESULT_PACKET.md` with evidence, not broad prose.
 
-## 8) After-Coding Checklist
-- [ ] `CHANGELOG.md` updated
-- [ ] Commands section updated if changed
-- [ ] Delegation policy updated if workflow changed
-- [ ] Traceability rows updated for touched Path IDs (Tier B/C)
-- [ ] Worker result packet completed
-- [ ] Verify gate passed
+## 5) Packet Class Iteration Ceilings
 
-## 9) Refactor Triggers and Workflow
-- Trigger refactor if any source file exceeds 500 lines.
-- Target <= 400 lines for new files.
-- Extract cohesive modules without changing behavior.
-- Re-run smoke plus targeted tests plus verify gate.
+| Packet Class | Max Iterations | Use When |
+|---|---:|---|
+| FEATURE | 3 | New behavior; too many loops means the packet is too broad. |
+| BUGFIX | 5 | Specific failure with regression test. |
+| GREEN-SUITE | 10 | Test repair, lint cleanup, regression backfill. |
+| REFACTOR | 3 | No behavior change; behavior diff is a bug. |
+
+The orchestrator chooses the class and writes a one-line rationale. Misclassified packets are rejected or reissued.
+
+## 6) Regression Accretion Rule
+
+Every BUGFIX packet must add or preserve at least one regression test that would have caught the bug before the fix. The result packet records the base revision, RED evidence, and GREEN confirmation.
+
+## 7) Mandatory Cloud Review
+
+Every DONE packet goes through `docs/POST_CODING_CHECKS.md` before merge or acceptance. This substitutes for the operator reading code and catches scope creep, weak tests, fake evidence, and wrong root-cause fixes.
+
+## 8) Traceability And Smoke Coverage
+
+For Tier B/C projects, maintain `docs/MASTER_TRACEABILITY_TABLE.md` as the canonical pathway map.
+
+- Every active Path ID maps to smoke/contract coverage.
+- New behavior adds a Path ID row in the same packet.
+- Touched Path IDs must have passing smoke evidence before DONE.
+- New smoke tests are registered in `docs/SMOKE_TEST_CATALOG.md`.
+- Workflow verification is tracked in `docs/WORKFLOW_TEST_MATRIX.md`.
+
+## 9) Escalation Triggers
+
+Worker returns BLOCKED when:
+- Architecture decision required.
+- Product/business rule unclear.
+- Security, privacy, or compliance risk appears.
+- Acceptance criterion appears wrong or impossible.
+- Need to touch files outside allowed scope.
+- Allowed commands are insufficient.
+- Runtime/tooling is too unhealthy to return a valid result packet.
+
+Second BLOCKED on the same Path ID escalates to `docs/INVESTIGATOR_PROTOCOL.md`.
+
+## 10) Token-Saving Rules
+- Worker never re-reads the whole repo.
+- Orchestrator does not ask for full file dumps when line ranges or summaries are enough.
+- Result packet body target <= 200 lines.
+- Diff stats by default; full diff only when requested.
+- One milestone means one broad orchestrator read, not one broad read per edit loop.
+
+## 11) Branching, Rollback, And Operator Safety
+- Branch naming: `[feature|fix|chore]/[short-description]`.
+- Every non-trivial packet result should include before commit, after commit, branch name, and rollback command.
+- Operator approval means approving a reviewed outcome, not personally reading raw code.
+
+## 12) Refactor Rule
+- Target new files <= 400 lines.
+- Return BLOCKED before pushing any source file past 500 lines unless the packet is explicitly a refactor.

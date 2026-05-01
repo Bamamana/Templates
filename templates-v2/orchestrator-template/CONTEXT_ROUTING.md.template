@@ -1,0 +1,61 @@
+# Context Routing Map ([PROJECT_NAME])
+
+Read when: always at session start.
+Skip when: never.
+
+Purpose: which docs to load beyond the startup set, and when.
+
+## Default
+Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTING.md`. Pull deeper docs only on the triggers below.
+
+## Doc Triggers
+
+| Doc | Load when |
+|---|---|
+| `docs/GAME_PLAN.md` | milestone, scope, sequencing, or next action is unclear |
+| `docs/PROJECT_CANVAS.md` | project purpose, tier, owner intent, or scope boundary is unclear |
+| `docs/ORCHESTRATION_MAP.md` | assigning work between cloud orchestrator and local worker |
+| `docs/ENGINEERING_PLAYBOOK.md` | commands, tests, worker loop, packet class, or validation rules matter |
+| `docs/WORKER_TASK_PACKET.md` | issuing a local-worker task |
+| `docs/WORKER_RESULT_PACKET.md` | reviewing or returning local-worker output |
+| `docs/APPLY_CHECKLIST.md` | worker preparing to return DONE |
+| `docs/POST_CODING_CHECKS.md` | cloud orchestrator reviewing a DONE result packet |
+| `docs/INVESTIGATOR_PROTOCOL.md` | repeated BLOCKED, test-honesty failure, production regression, or architecture unknown |
+| `docs/MASTER_TRACEABILITY_TABLE.md` | entrypoint, Path ID, workflow, side-effect, or smoke evidence changes |
+| `docs/SMOKE_TEST_CATALOG.md` | adding or referencing smoke tests |
+| `docs/WORKFLOW_TEST_MATRIX.md` | adding or changing workflow verification |
+| `docs/FEATURE_SPEC_TEMPLATE.md` | designing a non-trivial feature before packet decomposition |
+| `docs/STATE_LEDGER_PROTOCOL.md` | packet state, review evidence, budget, or investigator counts need checking/updating |
+| `docs/TECH_STACK.md` | architecture, dependency, runtime, or integration boundary decisions |
+| `docs/OPS_SECURITY_RELEASE.md` | deploy, rollback, secrets, auth, logging, data handling, or release path changes |
+| `CHANGELOG.md` | documenting a behavior or operating-model change |
+| `AI_CONTEXT.md` | nearby reads are insufficient and a generated map exists |
+
+## Event Triggers
+
+| Event | Load / Run |
+|---|---|
+| User gives a new directive | Update `docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md` first |
+| Issuing a worker packet | `docs/WORKER_TASK_PACKET.md` and `docs/STATE_LEDGER_PROTOCOL.md` |
+| Worker returned DONE | `docs/POST_CODING_CHECKS.md` mandatory review |
+| Worker returned PARTIAL or BLOCKED | `docs/WORKER_RESULT_PACKET.md`, then corrected packet or investigator path |
+| Worker returned BLOCKED twice on same Path ID | `docs/INVESTIGATOR_PROTOCOL.md` |
+| Active packet times out or returns malformed artifact | `docs/STATE_LEDGER_PROTOCOL.md`; mark `ABANDONED` or `CANCELLED` |
+| Test file modified | `docs/POST_CODING_CHECKS.md` test-honesty spot-check |
+| BUGFIX packet in flight | `docs/ENGINEERING_PLAYBOOK.md` regression accretion rule |
+| New entrypoint or workflow added | `docs/MASTER_TRACEABILITY_TABLE.md` and `docs/WORKFLOW_TEST_MATRIX.md` |
+| New smoke test added | `docs/SMOKE_TEST_CATALOG.md` |
+| About to run unattended overnight | `AI_AGENT.md` unattended and halt rules |
+| Behavior change without docs/tests | Stop and add tests/docs or return BLOCKED |
+| About to release or merge | Run `[VERIFY_COMMAND]` and project CI/predeploy gate |
+
+If an event is not listed here and the AI is unsure, surface to user; do not improvise.
+
+## Skip Rules
+- Skip `CHANGELOG.md` for routine implementation unless documenting the change.
+- Skip `OPS_SECURITY_RELEASE.md` for isolated local/test-only work.
+- Skip `MASTER_TRACEABILITY_TABLE.md` for Tier A doc-only edits with no runtime pathway.
+- Skip `TECH_STACK.md` when the task is local and architecture is already clear.
+
+## Escalation
+If more than three deeper docs seem necessary before the first edit, stop and ask whether the task is too broad or under-specified.

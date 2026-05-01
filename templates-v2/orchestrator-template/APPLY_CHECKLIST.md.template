@@ -1,0 +1,57 @@
+# Apply Checklist (Worker Pre-Return Gate)
+
+Read when: the local worker is about to mark a packet DONE.
+Skip when: never for DONE packets.
+
+Purpose: fixed ritual before the worker claims DONE. If any required item fails and cannot be repaired inside packet scope, return PARTIAL or BLOCKED, never DONE.
+
+## Pre-Return Gate
+
+### 1) Scope Discipline
+- [ ] All edits stayed inside Allowed Files from `docs/WORKER_TASK_PACKET.md`
+- [ ] No new file exceeds 400 lines
+- [ ] No source file exceeds 500 lines unless packet authorized refactor
+
+### 2) Path ID Evidence
+- [ ] Every Path ID listed in the packet has a row in `docs/MASTER_TRACEABILITY_TABLE.md`
+- [ ] Smoke Coverage status is filled for each touched row
+- [ ] Smoke command or runbook evidence recorded for each touched row
+
+### 3) Validation Commands
+Run only commands listed in the packet.
+- [ ] Lint / format check
+- [ ] Typecheck
+- [ ] Targeted tests
+- [ ] Required smoke IDs
+- [ ] Final verify gate
+
+### 4) Test Honesty
+- [ ] No assertion weakened to make a failing test pass
+- [ ] No test deleted or skipped without packet authorization
+- [ ] Test changes justified in result packet
+- [ ] BUGFIX packets keep the regression test in the suite
+- [ ] FEATURE / BUGFIX packets followed RED before GREEN
+
+### 5) Documentation Sync
+If behavior, paths, commands, or workflows changed:
+- [ ] `docs/MASTER_TRACEABILITY_TABLE.md` updated
+- [ ] `docs/SMOKE_TEST_CATALOG.md` updated when a new smoke is added
+- [ ] `docs/WORKFLOW_TEST_MATRIX.md` updated when workflow verification changes
+- [ ] `CHANGELOG.md` updated when behavior or operating model changes
+
+### 6) Result Packet Filled
+- [ ] Header echoes Packet ID and Packet Class
+- [ ] Each acceptance criterion has PASS / FAIL and evidence pointer
+- [ ] Iteration count <= Packet Class ceiling
+- [ ] Diff stats included
+- [ ] Body target <= 200 lines
+
+### 7) Local Self-Review
+- [ ] Fresh-context self-review executed
+- [ ] Self-review result recorded
+- [ ] Any flagged sections repaired or explicitly handed to orchestrator
+
+## If Any Box Is Unchecked
+- Scope, validation, or test-honesty failure -> return PARTIAL.
+- Architecture or product ambiguity -> return BLOCKED.
+- Never return DONE with unchecked required boxes.

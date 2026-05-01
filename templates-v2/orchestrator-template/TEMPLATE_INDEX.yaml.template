@@ -1,20 +1,47 @@
-version: v0.1-draft
-purpose: Machine-readable navigation and applicability map for the orchestrator-template variant
+version: v0.2-orchestrator-draft
+purpose: Machine-readable navigation and applicability map for the cloud-orchestrator plus local-worker template variant
 canonical_startup: AI_AGENT.md
 read_order:
   - AI_AGENT.md
+  - docs/SESSION_BRIEF.md
+  - docs/CONTEXT_ROUTING.md
+  - docs/GAME_PLAN.md
   - docs/ORCHESTRATION_MAP.md
   - docs/PROJECT_CANVAS.md
   - docs/ENGINEERING_PLAYBOOK.md
   - docs/MASTER_TRACEABILITY_TABLE.md
+  - docs/WORKER_TASK_PACKET.md
+  - docs/WORKER_RESULT_PACKET.md
+  - docs/POST_CODING_CHECKS.md
   - CHANGELOG.md
 
 core_templates:
   - template: AI_AGENT.md.template
     destination: AI_AGENT.md
-    purpose: Canonical AI startup contract for orchestrator-worker projects
+    purpose: Lean startup contract, orchestrator rails, decision tree, and DONE definition
     required_by_tier: [A, B, C]
     read_when: Always at session start
+    skip_when: Never
+
+  - template: SESSION_BRIEF.md.template
+    destination: docs/SESSION_BRIEF.md
+    purpose: Small startup snapshot of current project and orchestration state
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: CONTEXT_ROUTING.md.template
+    destination: docs/CONTEXT_ROUTING.md
+    purpose: Doc and event trigger map for lean startup sessions
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: GAME_PLAN.md.template
+    destination: docs/GAME_PLAN.md
+    purpose: Live execution plan and current-state source for vibe-coding sessions
+    required_by_tier: [A, B, C]
+    read_when: Sequencing, current state, or next action is unclear
     skip_when: Never
 
   - template: PROJECT_CANVAS.md.template
@@ -26,28 +53,105 @@ core_templates:
 
   - template: ENGINEERING_PLAYBOOK.md.template
     destination: docs/ENGINEERING_PLAYBOOK.md
-    purpose: Commands, validation policy, and delegation loop rules
+    purpose: Commands, 9-step local worker loop, Packet Class ceilings, test-first rules, rollback expectations
     required_by_tier: [A, B, C]
     read_when: Implementing, validating, or troubleshooting delegated work
     skip_when: Never
 
   - template: ORCHESTRATION_MAP.md.template
     destination: docs/ORCHESTRATION_MAP.md
-    purpose: Source of truth for role split, token policy, and escalation rules
+    purpose: Source of truth for cloud orchestrator, local worker, investigator, token policy, and escalation rules
     required_by_tier: [A, B, C]
     read_when: Planning or reviewing orchestrated work
     skip_when: Never
 
   - template: WORKER_TASK_PACKET.md.template
     destination: docs/WORKER_TASK_PACKET.md
-    purpose: Structured handoff from orchestrator to worker
+    purpose: Structured handoff from cloud orchestrator to local worker
     required_by_tier: [A, B, C]
     read_when: Issuing a delegated slice
     skip_when: Never
 
   - template: WORKER_RESULT_PACKET.md.template
     destination: docs/WORKER_RESULT_PACKET.md
-    purpose: Structured result from worker back to orchestrator
+    purpose: Structured result from local worker back to cloud orchestrator
     required_by_tier: [A, B, C]
     read_when: Reviewing delegated work outcome
     skip_when: Never
+
+  - template: APPLY_CHECKLIST.md.template
+    destination: docs/APPLY_CHECKLIST.md
+    purpose: Worker pre-return gate before claiming DONE
+    required_by_tier: [A, B, C]
+    read_when: Worker is preparing to return DONE
+    skip_when: Never for DONE packets
+
+  - template: POST_CODING_CHECKS.md.template
+    destination: docs/POST_CODING_CHECKS.md
+    purpose: Mandatory cloud review gate for every DONE packet
+    required_by_tier: [A, B, C]
+    read_when: Worker returned DONE
+    skip_when: Status is BLOCKED or PARTIAL
+
+  - template: INVESTIGATOR_PROTOCOL.md.template
+    destination: docs/INVESTIGATOR_PROTOCOL.md
+    purpose: Escalation protocol for repeated BLOCKED, test-honesty failure, regression, or architecture unknown
+    required_by_tier: [A, B, C]
+    read_when: Escalation trigger fires
+    skip_when: Routine packet flow
+
+  - template: MASTER_TRACEABILITY_TABLE.md.template
+    destination: docs/MASTER_TRACEABILITY_TABLE.md
+    purpose: Path ID and smoke/contract evidence map
+    required_by_tier: [B, C]
+    read_when: Pathway, entrypoint, workflow, side effect, or smoke evidence changes
+    skip_when: Tier A non-runtime work
+
+  - template: SMOKE_TEST_CATALOG.md.template
+    destination: docs/SMOKE_TEST_CATALOG.md
+    purpose: Smoke test registry by stable Smoke ID
+    required_by_tier: [B, C]
+    read_when: Adding or referencing a smoke test
+    skip_when: No smoke surface touched
+
+  - template: WORKFLOW_TEST_MATRIX.md.template
+    destination: docs/WORKFLOW_TEST_MATRIX.md
+    purpose: Workflow-to-command verification matrix
+    required_by_tier: [B, C]
+    read_when: Adding or changing workflow behavior
+    skip_when: No workflow behavior changes
+
+  - template: FEATURE_SPEC_TEMPLATE.md.template
+    destination: docs/FEATURE_SPEC_TEMPLATE.md
+    purpose: Spec artifact before decomposing non-trivial work into packets
+    required_by_tier: [A, B, C]
+    read_when: Non-trivial feature requires decomposition
+    skip_when: Trivial fix or doc-only edit
+
+  - template: STATE_LEDGER_PROTOCOL.md.template
+    destination: docs/STATE_LEDGER_PROTOCOL.md
+    purpose: Packet lifecycle, session budget, and review evidence protocol
+    required_by_tier: [A, B, C]
+    read_when: Issuing, returning, reviewing, escalating, cancelling, or abandoning packets
+    skip_when: Non-delegated work
+
+  - template: packet_ledger.json.template
+    destination: docs/state/packet_ledger.json
+    purpose: Starter packet ledger
+    required_by_tier: [A, B, C]
+    read_when: Packet state changes
+    skip_when: Non-delegated work
+
+  - template: session_budget.json.template
+    destination: docs/state/session_budget.json
+    purpose: Starter session budget and execution mode record
+    required_by_tier: [A, B, C]
+    read_when: Session budget or execution mode changes
+    skip_when: Non-delegated work
+
+  - template: OPERATOR_DASHBOARD.md.template
+    destination: docs/OPERATOR_DASHBOARD.md
+    purpose: Plain-English operator decision surface for non-coder approval and rollback
+    required_by_tier: [A, B, C]
+    read_when: Human asks what now, approval is needed, or status is confusing
+    skip_when: Never for handoff

@@ -1,0 +1,70 @@
+# State Ledger Protocol
+
+Read when: packet state, post-coding review evidence, session ceilings, or investigator usage need checking or updating.
+Skip when: project does not use orchestration state ledgers and work is not delegated.
+
+Purpose: make orchestration rails observable in repo-visible state instead of trusting memory.
+
+## Artifacts
+- `docs/state/packet_ledger.json` — one row-equivalent per issued packet.
+- `docs/state/session_budget.json` — current session counters and configured ceilings.
+
+## Packet Lifecycle
+Allowed `lifecycle_state` values:
+- `ISSUED`
+- `RESULT_RETURNED`
+- `POST_CHECKED`
+- `ACCEPTED`
+- `REJECTED`
+- `ESCALATED`
+- `CANCELLED`
+- `ABANDONED`
+
+Active states are `ISSUED` and `RESULT_RETURNED`. Active packets need:
+- `issued_at`
+- `last_event_at`
+- `timeout_minutes`
+
+DONE packets require completed post-coding review evidence before acceptance.
+
+## Minimum Packet Entry Shape
+```json
+{
+  "packet_id": "P-YYYY-MM-DD-NN",
+  "session_id": "session-name",
+  "path_ids": [],
+  "lifecycle_state": "ISSUED",
+  "worker_result_status": "NONE",
+  "post_coding_review": { "completed": false },
+  "investigator": { "invoked": false }
+}
+```
+
+## Session Budget Shape
+```json
+{
+  "session_id": "session-name",
+  "status": "ACTIVE",
+  "execution_mode": "HYBRID",
+  "cloud_spend_usd": 0.0,
+  "worker_packets_issued": 0,
+  "investigator_invocations": 0,
+  "done_packets_reviewed": 0,
+  "limits": {
+    "cloud_spend_usd": 5.0,
+    "worker_packets_issued": 10,
+    "investigator_invocations": 2
+  }
+}
+```
+
+Allowed `execution_mode` values:
+- `HYBRID`
+- `CLOUD_ONLY_TEMPORARY`
+- `HALTED`
+
+## Rules
+- Update ledger when issuing, receiving, reviewing, escalating, cancelling, or abandoning a packet.
+- Timeout or malformed result must not remain active.
+- Investigator usage increments session budget.
+- Spend counters are only as trustworthy as the updater; prefer scripts or provider-side limits where possible.

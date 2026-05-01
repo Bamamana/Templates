@@ -1,0 +1,41 @@
+# Game Plan ([PROJECT_NAME])
+
+This is the live plan for the current milestone. Keep it plain enough for the operator to read and specific enough for the AI to execute.
+
+## 0) Current Execution State
+- Current phase: [PHASE]
+- Current milestone: [MILESTONE]
+- Current status: [ACTIVE/IN_PROGRESS/BLOCKED/DONE]
+- Next unchecked checklist item: [EXACT_ITEM_TEXT]
+- Next command to run: `[NEXT_COMMAND]`
+- Last verified at: [YYYY-MM-DD]
+
+## 1) What We Are Building
+- Goal:
+- Why now:
+- Who it is for:
+
+## 2) Scope
+### In Scope
+-
+
+### Not Doing Yet
+-
+
+## 3) Active Plan
+- [ ] First bounded item
+- [ ] Second bounded item
+- [ ] Third bounded item
+
+## 4) Orchestration Notes
+- Default execution: cloud orchestrator plans/reviews, local worker implements.
+- Current local-worker route:
+- Current cloud checker/mastermind route:
+- Current investigator route:
+- Any temporary fallback mode:
+
+## 5) Risks / Open Questions
+-
+
+## 6) Notes
+-
