@@ -76,6 +76,8 @@ The orchestrator chooses the class and writes a one-line rationale. Misclassifie
 
 Every BUGFIX packet must add or preserve at least one regression test that would have caught the bug before the fix. The result packet records the base revision, RED evidence, and GREEN confirmation.
 
+Tests must assert the real behavior or user/data outcome. A test that only proves a function exists, a mock was called, or a variable is non-empty is not sufficient unless that is the actual acceptance criterion.
+
 ## 7) Mandatory Cloud Review
 
 Every DONE packet goes through `docs/POST_CODING_CHECKS.md` before merge or acceptance. This substitutes for the operator reading code and catches scope creep, weak tests, fake evidence, and wrong root-cause fixes.
@@ -90,6 +92,8 @@ For Tier B/C projects, maintain `docs/MASTER_TRACEABILITY_TABLE.md` as the canon
 - `Coverage pending` is BLOCKED, not DONE.
 - Manual coverage needs a concrete runbook or current evidence.
 - State Mutation Index locations must be checked against real repo paths.
+- UI-visible changes need browser-smoke evidence or a manual click path with expected visible result.
+- Data-mutating changes need a rollback/snapshot note before DONE.
 - New smoke tests are registered in `docs/SMOKE_TEST_CATALOG.md`.
 - Workflow verification is tracked in `docs/WORKFLOW_TEST_MATRIX.md`.
 
@@ -101,6 +105,9 @@ Before beta or user acceptance, the orchestrator checks:
 - Cron/scheduler paths have a runnable wrapper or manual runbook.
 - Runtime smoke optional mode is replaced by a required pre-beta command.
 - Promised security scans in ops docs exist in local verify or CI.
+
+## 8.2) Data Snapshot Rule
+Before a packet touches persistent data, schemas, migrations, seeds, destructive writes, file storage, or external API contracts, the orchestrator must require a snapshot/dump command or an explicit N/A rationale in the worker packet. Code rollback alone is not a data rollback.
 
 ## 9) Escalation Triggers
 
@@ -114,6 +121,8 @@ Worker returns BLOCKED when:
 - Runtime/tooling is too unhealthy to return a valid result packet.
 
 Second BLOCKED on the same Path ID escalates to `docs/INVESTIGATOR_PROTOCOL.md`.
+
+If investigator and worker cannot resolve the same Path ID after two investigator cycles, halt and present tie-breaker options on `docs/OPERATOR_DASHBOARD.md`.
 
 ## 10) Token-Saving Rules
 - Worker never re-reads the whole repo.

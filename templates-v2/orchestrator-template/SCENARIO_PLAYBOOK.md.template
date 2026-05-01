@@ -1,0 +1,80 @@
+# Scenario Playbook
+
+Read when: choosing an AI workflow mode, planning a template retrofit, planning a cloud-to-local migration, authorizing overnight local-agent work, or touching auth/security/data/deployment.
+Skip when: a worker packet is already issued and the mode/gates are already defined.
+
+Purpose: pick the safest cost-effective workflow before work begins. This is the operator-friendly decision table for cloud orchestrator, local orchestrator, local worker, and cloud judge usage.
+
+## Workflow Levels
+
+| Level | Orchestrator | Worker | Review / Judge | Use when |
+|---|---|---|---|---|
+| Level 1 Safe | Cloud Claude/GPT | Local worker or cloud fallback | Cloud Claude/GPT | Production, auth, data, migrations, security, legal/student records, deployment |
+| Level 2 Hybrid | Local model drafts plan/spec/packet; cloud approves before execution | Local worker | Cloud Claude/GPT | Template retrofit, medium-risk refactor, service migration planning, test backfill |
+| Level 3 Local-First | Local model orchestrates and local worker implements | Cloud final review | Low-risk mature-template work, docs, simple UI polish, non-production cleanup |
+
+Default to Level 1 when the risk is unclear. Move down to Level 2 or 3 only when rollback is simple, acceptance criteria are concrete, and the affected project already has strong template gates.
+
+## Scenario Matrix
+
+| Scenario | Recommended Level | Local agent should do | Cloud should do | Required gates |
+|---|---|---|---|---|
+| Template retrofit on an almost-done project | Level 2; Level 3 only for low-risk repos | Audit gaps, copy/adapt docs, add scripts, create traceability rows, write smoke/test scaffolds, run validators | Approve retrofit plan and final result | `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md`, template validator, context budget, verify gate |
+| Firebase/cloud app to local server migration | Level 1 or Level 2 | Inventory Firebase usage, draft parity tests, implement bounded adapters after approval | Approve architecture, data/auth plan, and final migration review | feature spec, traceability, data snapshot/export plan, auth/security review, parity tests, browser smoke |
+| New feature in production or sensitive app | Level 1 | Implement bounded packet only | Orchestrate, approve packet, review DONE | feature spec, worker packet, RED/GREEN evidence, verify gate |
+| UI polish, layout, copy, small workflow cleanup | Level 2 or Level 3 | Implement, run browser/manual smoke, collect screenshot/trace | Review final packet for visible evidence | visual/human smoke, screenshot/trace, targeted tests if behavior changes |
+| Auth, permissions, security, privacy | Level 1 only | Small approved implementation packet if needed | Orchestrate, review, investigate ambiguity | security docs, auth tests, traceability, rollback, verify gate |
+| Database/schema/data migration | Level 1 only | Draft migration or run approved script | Approve data plan before execution and review restore path | snapshot/dump, restore command, migration smoke, rollback note |
+| Broken test suite cleanup | Level 2 | Run local loops, fix tests without weakening assertions | Review test honesty and final evidence | no assertion weakening, result packet, verify gate |
+| Deployment or production rollout | Level 1 | Run scripted checks and collect logs | Coordinate rollout decision | predeploy suite, backup/restore, smoke, operator dashboard |
+| Large refactor with no intended behavior change | Level 2 | Create parity/smoke evidence and perform bounded slices | Approve slice plan and review parity evidence | traceability, parity tests, smoke catalog, rollback |
+| Overnight local-agent run | Level 2 or Level 3 only when bounded | Execute pre-approved packet queue and stop on ambiguity | Approve packet queue before run and review results after | max iterations, allowed files, stop rules, session budget, operator dashboard |
+
+## Hard Stop Rules
+
+Use Level 1 or halt for human/cloud approval when any of these are true:
+- Auth, permissions, privacy, legal, student, financial, or production data is touched.
+- Persistent data, database schema, migrations, seeds, destructive writes, or external API contracts are touched.
+- Rollback requires more than `git revert`.
+- The project lacks a passing verify gate or traceability table.
+- Acceptance criteria are vague or cannot be observed by command, browser smoke, or operator check.
+- The local worker has returned BLOCKED twice on the same Path ID.
+
+## Template Retrofit Packet Queue
+
+Use this sequence for projects that are almost done but not template-standard yet:
+
+1. Audit only: compare project against `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md`; no edits.
+2. Install or refresh lean startup docs: `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md`.
+3. Add or repair validation scripts: template validator, context budget, drift check, verify gate.
+4. Build traceability from existing behavior; do not change source behavior.
+5. Add smoke/test scaffolds for existing behavior only.
+6. Run validators and verify; return BLOCKED rather than broadening scope.
+7. Cloud review final result packet before the operator accepts.
+
+## Firebase / Cloud-To-Local Migration Packet Queue
+
+Use this sequence before migrating Firebase, hosted APIs, managed auth, or managed storage to a local server:
+
+1. Inventory cloud dependencies: auth, database, storage, functions, scheduled jobs, security rules, hosting, environment variables.
+2. Define parity table: old behavior, new local behavior, evidence command or manual smoke.
+3. Define data movement plan: export, transform, import, validation, rollback.
+4. Define auth/security model before code changes.
+5. Add tests/smokes against the current cloud-backed behavior where possible.
+6. Implement one adapter or workflow slice at a time.
+7. Run old-vs-new parity evidence and browser smoke for real workflows.
+8. Keep cloud rollback path available until local evidence is green.
+
+## Mode Decision Prompt
+
+Before starting a scenario, the orchestrator should answer:
+
+- Scenario selected:
+- Recommended level:
+- Why this level is safe:
+- Local model responsibilities:
+- Cloud model responsibilities:
+- Required gates before DONE:
+- Stop conditions:
+
+If the answer is uncertain, ask the operator a multiple-choice clarification instead of issuing a worker packet.

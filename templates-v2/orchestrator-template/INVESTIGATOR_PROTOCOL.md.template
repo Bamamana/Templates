@@ -50,7 +50,20 @@ Still update traceability and run apply/review gates.
 ### SPEC-AMENDMENT
 Original feature/spec was wrong. Return amended spec and restart decomposition.
 
+### TIE-BREAKER-HALT
+Use when investigator and worker fail to resolve the same BLOCKED status after two full investigator cycles, or when the disagreement depends on environment quirks the models cannot verify.
+
+Return a plain-English operator summary instead of another worker packet:
+- What the worker believes
+- What the investigator believes
+- What evidence supports each side
+- Lowest-risk pause point
+- Three operator choices with risk/cost labels
+
+Do not issue a third investigator-derived packet without explicit human choice.
+
 ## Cost And Use Limits
 - Track every invocation in ledger/session budget if enabled.
 - If investigator use becomes frequent, stop and retune packet quality or local-worker model.
 - Do not use investigator to debug infrastructure outage.
+- After two investigator cycles on the same Path ID, return TIE-BREAKER-HALT and update `docs/OPERATOR_DASHBOARD.md`.

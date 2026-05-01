@@ -58,9 +58,27 @@ The orchestrator creates or updates the packet's ledger entry when issuing this 
 
 ## Acceptance Criteria
 Each gets PASS / FAIL with evidence pointer in the result packet.
+Criteria must prove the intended behavior, not just implementation shape. Do not accept tautology tests such as "function exists" unless existence is the user-facing requirement.
 - [ ] AC-1:
 - [ ] AC-2:
 - [ ] AC-3:
+
+## Human / Visual Smoke Required
+- Required? NO / YES
+- If YES, exact local URL or screen:
+- Manual click path the operator or reviewer must perform:
+	1.
+	2.
+	3.
+- Expected visible result:
+
+## Data Safety Preflight
+- Data model, migration, seed data, external API contract, or persistent storage touched? NO / YES
+- If YES, snapshot/dump command required before implementation:
+	```bash
+	# exact project-specific backup command
+	```
+- Restore command or runbook path:
 
 ## Allowed Commands
 The worker may run only these. Anything else requires a new packet or a BLOCKED return.

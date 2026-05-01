@@ -189,6 +189,11 @@ optional_addons:
     purpose: Unified smoke/parity + fixture + canary/rollback verification playbook
     use_when: Team wants one consolidated advanced verification reference with lower doc maintenance overhead
 
+  - template: orchestrator-template/SCENARIO_PLAYBOOK.md.template
+    destination: docs/SCENARIO_PLAYBOOK.md
+    purpose: Level 1/2/3 scenario decision guide for template retrofit, cloud-to-local migration, overnight local-agent runs, and high-risk task routing
+    use_when: Project uses the orchestrator pattern or local-agent workflow modes
+
   - template: addons/AI_OPERATING_CONTRACT.md.template
     destination: AI_OPERATING_CONTRACT.md
     purpose: Legacy compatibility alias to AI_AGENT

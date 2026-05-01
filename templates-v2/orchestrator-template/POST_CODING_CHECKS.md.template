@@ -23,6 +23,7 @@ Purpose: mandatory cloud review of every DONE packet. This substitutes for the o
 - [ ] Every PASS has an evidence pointer
 - [ ] Every FAIL uses PARTIAL or BLOCKED, not DONE
 - [ ] Spot-check at least one evidence pointer against actual command/log/test output
+- [ ] Criteria prove real user behavior or data outcome, not only implementation existence
 
 ## 3) Test Honesty Spot-Check
 If any test file changed:
@@ -32,6 +33,7 @@ If any test file changed:
 - [ ] No `skip`, `xfail`, `it.skip`, or equivalent without justification
 - [ ] New FEATURE / BUGFIX tests include RED evidence
 - [ ] BUGFIX regression test would have failed against unfixed behavior
+- [ ] New assertions are not tautologies such as checking only that a mocked call, variable, or function exists
 
 ## 4) Traceability Evidence
 - [ ] Every Path ID listed in result has updated row or N/A rationale
@@ -41,12 +43,15 @@ If any test file changed:
 - [ ] State Mutation Index locations touched by this packet exist in the repo
 - [ ] New workflows update `docs/WORKFLOW_TEST_MATRIX.md`
 - [ ] New smokes update `docs/SMOKE_TEST_CATALOG.md`
+- [ ] UI-visible changes include a manual click path, screenshot/trace, or browser-smoke evidence
 
 ## 5) Security / Privacy / Data Quick Pass
 - [ ] No secret literals in source, docs, logs, or packet evidence
 - [ ] No new public endpoint without auth note
 - [ ] No new file-write path outside documented data directories
 - [ ] No migration/data-loss risk without rollback note
+- [ ] Persistent data/schema/storage changes have a pre-change snapshot/dump or explicit N/A rationale
+- [ ] Data rollback steps are operator-executable, not just "revert the commit"
 - [ ] Security scans promised in ops docs are actually run by local verify or CI, or the gap is recorded
 
 ## 6) Decision

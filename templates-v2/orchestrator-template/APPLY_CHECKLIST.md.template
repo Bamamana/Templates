@@ -25,12 +25,25 @@ Run only commands listed in the packet.
 - [ ] Required smoke IDs
 - [ ] Final verify gate
 
+### 3a) Visual / Human Smoke
+If the packet changes UI, layout, navigation, user-facing copy, browser auth, or a visible workflow:
+- [ ] Manual click path or browser smoke from the task packet was executed
+- [ ] Expected visible result was observed
+- [ ] Screenshot path, Playwright trace, or plain-English observation recorded in result packet
+
 ### 4) Test Honesty
 - [ ] No assertion weakened to make a failing test pass
 - [ ] No test deleted or skipped without packet authorization
 - [ ] Test changes justified in result packet
 - [ ] BUGFIX packets keep the regression test in the suite
 - [ ] FEATURE / BUGFIX packets followed RED before GREEN
+- [ ] New tests assert the real behavior or user outcome, not only that mocks, variables, or functions exist
+
+### 4a) Data Rollback Safety
+If the packet touches persistent data, migrations, schemas, seeds, file storage, external API contracts, or destructive writes:
+- [ ] Pre-change snapshot/dump command from the packet was run or explicit N/A rationale recorded
+- [ ] Snapshot artifact path or restore runbook recorded in result packet
+- [ ] Rollback steps are executable by the operator without inventing SQL or code
 
 ### 5) Documentation Sync
 If behavior, paths, commands, or workflows changed:
@@ -54,4 +67,5 @@ If behavior, paths, commands, or workflows changed:
 ## If Any Box Is Unchecked
 - Scope, validation, or test-honesty failure -> return PARTIAL.
 - Architecture or product ambiguity -> return BLOCKED.
+- Missing required data snapshot or visual smoke evidence -> return PARTIAL unless the packet explicitly marked it N/A with rationale.
 - Never return DONE with unchecked required boxes.

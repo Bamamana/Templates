@@ -56,6 +56,12 @@ If any unchecked: status MUST be PARTIAL or BLOCKED, never DONE.
 - If YES, were any assertions weakened? YES / NO
 - If YES, were any tests deleted or skipped? YES / NO + justification:
 - If YES, do new tests fail against the original buggy code? YES / N/A
+- If YES, what real behavior or user outcome do the new assertions prove?
+
+## Visual / Human Smoke Evidence
+- UI-visible change? YES / NO
+- Manual click path or browser smoke run? YES / NO / N/A
+- Evidence path or observation:
 
 ## Test-First Evidence (FEATURE / BUGFIX Only)
 - Base revision tested before the fix:
@@ -85,6 +91,9 @@ If any unchecked: status MUST be PARTIAL or BLOCKED, never DONE.
 - After commit:
 - Rollback command:
 - Data loss risk: NONE / POSSIBLE + note
+- Data touched? NO / YES
+- Pre-change snapshot/dump: N/A / command + artifact path
+- Data restore steps: N/A / exact command or runbook path
 
 ## Iteration Log (Compact; Omit When Iterations = 1)
 - Iter 1:

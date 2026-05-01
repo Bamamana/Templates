@@ -160,10 +160,12 @@ Notes / SHA:
 Check for these gaps explicitly:
 - [ ] Any browser login / auth callback path has either a scripted browser test or manual smoke evidence.
 - [ ] Any page with important mutations has a frontend test or manual smoke evidence for the actual user flow.
+- [ ] Any UI-visible change requires browser-smoke evidence or a manual click path with expected visible result.
 - [ ] Any realtime/WebSocket path has a repeatable script or current manual smoke evidence.
 - [ ] Any scheduler/cron path has a runnable wrapper or a documented manual runbook.
 - [ ] Any smoke script with optional runtime checks has a pre-beta mode that requires runtime checks to fail hard.
 - [ ] Each real user role has a short manual smoke path before beta: admin/operator, power user, normal user, restricted user.
+- [ ] Tests added by AI prove the actual behavior or user/data outcome, not only that a function, mock, or variable exists.
 
 If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINEERING_PLAYBOOK.md` under `Manual Smoke Runbook`; vague text like "manual smoke steps" is not enough.
 
@@ -175,17 +177,23 @@ If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINE
 
 **You should have:**
 - `docs/ORCHESTRATION_MAP.md` — three-role split
+- `docs/SCENARIO_PLAYBOOK.md` — Level 1/2/3 scenario guide before selecting cloud/local responsibilities
 - `docs/ENGINEERING_PLAYBOOK.md` — 9-step worker loop, MAX_ITERATIONS by Packet Class
 - `docs/WORKER_TASK_PACKET.md` — packet template with Packet Class + Concreteness Tier
 - `docs/WORKER_RESULT_PACKET.md` — result template with self-review + regression-accretion fields
 - `docs/APPLY_CHECKLIST.md` — worker pre-return ritual (do not confuse with the *template* `APPLY_CHECKLIST.md`)
 - `docs/POST_CODING_CHECKS.md` — mandatory cloud-orchestrator review of every DONE packet
 - `docs/INVESTIGATOR_PROTOCOL.md` — escalation role
+- `docs/OPERATOR_DASHBOARD.md` — plain-English operator choices, rollback, and tie-breaker options
 - `AI_AGENT.md` § Orchestrator Rails populated (10 hard rules, decision tree, unattended run rules)
 
 **Copy from:** the asus repo (`/home/mamana/private-repos/asus/docs/`) is the reference implementation; or a known-good orchestrator-pattern project.
 
 **Triggers to register in `docs/CONTEXT_ROUTING.md` § Event Triggers:**
+- "Before choosing Level 1/2/3 AI workflow mode" → `docs/SCENARIO_PLAYBOOK.md`
+- "Starting template retrofit on an existing project" → `docs/SCENARIO_PLAYBOOK.md` and `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md`
+- "Migrating Firebase/cloud app to local server" → `docs/SCENARIO_PLAYBOOK.md`, `docs/TECH_STACK.md`, `docs/OPS_SECURITY_RELEASE.md`, and `docs/MASTER_TRACEABILITY_TABLE.md`
+- "Planning overnight local-agent run" → `docs/SCENARIO_PLAYBOOK.md`, `docs/WORKER_TASK_PACKET.md`, and `docs/STATE_LEDGER_PROTOCOL.md`
 - "Issuing a worker packet" → `docs/WORKER_TASK_PACKET.md`
 - "Worker returned DONE" → `docs/POST_CODING_CHECKS.md` (mandatory review)
 - "Worker returned BLOCKED twice on same Path ID" → `docs/INVESTIGATOR_PROTOCOL.md`
@@ -196,10 +204,17 @@ If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINE
 
 **Orchestrator readiness audit:** before using local models for most implementation, confirm the project has enough rails that the local worker can succeed without a human reading raw diffs.
 - [ ] Every worker packet names Path IDs, allowed files, commands, smoke tests, stop conditions, and rollback expectations.
+- [ ] Scenario playbook is present and routes template retrofit, Firebase/cloud-to-local migration, overnight local-agent work, and high-risk work to the right Level 1/2/3 mode.
+- [ ] Vague human directives trigger multiple-choice clarification before broad specs or worker packets are written.
 - [ ] Every DONE packet requires RED/GREEN evidence, changed files, tests run, unresolved risks, and local self-review.
+- [ ] Test-honesty review rejects tautology tests and requires assertions tied to real behavior or user/data outcomes.
 - [ ] Cloud orchestrator review checks traceability, test honesty, security posture, and user workflow impact before accepting DONE.
+- [ ] UI-visible packets require a manual click path, screenshot/trace, or browser-smoke evidence before DONE.
+- [ ] Data-mutating packets require a pre-change snapshot/dump or explicit N/A rationale and operator-executable restore steps.
 - [ ] Cloud investigator escalation is triggered by repeated BLOCKED status, uncertain architecture, auth/security ambiguity, or failing CI after local green.
+- [ ] Investigator protocol halts with `TIE-BREAKER-HALT` after two unresolved investigator cycles on the same Path ID.
 - [ ] Operator dashboard or handoff format gives the non-coder operator decisions and evidence, not raw diff interpretation.
+- [ ] Operator dashboard includes data snapshot/restore fields and three plain-English tie-breaker choices.
 
 ---
 
@@ -250,11 +265,15 @@ Run this audit before adding orchestrator files, advanced verification files, or
    - `N/A` rows without rationale
    - stale `State Mutation Index` locations that do not exist in the repo
    - Path IDs for UI, realtime, cron, auth, or security flows with no current evidence
+   - UI-visible Path IDs without browser/manual visual evidence
+   - data-mutating Path IDs without snapshot/rollback evidence or rationale
 5. Compare `docs/OPS_SECURITY_RELEASE.md` to `.github/workflows/ci.yml` and `scripts/verify.sh`; flag any promised security scan not actually run.
 6. Inventory every active app/service verify gate. If a repo has a root app plus frontend/selfhost/worker service, identify each gate and whether it is required before handoff.
 7. Search for frontend/page tests matching important mutating pages. If none exist, mark the path as manual until a test is added.
-8. Check smoke scripts for optional runtime checks. Before beta, runtime checks must be required by a documented command or environment flag.
-9. Check `CHANGELOG.md` for recent manual smoke evidence. If it is old, treat it as stale.
+8. Spot-check recent AI-added tests for tautology risk. Tests must prove behavior or user/data outcome, not just existence.
+9. Check smoke scripts for optional runtime checks. Before beta, runtime checks must be required by a documented command or environment flag.
+10. Check `CHANGELOG.md` for recent manual smoke evidence. If it is old, treat it as stale.
+11. If orchestrator docs are adopted, confirm vague-prompt pushback, data snapshot rule, visual/human smoke rule, and `TIE-BREAKER-HALT` are present.
 
 If `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` is project-customized, it must still carry this audit section or explicitly link to the current upstream walkthrough. Version-only drift checks are not enough.
 
@@ -274,10 +293,11 @@ Run in order; all must pass:
 4. `scripts/validate_templates.sh` (if present) — exit 0
 5. Required security scans pass locally or are confirmed green in CI
 6. Runtime smoke required mode passes for pre-beta/beta projects
-7. Complete `docs/TEMPLATE_VALIDATION_CHECKLIST.md` — every box checked
-8. Push a no-op commit; confirm CI green
-9. Update `CHANGELOG.md` `Unreleased`: "Adopted templates-v2 vN.N via TEMPLATE_ADOPTION_WALKTHROUGH; sections completed: ..."
+7. Orchestrator-pattern repos confirm vague-prompt pushback, anti-tautology review, UI smoke evidence, data snapshot/restore, and tie-breaker halt are wired into the relevant docs
+8. Complete `docs/TEMPLATE_VALIDATION_CHECKLIST.md` — every box checked
+9. Push a no-op commit; confirm CI green
+10. Update `CHANGELOG.md` `Unreleased`: "Adopted templates-v2 vN.N via TEMPLATE_ADOPTION_WALKTHROUGH; sections completed: ..."
 
-- [ ] All nine pass.
+- [ ] All ten pass.
 
 Adoption is complete when this box is checked. Until then, the AI should treat the project as *partially adopted* and surface unchecked sections at the start of every session.

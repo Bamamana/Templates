@@ -14,6 +14,7 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTIN
 |---|---|
 | `docs/GAME_PLAN.md` | milestone, scope, sequencing, or next action is unclear |
 | `docs/PROJECT_CANVAS.md` | project purpose, tier, owner intent, or scope boundary is unclear |
+| `docs/SCENARIO_PLAYBOOK.md` | choosing AI workflow mode, planning template retrofit, planning cloud-to-local migration, or authorizing overnight local-agent work |
 | `docs/ORCHESTRATION_MAP.md` | assigning work between cloud orchestrator and local worker |
 | `docs/ENGINEERING_PLAYBOOK.md` | commands, tests, worker loop, packet class, or validation rules matter |
 | `docs/WORKER_TASK_PACKET.md` | issuing a local-worker task |
@@ -36,6 +37,10 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTIN
 | Event | Load / Run |
 |---|---|
 | User gives a new directive | Update `docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md` first |
+| Before choosing Level 1/2/3 AI workflow mode | `docs/SCENARIO_PLAYBOOK.md` |
+| Starting template retrofit on an existing project | `docs/SCENARIO_PLAYBOOK.md` and `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` |
+| Migrating Firebase/cloud app to local server | `docs/SCENARIO_PLAYBOOK.md`, `docs/FEATURE_SPEC_TEMPLATE.md`, `docs/OPS_SECURITY_RELEASE.md`, and `docs/MASTER_TRACEABILITY_TABLE.md` |
+| Planning overnight local-agent run | `docs/SCENARIO_PLAYBOOK.md`, `docs/WORKER_TASK_PACKET.md`, and `docs/STATE_LEDGER_PROTOCOL.md` |
 | Issuing a worker packet | `docs/WORKER_TASK_PACKET.md` and `docs/STATE_LEDGER_PROTOCOL.md` |
 | Worker returned DONE | `docs/POST_CODING_CHECKS.md` mandatory review |
 | Worker returned PARTIAL or BLOCKED | `docs/WORKER_RESULT_PACKET.md`, then corrected packet or investigator path |

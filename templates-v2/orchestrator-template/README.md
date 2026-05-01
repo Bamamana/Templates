@@ -26,6 +26,7 @@ It is intended for the workflow we have been discussing:
 - `AI_AGENT.md.template` -> canonical startup contract for orchestrator-driven projects
 - `SESSION_BRIEF.md.template` -> lean startup current-state snapshot
 - `CONTEXT_ROUTING.md.template` -> event/doc trigger map so the AI loads deeper docs only when needed
+- `SCENARIO_PLAYBOOK.md.template` -> Level 1/2/3 decision guide for template retrofit, cloud-to-local migration, and overnight local-agent work
 - `GAME_PLAN.md.template` -> live execution checklist for vibe-coding sessions
 - `PROJECT_CANVAS.md.template` -> project purpose and higher-level state
 - `ENGINEERING_PLAYBOOK.md.template` -> 9-step local worker loop, Packet Class ceilings, test-first rules
@@ -49,11 +50,12 @@ It is intended for the workflow we have been discussing:
 
 1. Human starts with `AI_AGENT.md`.
 2. Cloud orchestrator reads the lean startup set: `AI_AGENT.md`, `SESSION_BRIEF`, `CONTEXT_ROUTING`.
-3. Cloud orchestrator updates the plan and issues a narrow `WORKER_TASK_PACKET`.
-4. Local worker runs the 9-step test-first loop and returns `WORKER_RESULT_PACKET`.
-5. Cloud orchestrator runs mandatory `POST_CODING_CHECKS`.
-6. Outcome is accepted, repaired, rejected, or escalated to investigator.
-7. Human approves a reviewed outcome, not raw code.
+3. When the work type is unclear or high leverage, the orchestrator reads `SCENARIO_PLAYBOOK` to choose Level 1/2/3 mode and gates.
+4. Cloud orchestrator updates the plan and issues a narrow `WORKER_TASK_PACKET`.
+5. Local worker runs the 9-step test-first loop and returns `WORKER_RESULT_PACKET`.
+6. Cloud orchestrator runs mandatory `POST_CODING_CHECKS`.
+7. Outcome is accepted, repaired, rejected, or escalated to investigator.
+8. Human approves a reviewed outcome, not raw code.
 
 ## Token Control Rules
 

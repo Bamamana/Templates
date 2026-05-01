@@ -35,6 +35,7 @@ Choose one. Do not approve raw code.
 | accept reviewed result | Cloud review passed; verify gate passed; rollback known |
 | ask for repair | One narrow issue remains; issue follow-up worker packet |
 | escalate to investigator | Root cause unclear or repeated worker failure |
+| choose tie-breaker option | Worker and investigator disagree after repeated cycles |
 | rollback | Restore last known-good state |
 | stop | Halt until the question is answered |
 
@@ -46,6 +47,17 @@ Choose one. Do not approve raw code.
   git revert <commit-or-range>
   ```
 - Data rollback needed? NO / YES + notes:
+- Data snapshot/dump available? NO / YES + path:
+- Data restore command or runbook:
+
+## Tie-Breaker Options
+Use only after `docs/INVESTIGATOR_PROTOCOL.md` returns TIE-BREAKER-HALT.
+
+| Option | Plain-English meaning | Risk | Cost |
+|---|---|---|---|
+| A |  | LOW / MED / HIGH | LOW / MED / HIGH |
+| B |  | LOW / MED / HIGH | LOW / MED / HIGH |
+| C |  | LOW / MED / HIGH | LOW / MED / HIGH |
 
 ## Do-Not-Touch Areas
 -

@@ -19,12 +19,15 @@ Purpose: anti-drift mechanism. Every runtime pathway has a Path ID row, every ro
 7. `Coverage pending` is not a valid DONE state.
 8. Manual rows must point to a concrete runbook, live/local smoke evidence, or exact steps.
 9. State Mutation Index locations must be real repo paths after adoption.
+10. UI-visible Path IDs need either automated browser coverage or a manual click path with expected visible result.
+11. Data-mutating Path IDs need rollback/snapshot evidence or an explicit N/A rationale.
 
 ## Master Traceability Table
 
 | Path ID | Entry Point | Function Chain | Side Effects | Expected Outcome | Smoke Coverage | Smoke Command / Runbook |
 |---|---|---|---|---|---|---|
 | CLI-VERIFY-01 | `[VERIFY_COMMAND]` | verify gate | none | Project validation exits 0 | Automated | `[VERIFY_COMMAND]` |
+| UI-EXAMPLE-01 | Example visible workflow | route -> component -> action | UI/API/write as applicable | Operator can observe expected result | Manual | Manual: open local URL, click primary action, confirm expected visible result |
 
 ## State Mutation Index
 
@@ -44,4 +47,6 @@ Rules:
 - [ ] Smoke command/runbook evidence recorded
 - [ ] Manual rows point to concrete runbooks or exact steps
 - [ ] State Mutation Index paths exist in the repo
+- [ ] UI rows include visible expected result evidence
+- [ ] Data-mutating rows include snapshot/rollback evidence or rationale
 - [ ] Retired pathways noted in `CHANGELOG.md`

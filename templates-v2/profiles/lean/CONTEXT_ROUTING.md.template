@@ -1,62 +1,48 @@
 # Context Routing Map ([PROJECT_NAME])
 
-Read when: always at session start.
-Skip when: never.
+Read when: always at session start. Skip when: never.
 
-Purpose: which docs to load beyond the startup set, and when.
+Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md`. Pull deeper docs only on triggers.
 
-## Default
-Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md`. Pull deeper docs only on the triggers below.
-
-## Doc Triggers (Topic-Based)
+## Doc Triggers
 
 | Doc | Load when |
 |---|---|
-| `docs/PROJECT_CANVAS.md` | milestone, scope, sequencing, or next action is unclear |
-| `docs/ENGINEERING_PLAYBOOK.md` | commands, tests, CI, validation, or feature execution rules matter |
-| `docs/TECH_STACK.md` | architecture, dependency, or integration boundary decisions |
-| `docs/MASTER_TRACEABILITY_TABLE.md` | entrypoint, route, function chain, side-effect, or smoke evidence changes (Tier B/C) |
-| `docs/OPS_SECURITY_RELEASE.md` | deploy, secrets, auth, logging, data handling, or release path changes |
-| `CHANGELOG.md` | documenting a behavior change or checking recent history |
-| `AI_CONTEXT.md` | nearby code reads are insufficient and a generated map exists |
-| `docs/AI_MEMORY.md` | recurring preferences or prior lessons matter |
-| `docs/QUICKSTART_5_MIN.md` | first-time setup of this project |
-| `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` | first install OR retrofitting templates-v2 into an existing project OR something feels "missing" / AI keeps ignoring a script that exists |
+| `docs/PROJECT_CANVAS.md` | scope, milestone, or next action unclear |
+| `docs/SCENARIO_PLAYBOOK.md` | Level 1/2/3 mode, retrofit, cloud-to-local migration, overnight run |
+| `docs/ENGINEERING_PLAYBOOK.md` | commands, tests, CI, validation, feature workflow |
+| `docs/TECH_STACK.md` | architecture, dependency, integration boundary |
+| `docs/MASTER_TRACEABILITY_TABLE.md` | entrypoint, workflow, side effect, smoke evidence |
+| `docs/OPS_SECURITY_RELEASE.md` | deploy, secrets, auth, logging, data, release |
+| `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` | install, retrofit, missing capability, ignored script |
+| `CHANGELOG.md` | behavior history or documenting a change |
+| `AI_CONTEXT.md` | local reads are insufficient and generated map exists |
 
-## Event Triggers (Action-Based)
-
-These fire when the AI is *about to do* a specific kind of action. Same purpose as Doc Triggers, but keyed off an event in the work, not a topic in the user's question. Populated during adoption per `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §2–§6.
+## Event Triggers
 
 | Event | Load / Run |
 |---|---|
-| About to bump or compare versions, OR versions look out of sync, OR about to release | `scripts/bump_version.sh` (run; never hand-edit version strings in individual files) |
-| About to merge to `main` | `scripts/predeploy_full_suite.sh` and `docs/POST_CODING_CHECKS.md` |
-| Behavior change without doc update suspected | `scripts/enforce_doc_updates.sh` |
-| Template pack version bump | `scripts/check_template_drift.sh` and `docs/UPGRADE_GUIDE.md` |
-| About to add or change a CI job | `.github/workflows/ci.yml` and `docs/ENGINEERING_PLAYBOOK.md` |
-| CI red after the worker reported DONE | `docs/POST_CODING_CHECKS.md` (the orchestrator review missed something) |
-| About to add a new entrypoint or workflow | `docs/MASTER_TRACEABILITY_TABLE.md` and `docs/WORKFLOW_TEST_MATRIX.md` |
-| About to add a new smoke test | `docs/SMOKE_TEST_CATALOG.md` |
-| BUGFIX packet in flight | `docs/ENGINEERING_PLAYBOOK.md` §3e regression accretion rule |
-| Test file modified | `docs/POST_CODING_CHECKS.md` §3 test-honesty spot-check |
-| Returning to a lean-adopted project for audit, beta readiness, or importing more template pieces | `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §7.5 and `docs/MASTER_TRACEABILITY_TABLE.md` |
-| Session brief has `(not set)` for next item, next command, or last verified | `docs/GAME_PLAN.md` and `scripts/sync_session_brief.sh` |
-| Repo has multiple apps/services or a release-prep script | `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §2 validation gate inventory and `docs/WORKFLOW_TEST_MATRIX.md` |
-| Before beta or user acceptance testing | `docs/MASTER_TRACEABILITY_TABLE.md`, `docs/WORKFLOW_TEST_MATRIX.md`, `docs/ENGINEERING_PLAYBOOK.md` § Manual Smoke Runbook |
-| Runtime smoke is optional or skipped | `scripts/test_smoke.sh` and `docs/ENGINEERING_PLAYBOOK.md` § Manual Smoke Runbook |
-| Security docs promise a scan | compare `docs/OPS_SECURITY_RELEASE.md`, `.github/workflows/ci.yml`, and `scripts/verify.sh` |
-| Issuing a worker packet | `docs/WORKER_TASK_PACKET.md` |
-| Worker returned DONE | `docs/POST_CODING_CHECKS.md` (mandatory review) |
-| Worker returned BLOCKED twice on the same Path ID | `docs/INVESTIGATOR_PROTOCOL.md` |
-| About to run unattended overnight | `AI_AGENT.md` § Unattended Run Rules |
+| Choose Level 1/2/3 mode | `docs/SCENARIO_PLAYBOOK.md` |
+| Template retrofit | `docs/SCENARIO_PLAYBOOK.md` + `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` |
+| Firebase/cloud-to-local migration | `docs/SCENARIO_PLAYBOOK.md` + `docs/TECH_STACK.md` + `docs/OPS_SECURITY_RELEASE.md` |
+| Overnight local-agent run | `docs/SCENARIO_PLAYBOOK.md` + `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §5 |
+| Version/release/bump | `scripts/bump_version.sh` |
+| Merge/predeploy | `scripts/predeploy_full_suite.sh` + `docs/POST_CODING_CHECKS.md` |
+| Behavior change lacks docs | `scripts/enforce_doc_updates.sh` |
+| Template version bump | `scripts/check_template_drift.sh` + `docs/UPGRADE_GUIDE.md` |
+| CI red after DONE | `docs/POST_CODING_CHECKS.md` |
+| New entrypoint/workflow | `docs/MASTER_TRACEABILITY_TABLE.md` + `docs/WORKFLOW_TEST_MATRIX.md` |
+| New smoke test | `docs/SMOKE_TEST_CATALOG.md` |
+| BUGFIX packet | `docs/ENGINEERING_PLAYBOOK.md` regression rule |
+| Test modified | `docs/POST_CODING_CHECKS.md` test honesty |
+| Existing lean project audit | `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §7.5 |
+| Session brief has `(not set)` | `docs/GAME_PLAN.md` + `scripts/sync_session_brief.sh` |
+| Multi-service or release-prep repo | `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §2 |
+| Beta/user acceptance | `docs/MASTER_TRACEABILITY_TABLE.md` + `docs/WORKFLOW_TEST_MATRIX.md` |
+| Optional/skipped runtime smoke | `scripts/test_smoke.sh` + `docs/ENGINEERING_PLAYBOOK.md` |
+| Security docs promise scan | compare `docs/OPS_SECURITY_RELEASE.md`, CI, and `scripts/verify.sh` |
+| Issue worker packet | `docs/WORKER_TASK_PACKET.md` |
+| Worker DONE | `docs/POST_CODING_CHECKS.md` |
+| Worker BLOCKED twice | `docs/INVESTIGATOR_PROTOCOL.md` |
 
-If an event is not listed here and the AI is unsure, surface to user; do not improvise.
-
-## Skip Rules
-- Skip `CHANGELOG.md` for routine implementation unless documenting the change.
-- Skip `OPS_SECURITY_RELEASE.md` for local UI or isolated test work.
-- Skip `MASTER_TRACEABILITY_TABLE.md` for non-entrypoint edits in Tier A.
-- Skip `TECH_STACK.md` when the task is local and architecture is already clear.
-
-## Escalation
-If more than three deeper docs seem necessary before the first edit, stop and ask whether the task is too broad or under-specified.
+If event is unlisted and unclear, ask. If more than three deeper docs seem needed before first edit, ask whether task is too broad.

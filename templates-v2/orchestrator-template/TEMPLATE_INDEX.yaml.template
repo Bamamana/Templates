@@ -6,6 +6,7 @@ read_order:
   - docs/SESSION_BRIEF.md
   - docs/CONTEXT_ROUTING.md
   - docs/GAME_PLAN.md
+  - docs/SCENARIO_PLAYBOOK.md
   - docs/ORCHESTRATION_MAP.md
   - docs/PROJECT_CANVAS.md
   - docs/ENGINEERING_PLAYBOOK.md
@@ -64,6 +65,13 @@ core_templates:
     required_by_tier: [A, B, C]
     read_when: Planning or reviewing orchestrated work
     skip_when: Never
+
+  - template: SCENARIO_PLAYBOOK.md.template
+    destination: docs/SCENARIO_PLAYBOOK.md
+    purpose: Decision guide for Level 1/2/3 workflow mode, template retrofit, cloud-to-local migration, overnight local-agent work, and high-risk task routing
+    required_by_tier: [A, B, C]
+    read_when: Choosing workflow mode or planning a known scenario
+    skip_when: Packet mode and gates are already defined
 
   - template: WORKER_TASK_PACKET.md.template
     destination: docs/WORKER_TASK_PACKET.md

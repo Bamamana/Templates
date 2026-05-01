@@ -21,9 +21,16 @@ Use this before decomposing non-trivial work into worker packets.
 -
 
 ## Acceptance Criteria
+Criteria must be observable by a non-coder operator or a deterministic command. Avoid criteria that only say a file exists, a function was called, or a variable was set unless that is the real user outcome.
+
 - [ ] AC-1:
 - [ ] AC-2:
 - [ ] AC-3:
+
+## Operator Clarification Check
+- Was the original directive specific enough to define pass/fail? YES / NO
+- If NO, questions asked before writing this spec:
+- Human choice or safe default selected:
 
 ## Path IDs / Workflows
 | Path ID / Workflow ID | New / Existing | Expected Evidence |
@@ -42,7 +49,9 @@ For a non-coder operator, rollback must be plain and executable.
 - Branch:
 - Before commit:
 - Rollback command:
-- Data rollback needed? NO / YES + steps
+- Data touched? NO / YES
+- Data snapshot required before implementation? NO / YES + command/path
+- Data rollback needed? NO / YES + exact restore steps
 
 ## Packet Decomposition
 | Packet ID | Packet Class | Goal | Allowed Files | Notes |
