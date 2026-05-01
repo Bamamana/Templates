@@ -36,6 +36,9 @@ If any test file changed:
 ## 4) Traceability Evidence
 - [ ] Every Path ID listed in result has updated row or N/A rationale
 - [ ] Required smoke command/runbook evidence exists
+- [ ] No touched Path ID is left as `Coverage pending`
+- [ ] Manual smoke evidence is concrete and current enough for the project tier
+- [ ] State Mutation Index locations touched by this packet exist in the repo
 - [ ] New workflows update `docs/WORKFLOW_TEST_MATRIX.md`
 - [ ] New smokes update `docs/SMOKE_TEST_CATALOG.md`
 
@@ -44,6 +47,7 @@ If any test file changed:
 - [ ] No new public endpoint without auth note
 - [ ] No new file-write path outside documented data directories
 - [ ] No migration/data-loss risk without rollback note
+- [ ] Security scans promised in ops docs are actually run by local verify or CI, or the gap is recorded
 
 ## 6) Decision
 

@@ -77,6 +77,22 @@ jobs:
         run: |
           [VERIFY_COMMAND]
 
+      - name: Template validation
+        if: ${{ hashFiles('scripts/validate_templates.sh') != '' }}
+        run: bash scripts/validate_templates.sh .
+
+      - name: Context budget
+        if: ${{ hashFiles('scripts/validate_context_budget.sh') != '' }}
+        run: bash scripts/validate_context_budget.sh
+
+      - name: Template drift
+        if: ${{ hashFiles('scripts/check_template_drift.sh') != '' && hashFiles('templates-v2/TEMPLATE_INDEX.yaml.template') != '' }}
+        run: bash scripts/check_template_drift.sh . templates-v2
+
+      - name: Documentation update enforcement
+        if: ${{ hashFiles('scripts/enforce_doc_updates.sh') != '' }}
+        run: bash scripts/enforce_doc_updates.sh --against origin/main
+
   security:
     if: ${{ always() }}
     runs-on: ubuntu-latest

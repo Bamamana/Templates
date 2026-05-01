@@ -5,6 +5,9 @@ Skip when: never.
 
 Purpose: define the stable role split, handoff protocol, token-saving policy, and escalation boundaries.
 
+## Template Source Role
+This orchestrator-template is the reusable base for future projects. Project-specific repos may add hardware, runtime, or domain details, but generic three-role workflow improvements should be promoted back here before being treated as standard practice.
+
 ## Rollout Model
 - Phase 1: one premium cloud orchestrator plus one local worker.
 - Phase 2: add specialized local lanes only after Phase 1 proves valuable.

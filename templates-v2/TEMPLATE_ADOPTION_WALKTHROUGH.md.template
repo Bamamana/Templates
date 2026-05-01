@@ -82,6 +82,8 @@ Notes / SHA:
 | `scripts/validate_context_budget.sh` | Keeps the AI startup context under budget | `templates-v2/scripts/validate_context_budget.sh.template` |
 | `scripts/validate_templates.sh` | Validates placeholders, presence, drift in one call | `templates-v2/scripts/validate_templates.sh.template` |
 | `scripts/sync_session_brief.sh` | Regenerates `docs/SESSION_BRIEF.md` (lean profile only) | `templates-v2/scripts/sync_session_brief.sh.template` |
+| `scripts/test_smoke.sh` | Fast structural/runtime smoke checks | (project-specific; create if missing) |
+| `scripts/test_targeted.sh` | Focused backend/frontend/realtime test runner | (project-specific; create if missing) |
 | `scripts/bump_version.sh` | Single-source-of-truth version bump (if project has versions) | (project-specific; if it exists in the project, register it as a trigger below) |
 
 **Triggers to register in `docs/CONTEXT_ROUTING.md` § Event Triggers:**
@@ -92,6 +94,26 @@ Notes / SHA:
 
 **Proves it works:** `ls scripts/ && bash scripts/verify.sh`
 - [ ] All applicable scripts present and executable (`chmod +x scripts/*.sh`), triggers registered, or N/A:
+
+**Lean audit requirement:** `scripts/verify.sh` must be close enough to CI that a local green handoff means something. For Tier B/C, it should either run or explicitly delegate to:
+- template validation: `bash scripts/validate_templates.sh .`
+- context budget validation: `bash scripts/validate_context_budget.sh`
+- template drift check: `bash scripts/check_template_drift.sh . path/to/templates-v2`
+- documentation update enforcement: `bash scripts/enforce_doc_updates.sh`
+- security checks named in `docs/OPS_SECURITY_RELEASE.md` (secret scan, dependency scan, SAST), or a documented CI-only rationale
+- smoke + targeted tests for every active service
+
+- [ ] Local verify parity checked against CI; any CI-only checks have a clear rationale:
+
+**Validation gate inventory:** multi-service repos often have more than one meaningful gate. List them here so the AI does not stop after the smallest green command.
+
+| Gate | Command | Required before handoff? | Scope |
+|---|---|---|---|
+| Primary repo verify | `[VERIFY_COMMAND]` | Yes | Root project |
+| Service-specific verify | N/A unless this repo has a second app/service gate | Add rationale | Named app/service |
+| Release/predeploy prep | N/A unless this repo has a release/predeploy gate | Add rationale | Runtime/deploy path |
+
+- [ ] Every active app/service has a named validation gate or an explicit N/A rationale.
 
 ---
 
@@ -133,6 +155,18 @@ Notes / SHA:
 **Proves it works:** run the project's targeted test command and confirm exit 0.
 - [ ] Suite location set, runner verified, smoke + workflow matrix present, or N/A:
 
+**Pre-beta human workflow audit:** automated tests do not prove the app is usable. For each active role and primary workflow, record whether coverage is automated, manual, or missing in `docs/MASTER_TRACEABILITY_TABLE.md` and `docs/WORKFLOW_TEST_MATRIX.md`.
+
+Check for these gaps explicitly:
+- [ ] Any browser login / auth callback path has either a scripted browser test or manual smoke evidence.
+- [ ] Any page with important mutations has a frontend test or manual smoke evidence for the actual user flow.
+- [ ] Any realtime/WebSocket path has a repeatable script or current manual smoke evidence.
+- [ ] Any scheduler/cron path has a runnable wrapper or a documented manual runbook.
+- [ ] Any smoke script with optional runtime checks has a pre-beta mode that requires runtime checks to fail hard.
+- [ ] Each real user role has a short manual smoke path before beta: admin/operator, power user, normal user, restricted user.
+
+If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINEERING_PLAYBOOK.md` under `Manual Smoke Runbook`; vague text like "manual smoke steps" is not enough.
+
 ---
 
 ## 5) Worker / Orchestrator Pattern (if adopted)
@@ -159,6 +193,13 @@ Notes / SHA:
 
 **Proves it works:** dry-run a packet end-to-end on a trivial change.
 - [ ] All docs present, rails populated, triggers registered, or N/A:
+
+**Orchestrator readiness audit:** before using local models for most implementation, confirm the project has enough rails that the local worker can succeed without a human reading raw diffs.
+- [ ] Every worker packet names Path IDs, allowed files, commands, smoke tests, stop conditions, and rollback expectations.
+- [ ] Every DONE packet requires RED/GREEN evidence, changed files, tests run, unresolved risks, and local self-review.
+- [ ] Cloud orchestrator review checks traceability, test honesty, security posture, and user workflow impact before accepting DONE.
+- [ ] Cloud investigator escalation is triggered by repeated BLOCKED status, uncertain architecture, auth/security ambiguity, or failing CI after local green.
+- [ ] Operator dashboard or handoff format gives the non-coder operator decisions and evidence, not raw diff interpretation.
 
 ---
 
@@ -194,17 +235,49 @@ Notes / SHA:
 
 ---
 
+## 7.5) Lean Project Audit Before Importing More Template Pieces
+
+**Purpose:** when returning to an existing project that already adopted the lean profile, the AI must audit what is working before importing more files. This prevents the project from becoming doc-heavy while still missing the hard checks.
+
+Run this audit before adding orchestrator files, advanced verification files, or new CI gates:
+
+1. Read `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTING.md`.
+2. Confirm `docs/SESSION_BRIEF.md` has useful values for phase, milestone, status, next item, next command, and last verified. `(not set)` in active repos means the plan format or sync script drifted.
+3. Run the current verify gate and record whether local green includes CI-equivalent checks.
+4. Read `docs/MASTER_TRACEABILITY_TABLE.md` and flag:
+   - `Coverage pending`
+   - `Manual` rows without a concrete runbook
+   - `N/A` rows without rationale
+   - stale `State Mutation Index` locations that do not exist in the repo
+   - Path IDs for UI, realtime, cron, auth, or security flows with no current evidence
+5. Compare `docs/OPS_SECURITY_RELEASE.md` to `.github/workflows/ci.yml` and `scripts/verify.sh`; flag any promised security scan not actually run.
+6. Inventory every active app/service verify gate. If a repo has a root app plus frontend/selfhost/worker service, identify each gate and whether it is required before handoff.
+7. Search for frontend/page tests matching important mutating pages. If none exist, mark the path as manual until a test is added.
+8. Check smoke scripts for optional runtime checks. Before beta, runtime checks must be required by a documented command or environment flag.
+9. Check `CHANGELOG.md` for recent manual smoke evidence. If it is old, treat it as stale.
+
+If `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` is project-customized, it must still carry this audit section or explicitly link to the current upstream walkthrough. Version-only drift checks are not enough.
+
+Import only the template pieces that close a real gap found above. Do not add orchestrator docs just because they exist.
+
+- [ ] Lean audit completed and findings recorded in `CHANGELOG.md` or the active plan doc.
+
+---
+
 ## 8) Final Adoption Gate
 
 Run in order; all must pass:
 
 1. `bash scripts/verify.sh` (or project verify gate) — exit 0
 2. `bash scripts/check_template_drift.sh . path/to/templates-v2` — exit 0
-3. `scripts/validate_templates.sh` (if present) — exit 0
-4. Complete `docs/TEMPLATE_VALIDATION_CHECKLIST.md` — every box checked
-5. Push a no-op commit; confirm CI green
-6. Update `CHANGELOG.md` `Unreleased`: "Adopted templates-v2 vN.N via TEMPLATE_ADOPTION_WALKTHROUGH; sections completed: ..."
+3. `bash scripts/validate_context_budget.sh` — exit 0 for routed startup profiles
+4. `scripts/validate_templates.sh` (if present) — exit 0
+5. Required security scans pass locally or are confirmed green in CI
+6. Runtime smoke required mode passes for pre-beta/beta projects
+7. Complete `docs/TEMPLATE_VALIDATION_CHECKLIST.md` — every box checked
+8. Push a no-op commit; confirm CI green
+9. Update `CHANGELOG.md` `Unreleased`: "Adopted templates-v2 vN.N via TEMPLATE_ADOPTION_WALKTHROUGH; sections completed: ..."
 
-- [ ] All six pass.
+- [ ] All nine pass.
 
 Adoption is complete when this box is checked. Until then, the AI should treat the project as *partially adopted* and surface unchecked sections at the start of every session.

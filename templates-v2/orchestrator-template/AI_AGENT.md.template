@@ -13,6 +13,9 @@ Human startup instruction:
 
 Do not load other docs by default. Use `docs/CONTEXT_ROUTING.md` to decide.
 
+## Template Source Role
+This file is part of the reusable orchestrator base. New projects should start from `Templates/templates-v2/orchestrator-template/` and then specialize locally. Hardware-specific projects such as ASUS can prove improvements, but proven generic rules should be promoted back here before they become the standard for other repos.
+
 ## Working Rules
 - If confidence < 90%, ask 1-3 precise clarifying questions before acting.
 - Smallest correct change first. No unrequested scope.

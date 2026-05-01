@@ -89,7 +89,20 @@ if [[ -f "docs/SESSION_BRIEF.md" || -f "docs/CONTEXT_ROUTING.md" ]]; then
   [[ -f "docs/SESSION_BRIEF.md" ]] || fail "Routed startup profile requires docs/SESSION_BRIEF.md"
   [[ -f "docs/CONTEXT_ROUTING.md" ]] || fail "Routed startup profile requires docs/CONTEXT_ROUTING.md"
   grep -q "## Event Triggers" "docs/CONTEXT_ROUTING.md" || fail "docs/CONTEXT_ROUTING.md must include an ## Event Triggers section"
+  if grep -Eq '^-[[:space:]]+(Phase|Milestone|Status):[[:space:]]+\(not set\)' "docs/SESSION_BRIEF.md"; then
+    fail "docs/SESSION_BRIEF.md has unset Phase/Milestone/Status; update the plan doc and run scripts/sync_session_brief.sh"
+  fi
+  if grep -Eq '^-[[:space:]]+(Next item|Next command|Last verified):[[:space:]]+\(not set\)' "docs/SESSION_BRIEF.md"; then
+    warn "docs/SESSION_BRIEF.md has unset next-action fields; confirm the plan format and sync script still agree"
+  fi
   pass "Routed startup docs present"
+fi
+
+if [[ -f "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md" ]]; then
+  grep -q "Lean Project Audit Before Importing More Template Pieces" "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md" || \
+    fail "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md missing current lean audit section; refresh from templates-v2 or link to upstream with rationale"
+  grep -q "Validation gate inventory" "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md" || \
+    fail "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md missing validation gate inventory; refresh from templates-v2"
 fi
 
 placeholder_hits_file="$(mktemp)"
@@ -245,14 +258,27 @@ for row in data_rows:
 
   coverage = row[coverage_col].strip().strip("`").lower()
   smoke_ref = row[command_col].strip().strip("`")
+  smoke_ref_lower = smoke_ref.lower()
 
   if coverage not in allowed_coverage:
     errors.append(f"{path_id}: invalid smoke coverage '{row[coverage_col].strip()}'")
 
   if not smoke_ref:
     errors.append(f"{path_id}: missing Smoke Command / Runbook")
+  if "pending" in coverage or "pending" in smoke_ref_lower:
+    errors.append(f"{path_id}: coverage cannot be pending in Tier B/C")
+  if coverage in {"n/a", "n-a", "na"} and not any(marker in smoke_ref_lower for marker in ["because", "rationale", "not applicable", "covered by", "manual runbook", "baseline"]):
+    errors.append(f"{path_id}: N/A coverage needs a rationale in Smoke Command / Runbook")
+  if coverage == "manual" and not any(marker in smoke_ref_lower for marker in ["docs/", "step", "runbook", "manual:", "local:", "live:"]):
+    errors.append(f"{path_id}: Manual coverage must point to a concrete runbook or steps")
   if "[" in smoke_ref and "]" in smoke_ref:
     errors.append(f"{path_id}: Smoke Command / Runbook still has placeholder '{smoke_ref}'")
+
+  doc_refs = re.findall(r"docs/[A-Za-z0-9_./#-]+", smoke_ref)
+  for ref in doc_refs:
+    doc_path = pathlib.Path(ref.split("#", 1)[0])
+    if not doc_path.exists():
+      errors.append(f"{path_id}: referenced runbook/doc does not exist: {doc_path}")
 
 if path_row_count == 0:
   errors.append("no non-empty Path ID rows found")
@@ -264,6 +290,69 @@ if errors:
   sys.exit(1)
 
 print(f"[PASS] Traceability semantic check passed ({path_row_count} Path ID rows)")
+PY
+fi
+
+if [[ "$tier_requires_traceability" == "1" ]]; then
+  python3 - "docs/MASTER_TRACEABILITY_TABLE.md" <<'PY'
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+lines = path.read_text(encoding="utf-8").splitlines()
+
+inside = False
+header = None
+location_col = None
+errors = []
+row_count = 0
+
+for line in lines:
+  if line.strip().lower().startswith("## state mutation index"):
+    inside = True
+    continue
+  if inside and line.strip().startswith("## "):
+    break
+  if not inside or not line.strip().startswith("|"):
+    continue
+
+  parts = [part.strip() for part in line.strip().strip("|").split("|")]
+  normalized = [re.sub(r"\s+", " ", part.lower()) for part in parts]
+  if "location" in normalized and "function" in normalized:
+    header = normalized
+    location_col = normalized.index("location")
+    continue
+  if header is None:
+    continue
+  if all(re.fullmatch(r"[-: ]+", part) for part in parts):
+    continue
+  if location_col is None or location_col >= len(parts):
+    continue
+
+  raw_location = parts[location_col].strip().strip("`")
+  if not raw_location or raw_location.lower() in {"location", "n/a", "na", "none"}:
+    continue
+  if "[" in raw_location and "]" in raw_location:
+    continue
+
+  row_count += 1
+  location = raw_location.split("#", 1)[0].strip()
+  if location.endswith("/...") or location.endswith("/*"):
+    location = location[:-4]
+  if not pathlib.Path(location).exists():
+    errors.append(f"State Mutation Index location does not exist: {raw_location}")
+
+if header is None:
+  errors.append("State Mutation Index table missing Location/Function columns")
+
+if errors:
+  print("[FAIL] State Mutation Index semantic check failed:")
+  for error in errors:
+    print(f" - {error}")
+  sys.exit(1)
+
+print(f"[PASS] State Mutation Index semantic check passed ({row_count} checked rows)")
 PY
 fi
 

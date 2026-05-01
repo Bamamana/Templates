@@ -104,6 +104,11 @@ Single source for commands, testing policy, feature execution, and repository st
 - [ ] Commands section updated (if changed)
 - [ ] Matrix row(s) updated for new workflows
 - [ ] Traceability rows + per-path smoke coverage updated (Tier B/C)
+- [ ] State Mutation Index paths verified against real files (Tier B/C)
+- [ ] Manual smoke evidence current for UI/realtime/cron/auth paths that are not automated
+- [ ] Runtime smoke required mode run before beta/user acceptance
+- [ ] Security scans promised in docs are either run locally or confirmed green in CI
+- [ ] All active app/service validation gates from `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §2 were considered
 - [ ] AI context regenerated (`[AI_CONTEXT_COMMAND]`)
 - [ ] Verify gate passed
 

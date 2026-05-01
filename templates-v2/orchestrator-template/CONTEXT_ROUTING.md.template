@@ -45,6 +45,10 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTIN
 | BUGFIX packet in flight | `docs/ENGINEERING_PLAYBOOK.md` regression accretion rule |
 | New entrypoint or workflow added | `docs/MASTER_TRACEABILITY_TABLE.md` and `docs/WORKFLOW_TEST_MATRIX.md` |
 | New smoke test added | `docs/SMOKE_TEST_CATALOG.md` |
+| Returning to an existing project for audit, beta readiness, or importing more orchestrator pieces | `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §7.5 and `docs/MASTER_TRACEABILITY_TABLE.md` |
+| Before beta or user acceptance testing | `docs/MASTER_TRACEABILITY_TABLE.md`, `docs/WORKFLOW_TEST_MATRIX.md`, and manual smoke runbook |
+| Runtime smoke is optional or skipped | `scripts/test_smoke.sh` and `docs/SMOKE_TEST_CATALOG.md` |
+| Security docs promise a scan | compare `docs/OPS_SECURITY_RELEASE.md`, `.github/workflows/ci.yml`, and `[VERIFY_COMMAND]` |
 | About to run unattended overnight | `AI_AGENT.md` unattended and halt rules |
 | Behavior change without docs/tests | Stop and add tests/docs or return BLOCKED |
 | About to release or merge | Run `[VERIFY_COMMAND]` and project CI/predeploy gate |

@@ -16,6 +16,9 @@ Purpose: anti-drift mechanism. Every runtime pathway has a Path ID row, every ro
 4. New behavior adds a Path ID row in the same packet.
 5. Removed behavior is marked retired in `CHANGELOG.md`.
 6. Cloud review verifies the rows claimed in the result packet.
+7. `Coverage pending` is not a valid DONE state.
+8. Manual rows must point to a concrete runbook, live/local smoke evidence, or exact steps.
+9. State Mutation Index locations must be real repo paths after adoption.
 
 ## Master Traceability Table
 
@@ -25,6 +28,11 @@ Purpose: anti-drift mechanism. Every runtime pathway has a Path ID row, every ro
 
 ## State Mutation Index
 
+Rules:
+- Replace `TBD` before any Tier B/C packet returns DONE.
+- Locations must be real files or directories in this repo.
+- List mutating routes, services, jobs, scripts, and UI actions touched by packets.
+
 | Location | Function | Mutation Type | Affected Data |
 |---|---|---|---|
 | TBD | TBD | READ / WRITE / DELETE | TBD |
@@ -32,5 +40,8 @@ Purpose: anti-drift mechanism. Every runtime pathway has a Path ID row, every ro
 ## Coverage Completion Checklist
 - [ ] Every touched Path ID appears in the table
 - [ ] Every touched row has Smoke Coverage status
+- [ ] No touched row says `Coverage pending`
 - [ ] Smoke command/runbook evidence recorded
+- [ ] Manual rows point to concrete runbooks or exact steps
+- [ ] State Mutation Index paths exist in the repo
 - [ ] Retired pathways noted in `CHANGELOG.md`

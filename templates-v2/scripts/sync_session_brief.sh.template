@@ -56,15 +56,15 @@ project = sys.argv[3]
 text = source.read_text()
 
 def find(label, default="(not set)"):
-    # Match "- Current phase: X" or "- Phase: X" etc., case-insensitive, tolerate "Current" prefix.
-    pattern = rf"^-\s*(?:Current\s+)?{re.escape(label)}\s*:\s*(.+?)\s*$"
-    m = re.search(pattern, text, re.MULTILINE | re.IGNORECASE)
-    if not m:
-        return default
-    val = m.group(1).strip()
-    # Strip surrounding backticks if present
-    val = val.strip("`")
-    return val if val else default
+  # Match "- Current phase: X" or "Phase: X" etc., case-insensitive, tolerate "Current" prefix.
+  pattern = rf"^\s*-?\s*(?:Current\s+)?{re.escape(label)}\s*:\s*(.+?)\s*$"
+  m = re.search(pattern, text, re.MULTILINE | re.IGNORECASE)
+  if not m:
+    return default
+  val = m.group(1).strip()
+  # Strip surrounding backticks if present
+  val = val.strip("`")
+  return val if val else default
 
 phase     = find("phase")
 milestone = find("milestone")
@@ -72,7 +72,9 @@ status    = find("status")
 # "Next unchecked checklist item" or "Next item"
 next_item = find("Next unchecked checklist item")
 if next_item == "(not set)":
-    next_item = find("Next item")
+  next_item = find("Next item")
+if next_item == "(not set)":
+  next_item = find("Next action")
 next_cmd  = find("Next command to run")
 if next_cmd == "(not set)":
     next_cmd = find("Next command")

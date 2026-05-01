@@ -39,6 +39,12 @@ These fire when the AI is *about to do* a specific kind of action. Same purpose 
 | About to add a new smoke test | `docs/SMOKE_TEST_CATALOG.md` |
 | BUGFIX packet in flight | `docs/ENGINEERING_PLAYBOOK.md` §3e regression accretion rule |
 | Test file modified | `docs/POST_CODING_CHECKS.md` §3 test-honesty spot-check |
+| Returning to a lean-adopted project for audit, beta readiness, or importing more template pieces | `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §7.5 and `docs/MASTER_TRACEABILITY_TABLE.md` |
+| Session brief has `(not set)` for next item, next command, or last verified | `docs/GAME_PLAN.md` and `scripts/sync_session_brief.sh` |
+| Repo has multiple apps/services or a release-prep script | `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §2 validation gate inventory and `docs/WORKFLOW_TEST_MATRIX.md` |
+| Before beta or user acceptance testing | `docs/MASTER_TRACEABILITY_TABLE.md`, `docs/WORKFLOW_TEST_MATRIX.md`, `docs/ENGINEERING_PLAYBOOK.md` § Manual Smoke Runbook |
+| Runtime smoke is optional or skipped | `scripts/test_smoke.sh` and `docs/ENGINEERING_PLAYBOOK.md` § Manual Smoke Runbook |
+| Security docs promise a scan | compare `docs/OPS_SECURITY_RELEASE.md`, `.github/workflows/ci.yml`, and `scripts/verify.sh` |
 | Issuing a worker packet | `docs/WORKER_TASK_PACKET.md` |
 | Worker returned DONE | `docs/POST_CODING_CHECKS.md` (mandatory review) |
 | Worker returned BLOCKED twice on the same Path ID | `docs/INVESTIGATOR_PROTOCOL.md` |

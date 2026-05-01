@@ -87,8 +87,20 @@ For Tier B/C projects, maintain `docs/MASTER_TRACEABILITY_TABLE.md` as the canon
 - Every active Path ID maps to smoke/contract coverage.
 - New behavior adds a Path ID row in the same packet.
 - Touched Path IDs must have passing smoke evidence before DONE.
+- `Coverage pending` is BLOCKED, not DONE.
+- Manual coverage needs a concrete runbook or current evidence.
+- State Mutation Index locations must be checked against real repo paths.
 - New smoke tests are registered in `docs/SMOKE_TEST_CATALOG.md`.
 - Workflow verification is tracked in `docs/WORKFLOW_TEST_MATRIX.md`.
+
+## 8.1) Pre-Beta Workflow Audit
+Before beta or user acceptance, the orchestrator checks:
+- Browser login/auth callback paths have scripted or current manual evidence.
+- Mutating pages have frontend tests or manual role-based smoke evidence.
+- Realtime/WebSocket paths have a repeatable script or current manual smoke evidence.
+- Cron/scheduler paths have a runnable wrapper or manual runbook.
+- Runtime smoke optional mode is replaced by a required pre-beta command.
+- Promised security scans in ops docs exist in local verify or CI.
 
 ## 9) Escalation Triggers
 
