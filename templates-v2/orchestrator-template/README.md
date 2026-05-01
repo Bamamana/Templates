@@ -27,6 +27,7 @@ It is intended for the workflow we have been discussing:
 - `SESSION_BRIEF.md.template` -> lean startup current-state snapshot
 - `CONTEXT_ROUTING.md.template` -> event/doc trigger map so the AI loads deeper docs only when needed
 - `SCENARIO_PLAYBOOK.md.template` -> Level 1/2/3 decision guide for template retrofit, cloud-to-local migration, and overnight local-agent work
+- `CLOSING_CHECKLIST.md.template` -> final operator closeout gate before handoff
 - `GAME_PLAN.md.template` -> live execution checklist for vibe-coding sessions
 - `PROJECT_CANVAS.md.template` -> project purpose and higher-level state
 - `ENGINEERING_PLAYBOOK.md.template` -> 9-step local worker loop, Packet Class ceilings, test-first rules
@@ -55,7 +56,8 @@ It is intended for the workflow we have been discussing:
 5. Local worker runs the 9-step test-first loop and returns `WORKER_RESULT_PACKET`.
 6. Cloud orchestrator runs mandatory `POST_CODING_CHECKS`.
 7. Outcome is accepted, repaired, rejected, or escalated to investigator.
-8. Human approves a reviewed outcome, not raw code.
+8. AI runs `CLOSING_CHECKLIST` before final handoff.
+9. Human approves a reviewed outcome, not raw code.
 
 ## Token Control Rules
 

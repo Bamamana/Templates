@@ -21,6 +21,7 @@ Do not load other docs by default. Use `docs/CONTEXT_ROUTING.md` to decide.
 - Run verify gate before handoff: `[VERIFY_COMMAND]`.
 - Regenerate AI context map if used: `[AI_CONTEXT_COMMAND]`.
 - Tier B/C: update touched Path IDs in `docs/MASTER_TRACEABILITY_TABLE.md` with smoke or contract evidence.
+- Use `docs/CLOSING_CHECKLIST.md` before final DONE/handoff.
 
 ## Plan-Driven Workflow (Vibe Coding)
 The user describes intent; you maintain `docs/GAME_PLAN.md` (or `docs/PROJECT_CANVAS.md` if no game plan exists) as the single source of truth for current phase, milestone, next action, and status. Workflow per task:
@@ -36,18 +37,5 @@ The user describes intent; you maintain `docs/GAME_PLAN.md` (or `docs/PROJECT_CA
 - Selected tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
 - Rationale: [WHY_THIS_TIER]
 
-## Definition of Done
-- [ ] Scope completed
-- [ ] Targeted tests pass
-- [ ] Touched Path IDs updated (Tier B/C)
-- [ ] Verify gate passed
-- [ ] Plan doc (`docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md`) updated
-- [ ] `bash scripts/sync_session_brief.sh` run
-- [ ] Changelog updated
-- [ ] Risks noted (or `None`)
-
-## Handoff Format
-- Files changed
-- Commands or tests run with results
-- Deeper docs loaded beyond startup set
-- Open risks or follow-ups
+## Definition of Done & Final Handoff
+Before final DONE/handoff, run `docs/CLOSING_CHECKLIST.md` and use its handoff shape. If any required item is FAIL, do not claim DONE; report the blocker and next action.

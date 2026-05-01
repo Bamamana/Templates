@@ -178,6 +178,7 @@ If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINE
 **You should have:**
 - `docs/ORCHESTRATION_MAP.md` — three-role split
 - `docs/SCENARIO_PLAYBOOK.md` — Level 1/2/3 scenario guide before selecting cloud/local responsibilities
+- `docs/CLOSING_CHECKLIST.md` — final closeout gate for operator handoff
 - `docs/ENGINEERING_PLAYBOOK.md` — 9-step worker loop, MAX_ITERATIONS by Packet Class
 - `docs/WORKER_TASK_PACKET.md` — packet template with Packet Class + Concreteness Tier
 - `docs/WORKER_RESULT_PACKET.md` — result template with self-review + regression-accretion fields
@@ -194,6 +195,7 @@ If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINE
 - "Starting template retrofit on an existing project" → `docs/SCENARIO_PLAYBOOK.md` and `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md`
 - "Migrating Firebase/cloud app to local server" → `docs/SCENARIO_PLAYBOOK.md`, `docs/TECH_STACK.md`, `docs/OPS_SECURITY_RELEASE.md`, and `docs/MASTER_TRACEABILITY_TABLE.md`
 - "Planning overnight local-agent run" → `docs/SCENARIO_PLAYBOOK.md`, `docs/WORKER_TASK_PACKET.md`, and `docs/STATE_LEDGER_PROTOCOL.md`
+- "Before final handoff" OR "run the closing checklist" → `docs/CLOSING_CHECKLIST.md`
 - "Issuing a worker packet" → `docs/WORKER_TASK_PACKET.md`
 - "Worker returned DONE" → `docs/POST_CODING_CHECKS.md` (mandatory review)
 - "Worker returned BLOCKED twice on same Path ID" → `docs/INVESTIGATOR_PROTOCOL.md`
@@ -215,6 +217,7 @@ If a row says `Manual`, the runbook must live in a named file or in `docs/ENGINE
 - [ ] Investigator protocol halts with `TIE-BREAKER-HALT` after two unresolved investigator cycles on the same Path ID.
 - [ ] Operator dashboard or handoff format gives the non-coder operator decisions and evidence, not raw diff interpretation.
 - [ ] Operator dashboard includes data snapshot/restore fields and three plain-English tie-breaker choices.
+- [ ] Closing checklist is present, routed, and required before final handoff.
 
 ---
 

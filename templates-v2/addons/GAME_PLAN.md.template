@@ -33,6 +33,14 @@ Tell the AI what you want, the AI writes it here, and `scripts/sync_session_brie
 ## 4) Open Questions / Decisions Needed
 - 
 
+## 4a) Orchestration Mode
+- Workflow mode: Level 1 Safe / Level 2 Hybrid / Level 3 Local-First / Cloud-only temporary
+- Scenario selected:
+- Mode reason:
+- Cloud approval required before execution: YES / NO
+- Cloud review required before acceptance: YES / NO
+- Stop conditions:
+
 ## 5) Risk Snapshot
 - Top risk:
 - Mitigation:

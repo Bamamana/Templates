@@ -194,6 +194,11 @@ optional_addons:
     purpose: Level 1/2/3 scenario decision guide for template retrofit, cloud-to-local migration, overnight local-agent runs, and high-risk task routing
     use_when: Project uses the orchestrator pattern or local-agent workflow modes
 
+  - template: orchestrator-template/CLOSING_CHECKLIST.md.template
+    destination: docs/CLOSING_CHECKLIST.md
+    purpose: Final closeout gate for operator handoff; use when the operator says run closing checklist or asks whether everything required is done
+    use_when: Project uses routed startup or non-coder operator handoff
+
   - template: addons/AI_OPERATING_CONTRACT.md.template
     destination: AI_OPERATING_CONTRACT.md
     purpose: Legacy compatibility alias to AI_AGENT

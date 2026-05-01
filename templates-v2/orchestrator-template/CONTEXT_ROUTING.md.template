@@ -15,6 +15,7 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTIN
 | `docs/GAME_PLAN.md` | milestone, scope, sequencing, or next action is unclear |
 | `docs/PROJECT_CANVAS.md` | project purpose, tier, owner intent, or scope boundary is unclear |
 | `docs/SCENARIO_PLAYBOOK.md` | choosing AI workflow mode, planning template retrofit, planning cloud-to-local migration, or authorizing overnight local-agent work |
+| `docs/CLOSING_CHECKLIST.md` | final handoff, operator asks if everything is done, or operator says run closing checklist |
 | `docs/ORCHESTRATION_MAP.md` | assigning work between cloud orchestrator and local worker |
 | `docs/ENGINEERING_PLAYBOOK.md` | commands, tests, worker loop, packet class, or validation rules matter |
 | `docs/WORKER_TASK_PACKET.md` | issuing a local-worker task |
@@ -57,6 +58,7 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTIN
 | About to run unattended overnight | `AI_AGENT.md` unattended and halt rules |
 | Behavior change without docs/tests | Stop and add tests/docs or return BLOCKED |
 | About to release or merge | Run `[VERIFY_COMMAND]` and project CI/predeploy gate |
+| Before final handoff OR operator says "run the closing checklist" | `docs/CLOSING_CHECKLIST.md` |
 
 If an event is not listed here and the AI is unsure, surface to user; do not improvise.
 

@@ -10,6 +10,7 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md
 |---|---|
 | `docs/PROJECT_CANVAS.md` | scope, milestone, or next action unclear |
 | `docs/SCENARIO_PLAYBOOK.md` | Level 1/2/3 mode, retrofit, cloud-to-local migration, overnight run |
+| `docs/CLOSING_CHECKLIST.md` | final handoff / asks if done |
 | `docs/ENGINEERING_PLAYBOOK.md` | commands, tests, CI, validation, feature workflow |
 | `docs/TECH_STACK.md` | architecture, dependency, integration boundary |
 | `docs/MASTER_TRACEABILITY_TABLE.md` | entrypoint, workflow, side effect, smoke evidence |
@@ -40,9 +41,10 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md
 | Multi-service or release-prep repo | `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` §2 |
 | Beta/user acceptance | `docs/MASTER_TRACEABILITY_TABLE.md` + `docs/WORKFLOW_TEST_MATRIX.md` |
 | Optional/skipped runtime smoke | `scripts/test_smoke.sh` + `docs/ENGINEERING_PLAYBOOK.md` |
-| Security docs promise scan | compare `docs/OPS_SECURITY_RELEASE.md`, CI, and `scripts/verify.sh` |
+| Security docs promise scan | compare ops docs, CI, `scripts/verify.sh` |
 | Issue worker packet | `docs/WORKER_TASK_PACKET.md` |
 | Worker DONE | `docs/POST_CODING_CHECKS.md` |
 | Worker BLOCKED twice | `docs/INVESTIGATOR_PROTOCOL.md` |
+| Final handoff / closing checklist | `docs/CLOSING_CHECKLIST.md` |
 
 If event is unlisted and unclear, ask. If more than three deeper docs seem needed before first edit, ask whether task is too broad.

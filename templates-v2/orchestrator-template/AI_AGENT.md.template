@@ -27,6 +27,7 @@ This file is part of the reusable orchestrator base. New projects should start f
 - Tier B/C: update touched Path IDs in `docs/MASTER_TRACEABILITY_TABLE.md` with smoke or contract evidence.
 - Use `docs/ORCHESTRATION_MAP.md` for the stable three-role split: cloud orchestrator, local worker, cloud investigator.
 - Use `docs/SCENARIO_PLAYBOOK.md` before choosing Level 1/2/3 workflow mode, starting template retrofit, planning cloud-to-local migration, or authorizing overnight local-agent work.
+- Use `docs/CLOSING_CHECKLIST.md` when the operator asks to run closeout, before final handoff, or before claiming everything required is done.
 - Use `docs/WORKER_TASK_PACKET.md` and `docs/WORKER_RESULT_PACKET.md` for delegated work.
 
 ## Orchestrator Rails (Mandatory)
@@ -53,7 +54,7 @@ Run this in order on every turn. Stop at the first match.
 2. Active worker packet outstanding? -> If its timeout window is open, wait or check status. If expired/malformed, mark it `ABANDONED` or `CANCELLED` and follow recovery rules.
 3. DONE result packet awaiting review? -> Run `docs/POST_CODING_CHECKS.md`.
 4. PARTIAL or BLOCKED result packet? -> Diagnose. First failure: corrected packet. Second failure on same Path ID: investigator.
-5. Active plan has an unchecked item with no blockers? -> Issue the next bounded worker packet.
+5. Active plan has an unchecked item with no blockers? -> If workflow mode is unset, stale, or risk/scenario changed, read `docs/SCENARIO_PLAYBOOK.md`, record the Mode Decision Prompt in `docs/GAME_PLAN.md`, then issue the next bounded worker packet. If workflow mode is already current, issue the next bounded worker packet.
 6. Active plan all checked? -> Stop and surface completion; do not pull from backlog without confirmation.
 7. None of the above? -> Stop, record open question, and ask the user.
 
@@ -82,21 +83,9 @@ The user describes intent; you maintain `docs/GAME_PLAN.md` or `docs/PROJECT_CAN
 - Selected tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
 - Rationale: [WHY_THIS_TIER]
 
-## Definition of Done
-- [ ] Scope completed
-- [ ] Targeted tests pass
-- [ ] Worker packet/result packet completed for delegated work
-- [ ] DONE packet reviewed through `docs/POST_CODING_CHECKS.md`
-- [ ] Touched Path IDs updated (Tier B/C)
-- [ ] Verify gate passed
-- [ ] Plan doc updated
-- [ ] Session brief synced if used
-- [ ] Changelog updated
-- [ ] Risks noted (or `None`)
+## Definition of Done & Final Handoff
+Do not declare a session or task DONE until `docs/CLOSING_CHECKLIST.md` has been executed.
 
-## Handoff Format
-- Files changed
-- Commands/tests run with results
-- Worker packets issued/reviewed
-- Deeper docs loaded beyond startup set
-- Open risks or follow-ups
+When the operator says "run the closing checklist", "run closeout", asks if everything is done, or when you believe the task is complete, load `docs/CLOSING_CHECKLIST.md`, complete its Closing Gate table, and use its required final handoff shape.
+
+If any required closing-checklist item is FAIL, do not claim DONE. Report what is blocked and the exact next action needed.

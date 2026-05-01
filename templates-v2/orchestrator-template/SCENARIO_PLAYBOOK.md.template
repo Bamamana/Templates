@@ -67,7 +67,7 @@ Use this sequence before migrating Firebase, hosted APIs, managed auth, or manag
 
 ## Mode Decision Prompt
 
-Before starting a scenario, the orchestrator should answer:
+Before starting a scenario, or before issuing a worker packet when workflow mode is unset/stale or risk changed, the orchestrator should answer and record this in `docs/GAME_PLAN.md`:
 
 - Scenario selected:
 - Recommended level:
@@ -76,5 +76,7 @@ Before starting a scenario, the orchestrator should answer:
 - Cloud model responsibilities:
 - Required gates before DONE:
 - Stop conditions:
+
+Do not repeat this prompt for every packet if the recorded workflow mode is still current. Re-run it when the scenario changes, risk increases, acceptance criteria change materially, or a hard stop rule appears.
 
 If the answer is uncertain, ask the operator a multiple-choice clarification instead of issuing a worker packet.

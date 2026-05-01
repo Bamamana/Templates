@@ -289,6 +289,7 @@ apply_lean_overlay() {
   copy_template "profiles/lean/SESSION_BRIEF.md.template" "docs/SESSION_BRIEF.md"
   copy_template "profiles/lean/CONTEXT_ROUTING.md.template" "docs/CONTEXT_ROUTING.md"
   copy_template "orchestrator-template/SCENARIO_PLAYBOOK.md.template" "docs/SCENARIO_PLAYBOOK.md"
+  copy_template "orchestrator-template/CLOSING_CHECKLIST.md.template" "docs/CLOSING_CHECKLIST.md"
   SKIP_EXISTING="$prev_skip"
   copy_template "scripts/validate_context_budget.sh.template" "scripts/validate_context_budget.sh"
   copy_template "scripts/report_context_size.sh.template" "scripts/report_context_size.sh"

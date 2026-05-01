@@ -1,0 +1,39 @@
+# Closing Checklist
+
+Read when: before final handoff, when the operator says "run the closing checklist", "run closeout", "prove the checklist", or asks whether everything required is done.
+Skip when: the task is still actively blocked and the final answer is only a status update.
+
+Purpose: final session closeout gate. The AI must report PASS / FAIL / N/A for each item before saying the work is done.
+
+## Closing Gate
+
+| Check | Result | Evidence / Note |
+|---|---|---|
+| User request answered | PASS / FAIL | |
+| Scope stayed within request | PASS / FAIL | |
+| Acceptance criteria checked | PASS / FAIL / N/A | |
+| Workflow mode checked | PASS / N/A | `docs/SCENARIO_PLAYBOOK.md` decision recorded or cloud-only/local-mode N/A |
+| Plan updated | PASS / N/A | `docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md` |
+| Session brief synced | PASS / N/A | `bash scripts/sync_session_brief.sh` |
+| Tests / commands run | PASS / FAIL / N/A | list commands and exit results |
+| Verify gate run | PASS / FAIL / N/A | Project verify command or reason skipped |
+| Worker DONE packet reviewed | PASS / N/A | `docs/POST_CODING_CHECKS.md` |
+| Traceability updated | PASS / N/A | Path IDs / smoke evidence |
+| Docs / changelog updated | PASS / N/A | files updated or reason skipped |
+| UI-visible evidence checked | PASS / N/A | browser smoke, screenshot/trace, or manual click path |
+| Data safety checked | PASS / N/A | snapshot/restore evidence or no data touched |
+| Security/privacy risk checked | PASS / N/A | scan/review note |
+| Open risks listed | PASS / FAIL | risks or `None` |
+| Remaining work listed | PASS / FAIL | follow-ups or `None` |
+
+## Required Final Handoff Shape
+
+After running the checklist, answer with:
+
+- What changed
+- Commands/tests run and results
+- Closing checklist summary
+- Open risks or follow-ups
+- Whether the work is done, blocked, or waiting on operator action
+
+Do not claim DONE if any required item is FAIL. Say what is blocked and what exact next action would clear it.

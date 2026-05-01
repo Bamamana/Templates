@@ -7,6 +7,7 @@ read_order:
   - docs/CONTEXT_ROUTING.md
   - docs/GAME_PLAN.md
   - docs/SCENARIO_PLAYBOOK.md
+  - docs/CLOSING_CHECKLIST.md
   - docs/ORCHESTRATION_MAP.md
   - docs/PROJECT_CANVAS.md
   - docs/ENGINEERING_PLAYBOOK.md
@@ -72,6 +73,13 @@ core_templates:
     required_by_tier: [A, B, C]
     read_when: Choosing workflow mode or planning a known scenario
     skip_when: Packet mode and gates are already defined
+
+  - template: CLOSING_CHECKLIST.md.template
+    destination: docs/CLOSING_CHECKLIST.md
+    purpose: Final closeout gate for operator handoff; forces PASS/FAIL/N/A on plan, tests, verify, docs, risk, and remaining work
+    required_by_tier: [A, B, C]
+    read_when: Before final handoff or when operator asks whether everything required is done
+    skip_when: Task is still actively blocked and only a status update is needed
 
   - template: WORKER_TASK_PACKET.md.template
     destination: docs/WORKER_TASK_PACKET.md

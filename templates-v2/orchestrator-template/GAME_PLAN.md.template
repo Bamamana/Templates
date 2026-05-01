@@ -28,6 +28,12 @@ This is the live plan for the current milestone. Keep it plain enough for the op
 - [ ] Third bounded item
 
 ## 4) Orchestration Notes
+- Workflow mode: Level 1 Safe / Level 2 Hybrid / Level 3 Local-First / Cloud-only temporary
+- Scenario selected:
+- Mode reason:
+- Cloud approval required before execution: YES / NO
+- Cloud review required before acceptance: YES / NO
+- Stop conditions:
 - Default execution: cloud orchestrator plans/reviews, local worker implements.
 - Current local-worker route:
 - Current cloud checker/mastermind route:
