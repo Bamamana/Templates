@@ -9,6 +9,7 @@ read_order:
   - docs/TECH_STACK.md
   - docs/ENGINEERING_PLAYBOOK.md
   - docs/OPS_SECURITY_RELEASE.md
+  - docs/TEMPLATE_PROFILE_MIGRATION.md
   - CHANGELOG.md
   - AI_CONTEXT.md
 
@@ -75,6 +76,13 @@ core_templates:
     required_by_tier: [A, B, C]
     read_when: Initial setup and rollout onboarding
     skip_when: Never
+
+  - template: TEMPLATE_PROFILE_MIGRATION.md.template
+    destination: docs/TEMPLATE_PROFILE_MIGRATION.md
+    purpose: Profile selection and migration pathways between default v2, lean v2, and orchestrator v2
+    required_by_tier: [A, B, C]
+    read_when: Running carryover, switching profiles, or updating an existing project to a newer template profile
+    skip_when: Routine feature work after profile is current
 
   - template: PLACEHOLDER_REFERENCE.md.template
     destination: docs/PLACEHOLDER_REFERENCE.md

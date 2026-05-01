@@ -19,6 +19,7 @@ The known failure mode this prevents: AI partially adopts a template (copies the
 
 ## How to Use This Walkthrough
 
+0. Start with `docs/TEMPLATE_PROFILE_MIGRATION.md`. If the target profile is not explicit, ask the operator which profile to target: Default v2, Lean v2, or Orchestrator v2.
 1. Work top to bottom. Do not skip sections.
 2. For each capability:
    - Check whether it's present in the project.
@@ -33,11 +34,16 @@ The known failure mode this prevents: AI partially adopts a template (copies the
 
 ## 0) Pre-flight
 
+- [ ] Target profile selected: Default v2 / Lean v2 / Orchestrator v2
+- [ ] Current profile detected and recorded using `docs/TEMPLATE_PROFILE_MIGRATION.md`
+- [ ] Migration pathway selected from `docs/TEMPLATE_PROFILE_MIGRATION.md`
 - [ ] Project tier selected (TIER_A_STATIC / TIER_B_STANDARD / TIER_C_PRODUCTION_CRITICAL) and recorded in `AI_AGENT.md`
 - [ ] Project name placeholder resolved everywhere (`grep -r '\[PROJECT_NAME\]'` returns 0 outside the placeholder reference doc)
 - [ ] Existing project? Snapshot a baseline before any change: `git status` clean, current commit SHA recorded in this section
 
 Notes / SHA:
+
+Target profile / pathway:
 
 ---
 

@@ -1,0 +1,155 @@
+# Template Profile Migration ([PROJECT_NAME])
+
+Read when: the operator says "run the carryover checklist", "update this project to the template", "switch to lean", "switch to orchestrator", or asks which template version/profile to use.
+Skip when: routine feature work and the project profile is already current.
+
+Purpose: choose the target Templates profile before copying files. This prevents the AI from guessing whether the project should be default v2, lean, or orchestrator.
+
+## Available Profiles
+
+| Option | Profile | Use When | Bootstrap Flags |
+|---|---|---|---|
+| 1 | Default v2 | Project needs the full standard template and startup token cost is not a concern | none |
+| 2 | Lean v2 | Project should keep all v2 docs/scripts but start sessions from `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTING.md` only | `--lean` |
+| 3 | Orchestrator v2 | Project should use cloud orchestrator + local worker + investigator packets and review gates | `--orchestrator` |
+
+## Required First Question
+
+When the operator asks to run carryover or update a project and the target profile is not explicit, ask exactly one multiple-choice question before applying files:
+
+```text
+Which Templates profile should this project target?
+1. Default v2: full standard template, no routed startup overlay.
+2. Lean v2: default for most existing projects; small startup context plus all v2 docs/scripts.
+3. Orchestrator v2: lean-style startup plus worker packets, ledgers, local-worker health, post-coding review, and operator dashboard.
+```
+
+If the operator answers with a profile name, number, or obvious synonym, proceed with the matching pathway below. If the answer is ambiguous, ask one follow-up question.
+
+## Profile Detection
+
+Use these signals before asking only if the operator did not specify the target:
+
+| Current State | Likely Current Profile |
+|---|---|
+| `docs/SESSION_BRIEF.md` and `docs/CONTEXT_ROUTING.md` exist, no `docs/ORCHESTRATION_MAP.md` | Lean v2 |
+| `docs/ORCHESTRATION_MAP.md`, `docs/WORKER_TASK_PACKET.md`, and `docs/state/packet_ledger.json` exist | Orchestrator v2 |
+| `AI_AGENT.md` exists, no routed startup docs | Default v2 or older custom setup |
+| No template docs exist | Unstandardized project |
+
+Detection is not permission to choose silently. It is context for the operator question.
+
+## Migration Pathways
+
+### A) Any Profile -> Default v2
+
+Use when the operator wants the regular v2 baseline without lean or orchestrator startup behavior.
+
+```bash
+bash /path/to/Templates/templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "[PROJECT_NAME]" \
+  --tier TIER_B_STANDARD \
+  --tier-profile auto \
+  --strict
+```
+
+Then:
+- Keep project-specific docs that already contain real information.
+- Do not delete lean/orchestrator files automatically; mark unused profile docs as retired only after operator confirmation.
+- Run `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` sections 0-8.
+
+### B) Default v2 -> Lean v2
+
+Use when the project already has v2 docs and should reduce startup context.
+
+```bash
+bash /path/to/Templates/templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "[PROJECT_NAME]" \
+  --tier TIER_B_STANDARD \
+  --tier-profile auto \
+  --lean \
+  --strict
+```
+
+Then:
+- Fill `docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md` with current state.
+- Run `bash scripts/sync_session_brief.sh`.
+- Run `bash scripts/validate_context_budget.sh`.
+- Register missing triggers in `docs/CONTEXT_ROUTING.md`.
+
+### C) Lean v2 -> Orchestrator v2
+
+Use when the project should add local-worker/cloud-orchestrator packet flow.
+
+```bash
+bash /path/to/Templates/templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "[PROJECT_NAME]" \
+  --tier TIER_B_STANDARD \
+  --tier-profile auto \
+  --orchestrator \
+  --strict
+```
+
+Then follow `docs/ORCHESTRATOR_CARRYOVER_EXAMPLE.md`:
+- Run `python3 scripts/orchestrator_state.py init`.
+- Resolve `docs/LOCAL_WORKER_HEALTH.md`, `docs/ORCHESTRATION_MAP.md`, `docs/OPERATOR_DASHBOARD.md`, and budget ceilings.
+- Dry-run one doc-only packet end to end before implementation packets.
+- Run `python3 scripts/orchestrator_state.py validate` and `bash scripts/validate_templates.sh .`.
+
+### D) Default v2 -> Orchestrator v2
+
+Use the same command as C. Treat it as default v2 -> lean startup + orchestrator overlay in one step.
+
+Additional checks:
+- Create or update `docs/GAME_PLAN.md` before running `scripts/sync_session_brief.sh`.
+- Confirm `docs/CONTEXT_ROUTING.md` has all orchestrator event triggers.
+- Do not issue local-worker implementation packets until the doc-only dry run passes.
+
+### E) Orchestrator v2 -> Lean v2
+
+Use when the project no longer wants active local-worker packet flow but should keep routed startup.
+
+```bash
+bash /path/to/Templates/templates-v2/scripts/bootstrap_agent_ready.sh.template \
+  --target /path/to/project \
+  --project-name "[PROJECT_NAME]" \
+  --tier TIER_B_STANDARD \
+  --tier-profile auto \
+  --lean \
+  --strict
+```
+
+Then:
+- Do not delete orchestrator docs automatically.
+- Set `docs/state/session_budget.json` `current_session.execution_mode` to `HALTED` or record that orchestrator mode is inactive.
+- Add a changelog note that local-worker packet flow is paused or retired.
+- Keep packet ledgers for audit unless the operator explicitly asks to archive them.
+
+### F) Orchestrator v2 -> Default v2
+
+Use only when the operator explicitly wants to remove routed startup and active orchestration.
+
+Path:
+1. Run pathway E to halt orchestration safely.
+2. Run pathway A to refresh default v2.
+3. Ask before deleting any `docs/packets/`, `docs/state/`, or orchestrator docs.
+
+## Completion Criteria
+
+- [ ] Target profile selected by operator or explicit directive.
+- [ ] Bootstrap command for the selected profile ran successfully.
+- [ ] `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` completed for applicable sections.
+- [ ] Profile-specific validator passed: context budget for lean, orchestrator state for orchestrator.
+- [ ] Project verify gate passed or blocker recorded.
+- [ ] `CHANGELOG.md` or active plan records current profile and migration evidence.
+
+## Recommended Operator Prompt
+
+Use this in a project repo:
+
+```text
+Read docs/TEMPLATE_PROFILE_MIGRATION.md and docs/TEMPLATE_ADOPTION_WALKTHROUGH.md. Ask me which Templates profile I want, then update this project through the correct carryover pathway from the current Templates repo.
+```
