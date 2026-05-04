@@ -13,6 +13,7 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTIN
 | Doc | Load when |
 |---|---|
 | `docs/GAME_PLAN.md` | milestone, scope, sequencing, or next action is unclear |
+| `docs/VISION.md` | workflow intent, source-of-truth, role boundaries, or drift confusion needs clarification |
 | `docs/PROJECT_CANVAS.md` | project purpose, tier, owner intent, or scope boundary is unclear |
 | `docs/SCENARIO_PLAYBOOK.md` | choosing AI workflow mode, planning template retrofit, planning cloud-to-local migration, or authorizing overnight local-agent work |
 | `docs/CLOSING_CHECKLIST.md` | final handoff, operator asks if everything is done, or operator says run closing checklist |
@@ -41,6 +42,7 @@ Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, and `docs/CONTEXT_ROUTIN
 |---|---|
 | User gives a new directive | Update `docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md` first |
 | Before choosing Level 1/2/3 AI workflow mode | `docs/SCENARIO_PLAYBOOK.md` |
+| Workflow confusion or source-of-truth drift | `docs/VISION.md` |
 | Starting template retrofit on an existing project | `docs/SCENARIO_PLAYBOOK.md` and `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` |
 | Migrating Firebase/cloud app to local server | `docs/SCENARIO_PLAYBOOK.md`, `docs/FEATURE_SPEC_TEMPLATE.md`, `docs/OPS_SECURITY_RELEASE.md`, and `docs/MASTER_TRACEABILITY_TABLE.md` |
 | Planning overnight local-agent run | `docs/SCENARIO_PLAYBOOK.md`, `docs/WORKER_TASK_PACKET.md`, and `docs/STATE_LEDGER_PROTOCOL.md` |

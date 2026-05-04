@@ -1,0 +1,195 @@
+version: v0.1
+artifact: docs/TEMPLATE_AUDIT_REPORT.md
+purpose: Machine-readable checklist for auditing a project against the orchestrator template standard
+source_of_truth: master-templates-repo
+
+required_report_sections:
+  - Summary
+  - Current Profile
+  - Target Profile
+  - Template Source
+  - Required Template Files
+  - Missing Template Files
+  - Missing Scripts
+  - Missing State Files
+  - Missing Routing
+  - Validation Gaps
+  - CI/CD Gaps
+  - Template Checklist
+  - Gaps
+  - Recommended Packet Queue
+  - Stop Conditions
+  - Next Question
+  - Review Summary
+  - Reviewer Missed Items
+  - Audit Loop History
+
+checklist_items:
+  - id: core-ai-agent
+    title: AI agent contract present
+    category: core-docs
+    required_by_tier: [A, B, C]
+    expected_paths: [AI_AGENT.md]
+    evidence_rule: file exists and is project-specific
+    severity: high
+
+  - id: core-session-brief
+    title: Session brief present
+    category: core-docs
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/SESSION_BRIEF.md]
+    evidence_rule: file exists and is current enough to resume work
+    severity: high
+
+  - id: core-context-routing
+    title: Context routing present
+    category: core-docs
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/CONTEXT_ROUTING.md]
+    evidence_rule: file exists and routes major workflow triggers
+    severity: high
+
+  - id: core-game-plan
+    title: Game plan present
+    category: core-docs
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/GAME_PLAN.md]
+    evidence_rule: file exists and has a current next step
+    severity: high
+
+  - id: core-vision
+    title: Vision doc present
+    category: core-docs
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/VISION.md]
+    evidence_rule: file exists and defines canonical workflow intent
+    severity: medium
+
+  - id: workflow-engineering-playbook
+    title: Engineering playbook present
+    category: workflow
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/ENGINEERING_PLAYBOOK.md]
+    evidence_rule: commands and validation loop are documented
+    severity: high
+
+  - id: workflow-orchestration-map
+    title: Orchestration map present
+    category: workflow
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/ORCHESTRATION_MAP.md]
+    evidence_rule: role boundaries and handoff rules are documented
+    severity: high
+
+  - id: workflow-scenario-playbook
+    title: Scenario playbook present
+    category: workflow
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/SCENARIO_PLAYBOOK.md]
+    evidence_rule: mode and high-risk routing choices are documented
+    severity: medium
+
+  - id: packets-worker-task
+    title: Worker task packet present
+    category: packets
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/WORKER_TASK_PACKET.md]
+    evidence_rule: bounded task handoff artifact exists
+    severity: high
+
+  - id: packets-worker-result
+    title: Worker result packet present
+    category: packets
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/WORKER_RESULT_PACKET.md]
+    evidence_rule: result handoff artifact exists
+    severity: high
+
+  - id: packets-post-coding
+    title: Post coding checks present
+    category: packets
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/POST_CODING_CHECKS.md]
+    evidence_rule: reviewer gate exists for DONE work
+    severity: high
+
+  - id: state-ledger
+    title: Packet ledger state present
+    category: state
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/state/packet_ledger.json]
+    evidence_rule: state ledger file exists
+    severity: high
+
+  - id: state-budget
+    title: Session budget state present
+    category: state
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/state/session_budget.json]
+    evidence_rule: session budget file exists
+    severity: medium
+
+  - id: script-orchestrator-state
+    title: Orchestrator state script present
+    category: scripts
+    required_by_tier: [A, B, C]
+    expected_paths: [scripts/orchestrator_state.py]
+    evidence_rule: state script exists and supports packet lifecycle
+    severity: high
+
+  - id: qa-traceability
+    title: Traceability table present
+    category: qa
+    required_by_tier: [B, C]
+    expected_paths: [docs/MASTER_TRACEABILITY_TABLE.md]
+    evidence_rule: path/workflow evidence tracking exists
+    severity: high
+
+  - id: qa-smoke-catalog
+    title: Smoke catalog present
+    category: qa
+    required_by_tier: [B, C]
+    expected_paths: [docs/SMOKE_TEST_CATALOG.md]
+    evidence_rule: smoke tests are registered
+    severity: medium
+
+  - id: qa-workflow-matrix
+    title: Workflow test matrix present
+    category: qa
+    required_by_tier: [B, C]
+    expected_paths: [docs/WORKFLOW_TEST_MATRIX.md]
+    evidence_rule: workflow-to-command verification matrix exists
+    severity: medium
+
+  - id: ops-local-worker-health
+    title: Local worker health present
+    category: ops
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/LOCAL_WORKER_HEALTH.md]
+    evidence_rule: worker lane readiness and degraded rules are documented
+    severity: medium
+
+  - id: cicd-verify-command
+    title: Verify command exists
+    category: ci-cd
+    required_by_tier: [A, B, C]
+    expected_paths: []
+    expected_commands: [bash scripts/verify.sh]
+    evidence_rule: project has a real verification path, or explicit rationale why not
+    severity: high
+
+  - id: cicd-ci-workflow
+    title: CI workflow exists
+    category: ci-cd
+    required_by_tier: [B, C]
+    expected_paths: [.github/workflows/ci.yml]
+    evidence_rule: CI path exists, or explicit rationale why not
+    severity: medium
+
+  - id: audit-template-version
+    title: Template version tracked
+    category: audit-governance
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/TEMPLATE_VERSION.md]
+    evidence_rule: applied template version or source version is documented
+    severity: medium

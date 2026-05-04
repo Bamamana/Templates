@@ -6,6 +6,8 @@ read_order:
   - AI_AGENT.md
   - docs/SESSION_BRIEF.md
   - docs/CONTEXT_ROUTING.md
+  - docs/VISION.md
+  - docs/TEMPLATE_AUDIT_MANIFEST.yaml
   - docs/GAME_PLAN.md
   - docs/SCENARIO_PLAYBOOK.md
   - docs/ORCHESTRATOR_CARRYOVER_EXAMPLE.md
@@ -42,6 +44,20 @@ core_templates:
     required_by_tier: [A, B, C]
     read_when: Always at session start
     skip_when: Never
+
+  - template: VISION.md.template
+    destination: docs/VISION.md
+    purpose: Canonical workflow source of truth for template sync, audit, orchestration, review, and coding
+    required_by_tier: [A, B, C]
+    read_when: Workflow intent, source-of-truth, or role boundaries are unclear
+    skip_when: Narrow bounded work already matches the recorded workflow
+
+  - template: TEMPLATE_AUDIT_MANIFEST.yaml.template
+    destination: docs/TEMPLATE_AUDIT_MANIFEST.yaml
+    purpose: Machine-readable audit checklist and required report sections for template audits
+    required_by_tier: [A, B, C]
+    read_when: Running template audit or checking template compliance
+    skip_when: Never for template-auditor runs
 
   - template: GAME_PLAN.md.template
     destination: docs/GAME_PLAN.md

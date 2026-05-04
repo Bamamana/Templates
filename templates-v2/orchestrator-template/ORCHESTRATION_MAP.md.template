@@ -5,6 +5,8 @@ Skip when: never.
 
 Purpose: define the stable role split, handoff protocol, token-saving policy, and escalation boundaries.
 
+If workflow intent or source-of-truth policy is disputed, `docs/VISION.md` is the canonical workflow document.
+
 ## Template Source Role
 This orchestrator-template is the reusable base for future projects. Project-specific repos may add hardware, runtime, or domain details, but generic three-role workflow improvements should be promoted back here before being treated as standard practice.
 

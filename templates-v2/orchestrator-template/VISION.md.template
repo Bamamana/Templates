@@ -1,0 +1,534 @@
+# Vision ([PROJECT_NAME])
+
+Read when: workflow intent is unclear, template source-of-truth is in question, roles are drifting, or the operator wants to know how the system is supposed to work.
+Skip when: doing a narrow bounded implementation that already matches this vision.
+
+Purpose: define the canonical workflow for Templates sync, auditing, orchestration, review, and coding so the project stops drifting between competing interpretations.
+
+## NON-CODER OPERATOR PROMISE
+
+**THIS PROGRAM IS FOR PEOPLE WHO HAVE NEVER WRITTEN A LINE OF CODE.**
+
+The operator may not know what a file path, test command, packet, diff, branch, schema, runtime mirror, or validation gate is.
+The system must still let that operator safely describe what they want, approve or stop work, and understand what happened.
+
+This is the first product constraint, not a nice-to-have.
+If any workflow requires the operator to think like a developer before it can proceed, that workflow is wrong or incomplete.
+
+The operator should see:
+
+1. Plain-English questions.
+2. Plain-English summaries.
+3. Clear choices: approve, revise, stop, or view details.
+4. Evidence of what was checked.
+5. A simple next recommended action.
+
+The operator should not be required to:
+
+1. Pick implementation files by hand.
+2. Know which commands or tests should run.
+3. Read raw JSON or packet schemas.
+4. Interpret raw diffs as the normal approval path.
+5. Understand template internals before getting a safe recommendation.
+6. Notice code drift manually.
+
+The AI system exists to translate plain language into safe, bounded technical work.
+It must not push that translation burden back onto the operator.
+
+## Core Product Promise
+
+The product is a plain-language orchestration system with hidden technical rigor.
+
+The visible experience should feel like talking to a careful coding partner.
+The hidden machinery should use Templates, audit artifacts, plan artifacts, bounded packets, checks, and reviewer gates to prevent uncontrolled code drift.
+
+The system wins when a non-coder can say what they want, answer a few focused questions, approve a readable plan, and receive reviewed work without managing the coding process directly.
+
+The system fails when agents improvise from memory, skip written artifacts, mix template sources, silently broaden scope, or make the operator act as the safety system.
+
+## Golden Path
+
+The normal workflow should be simple enough to explain without developer language:
+
+1. The operator says what they want in normal language.
+2. The orchestrator reads the current project context and Templates state.
+3. The orchestrator asks only the questions needed to make the request safe and clear.
+4. The orchestrator shows a plain-English plan with a recommended next action.
+5. The operator chooses approve, revise, stop, or view details.
+6. The coder receives one bounded packet and changes only approved files.
+7. The system runs the approved checks.
+8. The reviewer checks the written result and evidence.
+9. The orchestrator tells the operator what changed, what passed, what failed, and what should happen next.
+
+The golden path is the default product experience.
+Advanced packet details, logs, diffs, and schema fields are support tools, not the main path.
+
+## What The Operator Never Has To Do
+
+The operator never has to:
+
+1. Pick implementation files by hand.
+2. Know which test, build, audit, or verification commands should run.
+3. Read raw JSON, packet schemas, or model transport data.
+4. Decide whether a code diff is safe as the normal approval path.
+5. Remember where the project left off.
+6. Notice template drift manually.
+7. Translate plain-language intent into developer tasks.
+8. Manage worker, reviewer, auditor, or helper handoffs by hand.
+
+If the system needs any of those things, the orchestrator should infer them from context, ask a focused plain-language question, or stop with a clear reason.
+
+## No Drift Contract
+
+No agent may continue work from memory when a written artifact exists.
+
+The current written artifacts are the source of truth for their lane:
+
+1. `docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md` for current project direction.
+2. `docs/SESSION_BRIEF.md` for startup state.
+3. Synced local Templates state for workflow rules and template shape.
+4. `docs/TEMPLATE_AUDIT_REPORT.md` for template gaps.
+5. `docs/ORCHESTRATOR_PLAN.md` for the current implementation plan.
+6. Worker task packet for approved coding scope.
+7. Worker result packet for what changed and what evidence exists.
+8. Review packet for accept, repair, reject, or escalate decisions.
+
+Chat memory, hidden JSON, model assumptions, and previous responses are never stronger than the current written artifact.
+If artifacts disagree, the system must stop, explain the conflict in plain language, and repair the written source of truth before continuing.
+
+## One Current Truth At A Time
+
+At any moment, the system should be able to name the current:
+
+1. Working project.
+2. Templates source.
+3. Runtime template state.
+4. Audit artifact.
+5. Plan artifact.
+6. Packet.
+7. Result.
+8. Reviewer decision.
+9. Recommended next action.
+
+If there are two competing versions of any of these, the system should not guess.
+It should choose the documented canonical artifact when one exists, otherwise ask the operator or create a bounded repair step.
+
+## Human-Readable Status Requirement
+
+Every workflow handoff back to the operator must include plain-language status.
+
+The status should say:
+
+1. What changed.
+2. What was checked.
+3. What passed.
+4. What failed or remains unknown.
+5. What risk remains.
+6. What the system recommends next.
+
+Do not report vague success without evidence.
+Do not bury failure behind technical logs.
+Do not make the operator open multiple files just to know whether the work is safe to continue.
+
+## AI Failure Modes We Design Against
+
+The system is specifically designed to prevent:
+
+1. Code drift.
+2. Stale plans.
+3. Hidden JSON becoming the real approval truth.
+4. Agents making up project state from memory.
+5. Broad unbounded fixes.
+6. Reviewers accepting weak or missing evidence.
+7. Coders changing files outside the approved packet.
+8. Auditors approving incomplete gap lists.
+9. Template source confusion.
+10. The operator being forced to act like a developer.
+
+When a proposed feature makes one of these failure modes more likely, the design should change before implementation continues.
+
+## Program Success Test
+
+The program succeeds when a person who has never coded can open the tool, describe a goal, approve plain-English steps, and receive reviewed working changes without manually managing files, commands, prompts, packets, diffs, or model handoffs.
+
+The program is not successful just because code was generated.
+It is successful only when the operator can stay in control without becoming the developer, and the system can prove its work through written artifacts and checks.
+
+## Canonical Rule
+
+If behavior, code, or other docs disagree with this file, this file is the intended workflow until it is deliberately revised.
+
+This file is the highest-level workflow contract.
+Other docs may add detail, but they must not quietly redefine the product away from non-coder operation, written artifacts, or drift prevention.
+
+## Approval Rule
+
+Approval and review must target written markdown artifacts, not hidden JSON, invisible model state, or private chain-of-thought.
+
+Internal structured data may exist for transport or UI support, but it is not the thing being approved.
+If a reviewer, operator, auditor, or orchestrator is expected to judge something, that thing must exist as a readable project artifact.
+
+Operator-facing approval must start with a plain-English summary.
+Detailed artifacts can sit behind a details view, but they must exist and remain available for audit, recovery, and model handoff.
+
+Default approval artifacts:
+
+1. Audit: `docs/TEMPLATE_AUDIT_REPORT.md`
+2. Plan: `docs/ORCHESTRATOR_PLAN.md`
+3. Implementation: existing worker packet, result packet, and review packet artifacts
+
+The plan artifact should be one rolling file by default, not a new file per run.
+That means `docs/ORCHESTRATOR_PLAN.md` is the live current plan and gets updated in place during review and repair.
+
+## 1) Source Of Truth
+
+There are two template locations, and they do different jobs.
+
+1. Master template source repo
+2. Project-local runtime template mirror or applied template set
+
+The master Templates repo is where generic template changes are made.
+The project-local runtime mirror is what the orchestrator, auditor, and related automation should read during actual work.
+
+The system should not mix random files from both places at runtime.
+The intended runtime path is:
+
+1. Update master Templates.
+2. Sync Templates into the project runtime mirror or apply the updated templates into the project.
+3. Validate the synced or applied template state.
+4. Use that one local template state for audit and orchestration.
+
+The source-of-truth rule exists to prevent code drift.
+An agent should never guess which template version, checklist, packet shape, or workflow rule is current.
+It should read the synced local template state and stop if that state cannot be validated.
+
+## 2) Startup Sync Workflow
+
+Desired behavior:
+
+1. When the project starts, or before the first audit/orchestration step, run the Templates sync/apply flow.
+2. Copy or sync the current template pack from the master Templates repo into the project-local template state.
+3. Run template validation immediately after sync/apply.
+4. If sync/apply or validation fails, stop and surface the problem. Do not continue with stale or mixed template state.
+
+## 2a) What Will Work Best
+
+The best practical workflow is:
+
+1. Keep one master Templates repo.
+2. Sync that Templates repo into one project-local runtime mirror or applied template state.
+3. Make the auditor and orchestrator read that same local template state.
+4. Make the auditor produce the full gap list before any implementation work starts.
+5. Make the orchestrator turn that gap list into one bounded implementation packet at a time.
+6. Make reviewer approval mandatory for both the audit artifact and implementation packets/results.
+
+That gives each role one job:
+
+1. Templates define the rules.
+2. Auditor finds the gaps.
+3. Reviewer checks the audit or result.
+4. Orchestrator turns accepted facts into the next safe step.
+5. Coder changes only what the approved packet allows.
+6. Operator approves, revises, stops, or asks what happened in plain language.
+
+## 2b) What Will Cause Serious Problems
+
+These approaches are not the right workflow:
+
+1. Auto-copying the full Templates pack directly into every target project on every startup.
+2. Letting the auditor inspect one template source while the orchestrator or coder uses another.
+3. Letting the auditor or reviewer approve hidden JSON instead of the written markdown artifact.
+4. Letting the coder apply broad template updates without first going through audit, plan, and review.
+
+The safe place to auto-copy is the local runtime mirror, not the target project.
+
+## 3) What The Auditor Must Do
+
+The auditor is not a coder. The auditor is a checklist-driven inspector.
+
+The auditor must read the current local template state, not improvise from memory.
+The auditor must use the current template pack, the carryover guidance, and the target project's current files.
+
+The auditor must:
+
+1. Determine the target profile and tier, or explicitly flag that operator confirmation is needed.
+2. Walk a checklist against the project.
+3. Mark what is present, missing, stale, malformed, or miswired.
+4. Build a complete audit artifact that shows the whole picture of the project against the template.
+
+The audit must include, at minimum:
+
+1. Required template files
+2. Missing template files
+3. Missing scripts
+4. Missing state files
+5. Missing routing
+6. Missing validation gates
+7. Missing checklist/governance docs
+8. Stale or malformed files
+9. Recommended implementation order
+
+The auditor must keep updating the same audit artifact until the reviewer says the checklist is complete enough.
+
+## 4) Auditor Review Loop
+
+The audit loop is:
+
+1. Auditor reads local template state plus target project.
+2. Auditor writes `docs/TEMPLATE_AUDIT_REPORT.md` in the target project.
+3. Reviewer checks the written markdown file against the checklist.
+4. If the reviewer finds missing items, it sends the audit back.
+5. Auditor fixes the same audit file.
+6. Loop until the reviewer accepts or halts.
+
+The reviewer is judging the written audit, not hidden model thoughts.
+
+The auditor may use internal structure while drafting, but the accepted truth is the markdown file.
+
+Reviewer decisions must stay explicit:
+
+1. `ACCEPT`
+2. `REPAIR`
+3. `REJECT`
+4. `ESCALATE`
+
+No percentage threshold or fuzzy "close enough" rule should be used.
+
+## 4a) Audit Report Structure
+
+`docs/TEMPLATE_AUDIT_REPORT.md` should always contain these sections:
+
+1. Summary
+2. Current Profile
+3. Target Profile
+4. Template Source
+5. Required Template Files
+6. Missing Template Files
+7. Missing Scripts
+8. Missing State Files
+9. Missing Routing
+10. Validation Gaps
+11. CI/CD Gaps
+12. Template Checklist
+13. Gaps
+14. Recommended Packet Queue
+15. Stop Conditions
+16. Next Question
+17. Review Summary
+18. Reviewer Missed Items
+19. Audit Loop History
+
+This is the minimum audit artifact shape.
+
+## 4b) Machine-Readable Audit Manifest
+
+The machine-readable checklist should live in Templates as `TEMPLATE_AUDIT_MANIFEST.yaml.template`.
+
+It should define:
+
+1. Required report sections
+2. Checklist item ids
+3. Checklist categories
+4. Required tiers/profiles
+5. Expected files or commands
+6. Evidence rules
+7. Severity
+
+The auditor should use that manifest plus the synced local template state to decide what to check.
+
+## 5) What The Orchestrator Must Do
+
+The orchestrator is the planner and coordinator.
+The orchestrator is not supposed to make the operator act like a coder.
+
+The orchestrator must protect the operator from technical clutter without hiding safety evidence.
+It should infer likely files, commands, checks, stop conditions, and acceptance criteria from the project context, then show the operator a simple readable plan.
+When it is unsure, it should ask the smallest useful question in plain language.
+
+For template retrofit or template update work:
+
+1. Start from the accepted audit.
+2. Turn the audit into a bounded markdown implementation plan.
+3. Write or update `docs/ORCHESTRATOR_PLAN.md`.
+4. Send that written plan to the reviewer.
+5. If the reviewer finds planning gaps, fix the same plan artifact and resubmit.
+6. When the plan is accepted, send the next bounded packet to the coder.
+7. Receive the coded result.
+8. Send the result to the reviewer.
+9. If reviewer requests repair, loop repair between coder and reviewer.
+10. Return the reviewed result to the orchestrator.
+11. Orchestrator decides the next step from the audit backlog.
+
+The orchestrator should be able to run long unattended cycles only after these conditions are true:
+
+1. The local template state is freshly synced and validated.
+2. The audit artifact is reviewer-accepted.
+3. The implementation plan is reviewer-accepted.
+4. Stop conditions are explicit.
+5. Each coding step is packet-bounded.
+6. Reviewer gates remain active for coder output.
+
+Default unattended behavior should still stop after each accepted packet unless the operator explicitly enables automatic continuation.
+
+The preferred operator control is:
+
+1. Default unchecked: stop after accepted packet and return control/status.
+2. Optional checked control: continue automatically to the next approved backlog item.
+
+For discovery-style product work:
+
+1. Orchestrator talks to the operator conversationally.
+2. Orchestrator asks discovery questions until intent is clear enough.
+3. Orchestrator writes the plan as markdown.
+4. Reviewer checks the written plan artifact.
+5. Accepted plan goes to coder.
+6. Reviewer checks coded result.
+7. Orchestrator returns status and next-step options.
+
+For ordinary non-coder requests:
+
+1. Understand the operator's intent from natural language.
+2. Read the project's startup context before drafting technical work.
+3. Ask only the questions needed to remove real ambiguity.
+4. Recommend the safest next step instead of dumping choices on the operator.
+5. Compile the hidden packet fields from context.
+6. Present a readable approval summary.
+7. Keep raw packet details available behind a details view.
+
+## 5a) Same-Artifact Repair Rule
+
+When the reviewer rejects or repairs an audit or plan, the system should update the same markdown artifact rather than generating unrelated fresh summaries.
+
+That means:
+
+1. Audit repair updates `docs/TEMPLATE_AUDIT_REPORT.md`
+2. Plan repair updates `docs/ORCHESTRATOR_PLAN.md`
+
+This keeps history understandable and prevents drift between versions.
+
+The same rule applies to the rolling orchestrator plan file.
+
+## 5b) Orchestrator Plan Structure
+
+`docs/ORCHESTRATOR_PLAN.md` should stay simple, readable, and operational.
+
+It should always contain these sections:
+
+1. Summary
+2. Audit Source
+3. Workflow Mode
+4. Current Status
+5. Current Step
+6. Approved Backlog
+7. Next Packet
+8. Last Completed Packet
+9. Reviewer Decision
+10. Auto-Continue
+11. Stop Conditions
+12. Open Questions
+13. Notes / History
+
+Why this structure is preferred:
+
+1. It is readable by a non-coder operator.
+2. It is structured enough for orchestrator and reviewer handoff.
+3. It is compact enough to stay updated instead of becoming stale.
+4. It supports resume after interruption or overnight stop.
+
+The plan file should not become a giant design document.
+Detailed coding instructions belong in bounded worker packets, not in the rolling plan file.
+
+## 6) What The Coder Must Do
+
+The coder does bounded work only.
+
+The coder must:
+
+1. Work from the approved packet.
+2. Stay inside allowed files and allowed commands.
+3. Return evidence, not vibes.
+4. Send work back to reviewer.
+5. Never silently expand scope.
+
+## 7) Checklist Requirement
+
+The system needs a checklist that can grow when the master Templates repo changes.
+
+The preferred long-term design is:
+
+1. Human guidance docs remain in Templates.
+2. A machine-readable audit manifest/checklist also lives in Templates.
+3. The auditor reads that checklist every run.
+4. Template changes automatically appear in future audits after sync.
+
+That means when a new required file, script, or rule is added to Templates, the next synced audit sees it automatically.
+
+The checklist should have two layers:
+
+1. Machine-readable manifest for the auditor.
+2. Human-readable walkthrough/checklist for operators and reviewers.
+
+## 7a) Implementation Reality
+
+The system should be built in this order:
+
+1. Master Templates repo remains the editable source of truth.
+2. The project syncs or applies a local template state from it.
+3. Auditor reads the local template state plus a machine-readable checklist.
+4. Reviewer verifies the audit artifact against that checklist.
+5. Orchestrator turns accepted audit findings into bounded packets.
+6. Coder and reviewer loop packet by packet.
+
+The target repo should only change through reviewed packets, not through blind startup sync.
+
+## 8) Drift Prevention Rules
+
+1. Update master Templates first for reusable template behavior.
+2. Sync or apply Templates before auditing or orchestrating against Templates.
+3. Use one local template state during execution.
+4. Do not let the auditor or orchestrator compare against stale or mixed template sources.
+5. Do not change workflow intent in code without updating this vision.
+6. Do not change workflow intent in docs other than this file unless this file is updated too.
+7. Do not let hidden JSON, chat memory, or model assumptions become the real source of truth.
+8. Do not accept model work unless the written result, checks, and reviewer decision agree.
+9. Do not auto-repair target projects before measuring their current state.
+10. Do not continue after sync, validation, audit, plan, check, or review failures unless the operator explicitly approves a bounded repair path.
+
+The drift prevention chain is:
+
+1. One master Templates source.
+2. One validated local runtime template state.
+3. One written audit artifact.
+4. One rolling written plan artifact.
+5. One bounded worker packet at a time.
+6. One result packet with evidence.
+7. One reviewer decision.
+8. One plain-English operator status.
+
+## 9) Operator Experience Goal
+
+The operator should be able to use the system without knowing how to code.
+
+That means:
+
+1. The auditor finds the full gap list.
+2. The orchestrator turns that into the next safe plan.
+3. The reviewer checks the plan and the result.
+4. The coder executes bounded work.
+5. The orchestrator comes back with what was done and what is next.
+
+The operator should not have to manually inspect raw diffs, remember template internals, or manage the coding workflow by hand.
+
+The normal experience should be:
+
+1. Operator says what they want in normal language.
+2. Orchestrator reads the right project context.
+3. Orchestrator asks a focused question only if needed.
+4. Orchestrator shows a simple plan and recommended next action.
+5. Operator chooses approve, revise, stop, or view details.
+6. Coder performs bounded work.
+7. Reviewer checks the result.
+8. Orchestrator reports what changed, what passed, what failed, and what should happen next.
+
+Advanced details should be available, but they are not the main path.
+The main path is confidence, control, and safety for someone who does not code.
