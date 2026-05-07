@@ -317,8 +317,11 @@ No percentage threshold or fuzzy "close enough" rule should be used.
 17. Review Summary
 18. Reviewer Missed Items
 19. Audit Loop History
+20. AI Summary Paragraphs
 
 This is the minimum audit artifact shape.
+
+`AI Summary Paragraphs` is the persistent handoff trail. It should keep short human-readable auditor and reviewer paragraphs in iteration order so the operator can see what the auditor wrote, what the reviewer judged, and what the next auditor pass changed.
 
 ## 4b) Machine-Readable Audit Manifest
 

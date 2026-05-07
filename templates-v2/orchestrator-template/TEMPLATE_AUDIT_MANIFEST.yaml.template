@@ -23,6 +23,7 @@ required_report_sections:
   - Review Summary
   - Reviewer Missed Items
   - Audit Loop History
+  - AI Summary Paragraphs
 
 checklist_items:
   - id: core-ai-agent
