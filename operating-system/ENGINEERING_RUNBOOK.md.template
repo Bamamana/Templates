@@ -1,0 +1,147 @@
+# Engineering Runbook ([PROJECT_NAME])
+
+Read when:
+
+1. implementing,
+2. testing,
+3. validating,
+4. reviewing,
+5. troubleshooting workflow safeguards.
+
+Skip when:
+
+1. only project mission or current milestone is needed,
+2. a more specific packet or role contract already provides the needed boundary.
+
+## Purpose
+
+This is the single execution runbook for the project.
+
+It merges the jobs currently split across engineering playbook, commands, workflow matrix, and parts of the verification guidance.
+
+Use it for:
+
+1. canonical commands,
+2. implementation workflow,
+3. testing policy,
+4. traceability discipline,
+5. scripts and automation expectations,
+6. CI/CD contract,
+7. handoff expectations.
+
+## Source-Of-Truth Boundaries
+
+1. `PROJECT_STATE.md` owns current milestone and scope.
+2. `OPERATIONS_RUNBOOK.md` owns deploy, rollback, secrets, incident, and release policy.
+3. role contracts own auditor/orchestrator/worker/reviewer behavior.
+4. this file owns coding, testing, verification, and engineering evidence rules.
+
+## 1) Canonical Commands
+
+| Goal | Command | Notes |
+|---|---|---|
+| Setup | [SETUP_COMMANDS] | Required for local readiness |
+| Run / dev | [BUILD_OR_RUN_COMMAND] | Main local runtime |
+| Logs / troubleshoot | [LOGS_COMMAND_OR_NA] | Fastest useful log view |
+| Lint | [LINT_COMMAND_OR_NA] | Keep `N/A` explicit if unused |
+| Format check | [FORMAT_CHECK_COMMAND_OR_NA] | |
+| Type check | [TYPECHECK_COMMAND_OR_NA] | |
+| Fast smoke | [SMOKE_COMMAND_OR_NA] | Smallest useful confidence check |
+| Focused test | [TARGETED_TEST_COMMAND_OR_NA] | Narrow regression or feature check |
+| Coverage | [COVERAGE_COMMAND_OR_NA] | Tier B/C usually require this |
+| Verify gate | [VERIFY_COMMAND] | Required before handoff |
+| Predeploy gate | [PREDEPLOY_COMMAND_OR_NA] | Release/readiness proof |
+| Sync session brief | [SYNC_SESSION_BRIEF_COMMAND_OR_NA] | If routed startup is used |
+
+## 2) Modularity Rules
+
+- Soft review trigger: 500 lines.
+- Hard refactor trigger: 800 lines.
+- Exception rule: allow larger files only with explicit rationale and a near-term extraction plan.
+- Prefer cohesive modules with clear dependency direction.
+- Do not accept broad rewrites when a smaller slice solves the problem.
+
+## 3) Default Engineering Loop
+
+1. Read the project state and relevant role contract or packet.
+2. Make the smallest correct change.
+3. Add or update targeted tests when behavior changes.
+4. Update docs in the same change when behavior, commands, paths, or structure change.
+5. Run the smallest meaningful check first.
+6. Run the verify gate before handoff.
+7. Return concrete evidence, not just a summary.
+
+## 4) Testing And Evidence Policy
+
+- Behavior change requires a targeted test or explicit manual-evidence rationale.
+- Smoke checks should stay fast.
+- Focused tests should prove the touched behavior, not only implementation presence.
+- Manual smoke is valid only when the run path is concrete and current.
+- Tier B/C work should map to real traceability evidence.
+
+## 5) Traceability Rules
+
+- Maintain `MASTER_TRACEABILITY_TABLE.md` as the project pathway map.
+- Every active Path ID must have `Automated`, `Manual`, or `N/A` coverage with rationale.
+- Pathway changes update the table in the same change.
+- New workflows or entrypoints update test and smoke evidence in the same change.
+- Do not leave active rows as "pending" for handoff.
+
+## 6) Scripts And Automation Contract
+
+These scripts are first-class safeguards, not optional documentation decoration.
+
+| Script | Purpose | Required |
+|---|---|---|
+| `scripts/verify.sh` | Main local proof gate | Yes |
+| `scripts/test_smoke.sh` | Fast structural/runtime confidence | Preferred |
+| `scripts/test_targeted.sh` | Narrow regression or feature proof | Preferred |
+| `scripts/sync_session_brief.sh` | Sync current-state brief from source state doc | If routed startup is used |
+| `scripts/validate_context_budget.sh` | Keep always-on startup context within budget | If routed startup is used |
+| `scripts/check_template_drift.sh` | Detect drift against template/runtime source | If template governance is in use |
+| `scripts/enforce_doc_updates.sh` | Fail if behavior changes without docs updates | Strongly recommended |
+| `scripts/predeploy_full_suite.sh` | Composite release-readiness gate | Strongly recommended |
+
+If a safeguard is claimed in docs but has no script or no CI/CD gate, treat it as incomplete.
+
+## 7) CI/CD Contract
+
+CI/CD should run the same or stronger proofs than local handoff.
+
+Baseline expectation:
+
+1. setup and dependency install,
+2. lint if used,
+3. format check if used,
+4. typecheck if used,
+5. smoke check if defined,
+6. focused test if defined,
+7. verify gate,
+8. template or runtime-mirror validation when relevant,
+9. doc-update enforcement when relevant,
+10. security scans when promised by policy.
+
+If CI uses placeholders, echo commands, or non-real checks, it does not count as a real safeguard.
+
+## 8) Handoff Contract
+
+Every meaningful handoff should include:
+
+1. files changed,
+2. commands run and exit results,
+3. acceptance criteria status,
+4. traceability and doc updates when required,
+5. open risks or blockers,
+6. next recommended action.
+
+## 9) Update Rules
+
+Update this file when:
+
+1. commands change,
+2. verify policy changes,
+3. file-size policy changes,
+4. testing or evidence expectations change,
+5. scripts or CI/CD gates change.
+
+This file should stay aligned with the real scripts and CI/CD behavior.

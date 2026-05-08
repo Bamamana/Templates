@@ -1,0 +1,90 @@
+# AI Agent Contract ([PROJECT_NAME] - Orchestrator Profile)
+
+Read when: always.
+Skip when: never.
+
+Human startup instruction:
+"Read AI_AGENT.md and follow it."
+
+## Startup Reads (Always)
+
+1. `AI_AGENT.md`
+2. `docs/SESSION_BRIEF.md`
+3. `docs/CONTEXT_ROUTING.md`
+
+Do not load other docs by default.
+Use `docs/CONTEXT_ROUTING.md` to decide.
+
+## Orchestrator Profile Intent
+
+This profile is for auditor, orchestrator, worker, reviewer, and investigator flows.
+
+Use it when:
+
+1. bounded worker packets are the default implementation path,
+2. non-coder operator handoff matters,
+3. repeated failure needs structured escalation,
+4. worker readiness and packet state need explicit artifacts.
+
+## Working Rules
+
+- If confidence is low, ask a small number of precise questions before acting.
+- If the request lacks acceptance criteria, clarify before packetizing broad work.
+- Smallest correct change first. No silent scope expansion.
+- Use `docs/PROJECT_STATE.md` as the source of truth for phase, plan, risk, and next action.
+- Use `docs/ENGINEERING_RUNBOOK.md` for commands, tests, scripts, CI/CD, and verify rules.
+- Use `docs/OPERATIONS_RUNBOOK.md` for deploy, rollback, secrets, release, and incident work.
+- Use `docs/ORCHESTRATOR_CONTRACT.md` for planning and packet authority.
+- Use `docs/WORKER_TASK_PACKET.md` and `docs/WORKER_RESULT_PACKET.md` for delegated work.
+- Use `docs/REVIEW_CHECKLIST.md` and `docs/REVIEWER_CONTRACT.md` before accepting results.
+- Use `docs/INVESTIGATOR_PROTOCOL.md` after repeated blocked or escalated work.
+- Use `docs/OPERATOR_DASHBOARD.md` when the operator needs a plain-English decision surface.
+- Use `docs/LOCAL_WORKER_HEALTH.md` before trusting the worker lane for meaningful implementation work.
+- Tier B/C runtime changes require `docs/MASTER_TRACEABILITY_TABLE.md` updates with smoke or contract evidence.
+- Use `docs/CLOSING_CHECKLIST.md` before claiming the work is done.
+
+## Orchestrator Rails
+
+1. Plan is law. Every action must trace to `docs/PROJECT_STATE.md`, an accepted artifact, or the current user directive.
+2. One milestone in flight. Do not advance to a new milestone without explicit confirmation.
+3. One bounded packet at a time unless explicit queue mode exists.
+4. Worker packets are the default code path.
+5. Every `DONE` result requires explicit review before acceptance.
+6. Two-failure escalation is hard: repeated blocked or contradictory results route to `docs/INVESTIGATOR_PROTOCOL.md`.
+7. Cost and packet ceilings are real when state ledgers are in use.
+8. Doc, traceability, and changelog updates ride with the work.
+9. Verify gate must pass before final handoff unless the work is explicitly blocked.
+10. Tier C worker implementation requires a real sandbox and worker-health record.
+
+## Decision Tree
+
+1. New directive this turn: update `docs/PROJECT_STATE.md` first, then act.
+2. Active worker packet outstanding: check timeout or status before issuing new work.
+3. Result packet awaiting review: run the review path first.
+4. Repeated blocked, escalated, or contradictory outcome: use `docs/INVESTIGATOR_PROTOCOL.md`.
+5. Clear unchecked next step: issue the next bounded packet.
+6. All current plan items checked: stop and surface completion.
+7. None of the above: record the open question and ask.
+
+## Worker Timeout And Fallback Rules
+
+- Default packet timeout should be explicit in state or packet artifacts.
+- Malformed or timed-out results must not remain active silently.
+- Infrastructure outage is not investigator work.
+- Attended sessions may use one bounded fallback slice only when surfaced to the operator.
+- Unattended sessions halt on ambiguity, timeout, malformed result, outage, or ceiling breach.
+
+## File Size Rule
+
+- Target new files at or below 400 lines.
+- Review any source file above 500 lines.
+- Treat 800 lines as a hard refactor trigger unless explicitly justified.
+
+## Definition Of Done
+
+Do not claim done until:
+
+1. review outcome is explicit,
+2. required evidence is recorded,
+3. verify passes or the blocker is explicit,
+4. `docs/CLOSING_CHECKLIST.md` has been completed.

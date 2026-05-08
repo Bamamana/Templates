@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SOURCE_ROOT="${SOURCE_ROOT:-$(cd "${OS_ROOT}/.." && pwd)}"
+MANIFEST_PATH="${MANIFEST_PATH:-${OS_ROOT}/RUNTIME_MIRROR_MANIFEST.json.template}"
+TARGET_ROOT="${TARGET_ROOT:-}"
+MAX_PHASE="${MAX_PHASE:-2}"
+
+if [[ -z "${TARGET_ROOT}" ]]; then
+  echo "[sync_runtime_mirror] TARGET_ROOT is required" >&2
+  exit 2
+fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "[sync_runtime_mirror] python3 is required" >&2
+  exit 2
+fi
+
+mapfile -t ENTRIES < <(
+  python3 - "${MANIFEST_PATH}" "${MAX_PHASE}" <<'PY'
+import json
+import sys
+
+manifest_path = sys.argv[1]
+max_phase = int(sys.argv[2])
+
+with open(manifest_path, "r", encoding="utf-8") as handle:
+    manifest = json.load(handle)
+
+for entry in manifest["entries"]:
+    if entry.get("action", "copy") != "copy":
+        continue
+    if int(entry.get("phase", 1)) > max_phase:
+        continue
+    print("\t".join([entry["id"], entry["sourcePath"], entry["mirrorPath"]]))
+PY
+)
+
+if [[ "${#ENTRIES[@]}" -eq 0 ]]; then
+  echo "[sync_runtime_mirror] no manifest entries matched phase ${MAX_PHASE}" >&2
+  exit 1
+fi
+
+count=0
+for row in "${ENTRIES[@]}"; do
+  IFS=$'\t' read -r entry_id source_path mirror_path <<<"${row}"
+  source_file="${SOURCE_ROOT}/${source_path}"
+  target_file="${TARGET_ROOT}/${mirror_path}"
+
+  if [[ ! -r "${source_file}" ]]; then
+    echo "[sync_runtime_mirror] missing source: ${source_file} (${entry_id})" >&2
+    exit 1
+  fi
+
+  mkdir -p "$(dirname "${target_file}")"
+  cp "${source_file}" "${target_file}"
+  echo "[sync_runtime_mirror] ${entry_id}: ${source_path} -> ${mirror_path}"
+  count=$((count + 1))
+done
+
+mkdir -p "${TARGET_ROOT}"
+cp "${MANIFEST_PATH}" "${TARGET_ROOT}/$(basename "${MANIFEST_PATH}")"
+
+python3 - "${MANIFEST_PATH}" "${TARGET_ROOT}" "${SOURCE_ROOT}" "${MAX_PHASE}" "${count}" <<'PY'
+import json
+import os
+import sys
+from datetime import datetime, timezone
+
+manifest_path, target_root, source_root, max_phase, count = sys.argv[1:6]
+
+with open(manifest_path, "r", encoding="utf-8") as handle:
+    manifest = json.load(handle)
+
+status_path = os.path.join(target_root, manifest["statusFile"])
+status = {
+    "mirrorId": manifest["mirrorId"],
+    "schemaVersion": manifest["schemaVersion"],
+    "sourceRoot": source_root,
+    "manifest": os.path.basename(manifest_path),
+    "maxPhase": int(max_phase),
+    "syncedFileCount": int(count),
+    "syncedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    "result": "ok"
+}
+
+with open(status_path, "w", encoding="utf-8") as handle:
+    json.dump(status, handle, indent=2)
+    handle.write("\n")
+PY
+
+echo "[sync_runtime_mirror] mirror refreshed into ${TARGET_ROOT}"

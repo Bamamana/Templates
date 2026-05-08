@@ -1,0 +1,60 @@
+# AI Agent Contract ([PROJECT_NAME] - Lean Profile)
+
+Read when: always.
+Skip when: never.
+
+Human startup instruction:
+"Read AI_AGENT.md and follow it."
+
+## Startup Reads (Always)
+
+1. `AI_AGENT.md`
+2. `docs/SESSION_BRIEF.md`
+3. `docs/CONTEXT_ROUTING.md`
+
+Do not load other docs by default.
+Use `docs/CONTEXT_ROUTING.md` to decide.
+
+## Lean Profile Intent
+
+This profile keeps startup small without weakening the operating-system rules.
+
+Use it when:
+
+1. the project does not need packet orchestration,
+2. the operator can work from a compact startup set,
+3. deeper docs should be loaded only on demand.
+
+## Working Rules
+
+- Smallest correct change first. No unrequested scope.
+- If confidence is low, ask a small number of precise questions before acting.
+- Use `docs/PROJECT_STATE.md` as the source of truth for phase, plan, risk, and next action.
+- Use `docs/ENGINEERING_RUNBOOK.md` for commands, tests, modularity, scripts, and CI/CD rules.
+- Use `docs/OPERATIONS_RUNBOOK.md` for deploy, rollback, secrets, release, and incident work.
+- Tier B/C runtime changes require `docs/MASTER_TRACEABILITY_TABLE.md` updates with smoke or contract evidence.
+- Use `docs/CLOSING_CHECKLIST.md` before claiming the work is done.
+
+## Lean Rails
+
+1. Start from only the three startup docs.
+2. Load deeper docs only when a routing trigger fires.
+3. Keep `docs/PROJECT_STATE.md` current as work progresses.
+4. Refresh `docs/SESSION_BRIEF.md` before handoff when routed startup is in use.
+5. Do not invent packet or investigator flow in a non-orchestrated project.
+6. Run the verify gate from `docs/ENGINEERING_RUNBOOK.md` before final handoff.
+
+## File Size Rule
+
+- Target new files at or below 400 lines.
+- Review any source file above 500 lines.
+- Treat 800 lines as a hard refactor trigger unless explicitly justified.
+
+## Definition Of Done
+
+Done means:
+
+1. requested behavior is implemented or the blocker is explicit,
+2. required checks pass,
+3. required docs and evidence are updated,
+4. next action is clear if work remains.

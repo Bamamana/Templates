@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
+run_if_real() {
+  local label="$1"
+  local command_text="$2"
+
+  if [[ -z "$command_text" || "$command_text" == "N/A" ]]; then
+    echo "[verify][SKIP] $label"
+    return 0
+  fi
+
+  if [[ "$command_text" =~ ^\[[A-Z0-9_]+\]$ ]]; then
+    echo "[verify][FAIL] Unresolved placeholder for $label: $command_text" >&2
+    return 1
+  fi
+
+  echo "[verify] -> $label"
+  eval "$command_text"
+}
+
+run_if_real "lint" "[LINT_COMMAND_OR_NA]"
+run_if_real "format check" "[FORMAT_CHECK_COMMAND_OR_NA]"
+run_if_real "type check" "[TYPECHECK_COMMAND_OR_NA]"
+run_if_real "smoke" "[SMOKE_COMMAND_OR_NA]"
+run_if_real "targeted tests" "[TARGETED_TEST_COMMAND_OR_NA]"
+
+if [[ -f "scripts/validate_context_budget.sh" ]]; then
+  echo "[verify] -> context budget"
+  bash scripts/validate_context_budget.sh
+fi
+
+if [[ -f "scripts/validate_operating_system.sh" ]]; then
+  echo "[verify] -> operating-system validation"
+  bash scripts/validate_operating_system.sh .
+fi
+
+echo "[verify][PASS] Verification gate passed"

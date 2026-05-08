@@ -1,0 +1,59 @@
+# Closing Checklist ([PROJECT_NAME])
+
+Read when:
+
+1. before final handoff,
+2. when someone says run closeout,
+3. when claiming the work is done,
+4. when the operator asks whether everything required is actually complete.
+
+Skip when:
+
+1. the task is still actively blocked and only a status update is needed.
+
+## Purpose
+
+This is the explicit final closeout gate.
+
+The agent must report `PASS`, `FAIL`, or `N/A` for each item before claiming done.
+
+## Closing Gate
+
+| Check | Result | Evidence / Note |
+|---|---|---|
+| User request answered | PASS / FAIL | |
+| Scope stayed within request | PASS / FAIL | |
+| Acceptance boundary checked | PASS / FAIL / N/A | |
+| Project state updated | PASS / FAIL / N/A | `docs/PROJECT_STATE.md` |
+| Session brief refreshed | PASS / N/A | `docs/SESSION_BRIEF.md` or routed-startup not used |
+| Tests or commands run | PASS / FAIL / N/A | list commands and exit results |
+| Verify gate run | PASS / FAIL / N/A | `scripts/verify.sh` or explicit rationale |
+| Review decision recorded | PASS / N/A | `docs/REVIEW_CHECKLIST.md` or accepted review artifact |
+| Traceability updated | PASS / N/A | Path IDs or rationale |
+| Docs and changelog updated | PASS / N/A | files updated or reason skipped |
+| UI-visible evidence checked | PASS / N/A | browser smoke, screenshot/trace, or manual click path |
+| Data safety checked | PASS / N/A | snapshot/restore evidence or no data touched |
+| Security/privacy risk checked | PASS / N/A | scan or review note |
+| Operator dashboard updated | PASS / N/A | `docs/OPERATOR_DASHBOARD.md` for orchestrated work |
+| Open risks listed | PASS / FAIL | risks or `None` |
+| Remaining work listed | PASS / FAIL | follow-ups or `None` |
+
+## Required Final Handoff Shape
+
+After running the checklist, the handoff should say:
+
+1. what changed,
+2. what commands or tests ran and with what result,
+3. closing checklist summary,
+4. open risks or follow-ups,
+5. whether the work is done, blocked, or waiting on operator action.
+
+Do not claim done if any required item is `FAIL`.
+
+## Update Rules
+
+Update this file when:
+
+1. handoff expectations change,
+2. verify or review requirements change,
+3. closeout evidence expectations change.

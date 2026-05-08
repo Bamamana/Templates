@@ -1,0 +1,96 @@
+# State Ledger Protocol ([PROJECT_NAME])
+
+Read when: packet state, review evidence, session ceilings, or escalation history needs checking or updating.
+Skip when: the project does not use orchestration ledgers and work is not delegated.
+
+Purpose: make orchestration state visible in repo artifacts instead of trusting memory.
+
+## Artifacts
+
+- `docs/state/packet_ledger.json` - one row-equivalent per issued packet
+- `docs/state/session_budget.json` - current session counters and configured ceilings
+- `docs/packets/issued/` - persisted task packets
+- `docs/packets/results/` - persisted result packets
+- `docs/packets/reviewed/` - persisted review notes
+- `docs/packets/archived/` - optional closed-packet archive
+
+Use the project script that owns state-ledger operations to initialize and validate these artifacts.
+
+## Packet Lifecycle
+
+Allowed `lifecycle_state` values:
+
+- `ISSUED`
+- `RESULT_RETURNED`
+- `POST_CHECKED`
+- `ACCEPTED`
+- `REJECTED`
+- `ESCALATED`
+- `CANCELLED`
+- `ABANDONED`
+
+Active states are `ISSUED` and `RESULT_RETURNED`.
+
+Active packets need:
+
+1. `issued_at`
+2. `last_event_at`
+3. `timeout_minutes`
+
+Done work requires completed review evidence before acceptance.
+
+## Minimum Packet Entry Shape
+
+```json
+{
+  "packet_id": "P-YYYY-MM-DD-NN",
+  "session_id": "session-name",
+  "path_ids": [],
+  "lifecycle_state": "ISSUED",
+  "worker_result_status": "NONE",
+  "review": { "completed": false },
+  "investigator": { "invoked": false }
+}
+```
+
+## Session Budget Shape
+
+```json
+{
+  "session_id": "session-name",
+  "status": "ACTIVE",
+  "execution_mode": "HYBRID",
+  "cloud_spend_usd": 0.0,
+  "worker_packets_issued": 0,
+  "investigator_invocations": 0,
+  "done_packets_reviewed": 0,
+  "limits": {
+    "cloud_spend_usd": 5.0,
+    "worker_packets_issued": 10,
+    "investigator_invocations": 2
+  }
+}
+```
+
+Allowed `execution_mode` values:
+
+- `HYBRID`
+- `CLOUD_ONLY_TEMPORARY`
+- `HALTED`
+
+## Rules
+
+- Update the ledger when issuing, receiving, reviewing, escalating, cancelling, or abandoning a packet.
+- Timeout or malformed result must not remain active.
+- Review outcomes should match the written artifact kept with the packet.
+- Investigator usage increments session budget.
+- Spend counters are only as trustworthy as the updater, so prefer scripts or provider-side ceilings when possible.
+
+## Minimum Validation Expectations
+
+Before handoff or session close:
+
+1. no stale active packets remain without explanation,
+2. reviewed done packets have explicit outcome,
+3. session budget reflects investigator and packet usage,
+4. packet folders match the ledger state closely enough to audit.

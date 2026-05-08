@@ -1,0 +1,37 @@
+# Session Brief ([PROJECT_NAME])
+
+Read when: always at session start.
+Skip when: never.
+
+This is the compact startup snapshot.
+
+`docs/PROJECT_STATE.md` is the richer source of truth.
+If automation exists, generate this file from project state.
+If no automation exists, keep this file short and current.
+
+## Now
+
+- Phase:
+- Milestone:
+- Status:
+- Next item:
+- Next command:
+- Last verified:
+
+## Focus
+
+- Active objective:
+- In-scope area:
+- Known blocker or risk:
+
+## Quick Guardrails
+
+- Verify gate: see `docs/ENGINEERING_RUNBOOK.md`
+- Operational risk or release change: see `docs/OPERATIONS_RUNBOOK.md`
+- Runtime pathway change: see `docs/MASTER_TRACEABILITY_TABLE.md`
+- Packeted work: see `docs/WORKER_TASK_PACKET.md` and `docs/STATE_LEDGER_PROTOCOL.md`
+
+## Notes For Next Session
+
+- Update `docs/PROJECT_STATE.md` first when the phase, milestone, or next action changes.
+- Refresh this brief before handoff.

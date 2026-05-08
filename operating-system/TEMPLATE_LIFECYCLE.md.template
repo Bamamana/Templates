@@ -1,0 +1,181 @@
+# Template Lifecycle ([PROJECT_NAME])
+
+Read when:
+
+1. choosing a profile,
+2. applying the operating system to a project,
+3. validating adoption,
+4. resolving placeholders,
+5. upgrading to a newer operating-system version,
+6. auditing whether a project is truly ready.
+
+Skip when:
+
+1. routine feature work is already inside an established project and no lifecycle change is happening.
+
+## Purpose
+
+This is the single lifecycle document.
+
+It merges the jobs currently split across:
+
+1. profile migration,
+2. quickstart,
+3. apply checklist,
+4. adoption walkthrough,
+5. validation checklist,
+6. placeholder guide,
+7. upgrade guide.
+
+## 1) Choose Tier And Profile
+
+### Tier
+
+| Tier | Use when |
+|---|---|
+| `TIER_A_STATIC` | static or lightweight work with minimal operational risk |
+| `TIER_B_STANDARD` | standard app/API with meaningful workflows or state |
+| `TIER_C_PRODUCTION_CRITICAL` | regulated, production-critical, or high-risk systems |
+
+### Profile
+
+| Profile | Use when |
+|---|---|
+| `DEFAULT` | full project baseline without routed lean startup |
+| `LEAN` | same operating-system rules with smaller startup context |
+| `ORCHESTRATOR` | projects using auditor, orchestrator, worker, reviewer, and packet-state flow |
+
+Do not guess silently when the profile materially changes required artifacts.
+
+## 2) Quickstart Apply Flow
+
+Recommended high-level flow:
+
+1. choose tier,
+2. choose profile,
+3. apply the operating-system pack or profile overlay,
+4. resolve placeholders,
+5. wire real commands and scripts,
+6. validate adoption,
+7. run the verify gate.
+
+## 3) Adoption / Carryover Sequence
+
+Use this order for new projects or retrofits:
+
+1. confirm target profile and tier,
+2. record current project baseline when retrofitting,
+3. apply required startup docs,
+4. apply required runbooks and contracts,
+5. wire required scripts,
+6. wire CI/CD to the same rules,
+7. resolve placeholders,
+8. validate the operating-system inventory,
+9. run verify,
+10. record the adoption in the changelog or current plan.
+
+## 4) Capability Checklist
+
+Adoption is not complete until all relevant capabilities are present or explicitly `N/A` with rationale.
+
+### Startup capability
+
+- `AI_AGENT.md`
+- `SESSION_BRIEF.md` when routed startup is used
+- `CONTEXT_ROUTING.md` when routed startup is used
+
+### State and execution capability
+
+- `PROJECT_STATE.md`
+- `MASTER_TRACEABILITY_TABLE.md` when tier requires it
+- real project commands and verify gate
+
+### Scripts and automation capability
+
+- verify gate
+- smoke and targeted test surfaces if applicable
+- context-budget validation if routed startup is used
+- drift or runtime-mirror checks if template governance is in use
+- documentation-update enforcement when same-change docs discipline is expected
+- predeploy gate when release readiness matters
+
+### CI/CD capability
+
+- CI runs real gates, not placeholders
+- CI reflects the same or stronger proof than local handoff
+- security scans exist if promised by policy
+
+### Orchestrator capability
+
+If orchestrator profile is used, also require:
+
+- role contracts,
+- packet templates,
+- state ledger protocol,
+- audit manifest,
+- reviewer and escalation flow.
+
+## 5) Validation Rules
+
+Validation should check:
+
+1. required files exist,
+2. placeholders are resolved or intentionally allowlisted,
+3. startup docs match the selected profile,
+4. scripts exist and are executable where required,
+5. CI/CD gates are real,
+6. traceability rules are satisfied for the tier,
+7. verify gate runs or a blocker is recorded.
+
+Do not treat file presence alone as adoption success.
+
+## 6) Placeholder Rules
+
+- Resolve placeholders that affect active behavior, commands, paths, or safety decisions.
+- Allowlist intentional placeholders only with rationale.
+- Placeholder reports should be treated as real failures in strict mode.
+- A placeholder in an active command, tier rationale, or startup contract is not harmless.
+
+## 7) Upgrade Rules
+
+When updating to a newer operating-system version:
+
+1. record current version and current gates,
+2. apply the new pack without overwriting project-specific state by default,
+3. resolve diffs and placeholders,
+4. rerun validation,
+5. rerun verify,
+6. record the version change separately from feature work.
+
+## 8) Rollback Rules
+
+If upgrade or carryover fails:
+
+1. stop broad changes,
+2. revert the upgrade pass or isolate it in a smaller slice,
+3. keep the failure evidence,
+4. do not continue on mixed old/new template state.
+
+## 9) Auditor Expectations
+
+The auditor should use this lifecycle doc as a first-class source.
+
+It should check:
+
+1. selected profile and tier,
+2. capability presence,
+3. scripts and CI/CD reality,
+4. placeholder status,
+5. upgrade or carryover readiness,
+6. whether the next safe packet is doc-only, script-only, CI/CD, traceability, or broader.
+
+## 10) Done Criteria For Adoption
+
+Adoption or upgrade is done only when:
+
+1. target tier and profile are explicit,
+2. required artifacts exist,
+3. scripts and CI/CD reflect the documented safeguards,
+4. placeholders are resolved or allowlisted with rationale,
+5. traceability and evidence rules are satisfied,
+6. verify passes or the blocker is explicit and bounded.

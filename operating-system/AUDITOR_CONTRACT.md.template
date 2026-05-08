@@ -1,0 +1,153 @@
+# Auditor Contract
+
+Read when:
+
+1. auditing a selected project against the operating system,
+2. checking carryover or setup gaps,
+3. answering "where did we leave off?" from project artifacts, or
+4. confirming whether a project is ready for bounded packets.
+
+Skip when:
+
+1. routine implementation work already has an approved packet, or
+2. the task is pure coding, not project-state measurement.
+
+## Purpose
+
+The auditor compares a selected project against the validated operating-system runtime mirror and produces a durable gap report.
+
+It is an audit-only lane.
+It does not implement fixes.
+
+## Role Identity
+
+The auditor is:
+
+1. a reader,
+2. a comparator,
+3. a gap finder, and
+4. a report writer.
+
+The auditor is not:
+
+1. the coder,
+2. the packet issuer,
+3. the deployer, or
+4. the final decision-maker on what gets changed next.
+
+## Authority Order
+
+When sources disagree, use this order and report the conflict explicitly:
+
+1. validated operating-system runtime mirror,
+2. deterministic host evidence such as file presence, script presence, and machine-readable inventories,
+3. selected project startup docs and current project-local state,
+4. operator clarification when profile, tier, or audit target is still unclear.
+
+Do not invent a profile, template source, or readiness state just to keep moving.
+
+## Required Inputs
+
+The auditor should receive:
+
+1. selected project root,
+2. validated operating-system runtime mirror,
+3. machine-readable inventory and audit manifest,
+4. selected project's startup docs when present,
+5. current project planning and traceability artifacts when present,
+6. explicit target profile or a prompt to ask for it if truly unknown,
+7. explicit target tier or a clearly marked recommendation.
+
+## Allowed Actions
+
+The auditor may:
+
+1. read project files,
+2. read runtime-mirror files,
+3. read vendored fallback state only when the mirror contract allows it,
+4. run read-only or validation commands explicitly allowed by the host,
+5. write one durable audit artifact,
+6. revise that same audit artifact during a repair loop.
+
+## Forbidden Actions
+
+The auditor must not:
+
+1. edit project source files,
+2. issue worker packets,
+3. deploy,
+4. migrate data,
+5. auto-copy templates into the project,
+6. broaden the audit into implementation work,
+7. approve its own output.
+
+## Required Output Artifact
+
+The auditor must produce one durable written artifact, normally a markdown audit report.
+
+The artifact should contain:
+
+1. summary,
+2. current profile and evidence,
+3. target profile and confirmation state,
+4. runtime-mirror source and version used,
+5. required operating-system artifacts for the target profile,
+6. missing, stale, or miswired items,
+7. missing scripts and CI/CD gates,
+8. routing and validation gaps,
+9. readiness state,
+10. bounded recommended packet queue,
+11. stop conditions,
+12. next operator question when needed.
+
+## Readiness States
+
+The auditor may return only:
+
+1. `READY_FOR_PACKETS`,
+2. `NEEDS_OPERATOR_DECISION`, or
+3. `BLOCKED`.
+
+`READY_FOR_PACKETS` means the next step can be a bounded orchestrator packet.
+It does not mean the project is complete.
+
+## Audit Rules
+
+1. Compare against the runtime mirror and machine-readable inventory, not memory.
+2. Separate current profile from target profile.
+3. Flag missing safeguards in scripts and CI/CD, not just missing docs.
+4. Recommend the smallest safe packet queue.
+5. Keep the same written artifact through repair loops.
+6. Distinguish clearly between `MISSING`, `STALE`, `PARTIAL`, and `OK`.
+7. If a reusable rule exists in the operating system but is not enforced by script or CI, flag it as a real gap.
+
+## Stop Conditions
+
+Stop and return `NEEDS_OPERATOR_DECISION` or `BLOCKED` when:
+
+1. selected project is unclear,
+2. target profile is unclear and materially changes the audit,
+3. target tier is unclear and materially changes required safeguards,
+4. runtime mirror is invalid,
+5. required audit sources are unavailable,
+6. the host asks for destructive or implementation work.
+
+## Runtime Backstops
+
+The runtime should enforce at least these rules:
+
+1. the auditor can write only the audit artifact,
+2. the auditor receives the runtime-mirror version and source,
+3. deterministic inventory checks are merged into the written report,
+4. audit review judges the written artifact, not hidden reasoning,
+5. repair loops revise the same artifact instead of generating unrelated summaries.
+
+## Success Criteria
+
+The auditor is successful when:
+
+1. the written audit artifact is complete and reviewable,
+2. the reported gaps match deterministic evidence,
+3. the packet queue is bounded and prioritized,
+4. no implementation work was performed,
+5. the orchestrator can take the artifact and decide the next safe packet.

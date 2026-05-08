@@ -1,0 +1,88 @@
+# Review Checklist
+
+Read when:
+
+1. reviewing an audit artifact,
+2. reviewing a plan artifact,
+3. reviewing a worker result packet before acceptance.
+
+Skip when:
+
+1. no written artifact exists yet.
+
+## Purpose
+
+This is the concrete checklist companion to the reviewer contract.
+
+Use it to judge written artifacts against evidence, scope, scripts, and safeguards.
+
+## 1) Artifact Review Inputs
+
+Reviewer should have:
+
+1. written artifact under review,
+2. relevant operating-system contract,
+3. deterministic host evidence,
+4. project-local state needed for context.
+
+## 2) Scope Check
+
+- [ ] Artifact matches the lane it belongs to.
+- [ ] Scope did not silently broaden.
+- [ ] Required files and state references are concrete.
+- [ ] Claimed status matches actual artifact/evidence state.
+
+## 3) Evidence Check
+
+- [ ] Important claims have evidence pointers.
+- [ ] Evidence is specific enough to verify.
+- [ ] Scripts/commands cited are real, not placeholder prose.
+- [ ] Claimed safeguards are actually enforced by script or CI/CD when required.
+
+## 4) Audit-Specific Check
+
+- [ ] Current profile is evidence-backed.
+- [ ] Target profile is explicit or correctly flagged as unclear.
+- [ ] Missing/stale/partial items reflect deterministic evidence.
+- [ ] Packet queue is bounded and prioritized.
+- [ ] Audit did not drift into implementation.
+
+## 5) Plan-Specific Check
+
+- [ ] Plan reflects accepted audit or current state.
+- [ ] Next step is the smallest safe slice.
+- [ ] Operator-facing explanation is plain language.
+- [ ] Stop conditions are still intact.
+
+## 6) Result-Specific Check
+
+- [ ] Changed files stay within packet scope.
+- [ ] Commands run stay within packet scope.
+- [ ] Acceptance criteria use real evidence.
+- [ ] Docs and traceability are updated when required.
+- [ ] No obvious test-honesty failure is present.
+- [ ] Security/privacy/data issues are surfaced when touched.
+
+## 7) Decision
+
+Return only:
+
+1. `ACCEPT`
+2. `REPAIR`
+3. `REJECT`
+4. `ESCALATE`
+
+Use:
+
+- `ACCEPT` when the artifact is complete and evidence-backed.
+- `REPAIR` when one or two narrow gaps can be corrected safely.
+- `REJECT` when multiple gaps or trust failures exist.
+- `ESCALATE` when the root cause or risk exceeds normal packet repair.
+
+## 8) Notes For The Next Step
+
+The review output should always say:
+
+1. what passed,
+2. what failed,
+3. what exact next action is needed.

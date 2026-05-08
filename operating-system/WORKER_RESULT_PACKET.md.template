@@ -1,0 +1,75 @@
+# Worker Result Packet
+
+Use this document to return one bounded subtask from the worker to the orchestrator.
+
+## Header
+
+- Packet ID: `P-YYYY-MM-DD-NN`
+- Date:
+- Worker:
+- Packet Class:
+- Status: DONE / PARTIAL / BLOCKED
+- Iterations used:
+
+## Summary
+
+- Outcome:
+- Scope respected: YES / NO
+
+## Acceptance Criteria Results
+
+| # | Criterion | Result | Evidence pointer |
+|---|---|---|---|
+| 1 |  | PASS / FAIL | |
+| 2 |  | PASS / FAIL | |
+| 3 |  | PASS / FAIL | |
+
+## Path IDs Updated
+
+| Path ID | Row updated? | Smoke/manual evidence | Result |
+|---|---|---|---|
+| `XXX-YYY-NN` | YES / NO / N/A | [EVIDENCE] | PASS / FAIL / N/A |
+
+## Files Changed
+
+```bash
+git diff --stat output here
+```
+
+## Commands Run
+
+| # | Command | Exit | Notes |
+|---|---|---|---|
+| 1 |  | 0 | |
+| 2 |  | 0 | |
+
+## Documentation And Traceability
+
+- Docs updated when required? YES / NO / N/A
+- Traceability updated when required? YES / NO / N/A
+- Reason if NO or N/A:
+
+## Self-Review
+
+- Any tests changed? YES / NO
+- Any assertions weakened? YES / NO
+- Any skipped or deleted tests? YES / NO
+- Any scope pressure discovered? YES / NO
+- Local self-review notes:
+
+## Final Verify
+
+- Command:
+- Result: PASS / FAIL / N/A
+
+## Assumptions
+
+- None
+
+## Blockers
+
+- None
+
+## Recommended Next Action
+
+- One concrete next step.

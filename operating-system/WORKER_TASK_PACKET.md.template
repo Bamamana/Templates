@@ -1,0 +1,98 @@
+# Worker Task Packet
+
+Use this document to hand one bounded subtask from the orchestrator to the worker.
+
+## Header
+
+- Packet ID: `P-YYYY-MM-DD-NN`
+- Date:
+- Issued by: orchestrator
+- Target worker:
+- Priority: LOW / MEDIUM / HIGH
+- Packet Class: FEATURE / BUGFIX / GREEN-SUITE / REFACTOR / DOCS / INFRA
+- Packet Class Rationale:
+- Concreteness Tier: 1 / 2 / 3
+- Max iterations:
+
+## Goal
+
+- One-sentence objective:
+
+## Scope
+
+### Allowed Files
+
+- `path/one`
+- `path/two`
+
+### Reference Files
+
+- `path/three`
+
+### Out Of Scope
+
+- 
+
+## Path IDs Touched
+
+| Path ID | Action | Notes |
+|---|---|---|
+| `XXX-YYY-NN` | NEW / MODIFY / RETIRE | |
+
+## Constraints
+
+- Smallest correct change.
+- Stay inside Allowed Files.
+- No silent scope expansion.
+- No assertion weakening or test deletion without explicit authorization.
+- No new file should exceed the modularity limit without rationale.
+- Stop and return `BLOCKED` before broadening files, commands, or behavior.
+
+## Acceptance Criteria
+
+Each criterion must be testable or observable.
+
+- [ ] AC-1:
+- [ ] AC-2:
+- [ ] AC-3:
+
+## Required Evidence
+
+- Required scripts or commands:
+- Required smoke/manual evidence:
+- Required doc or traceability updates within scope:
+
+## Allowed Commands
+
+Only these commands may be used.
+
+```bash
+[ALLOWED_COMMAND_1]
+[ALLOWED_COMMAND_2]
+[ALLOWED_COMMAND_3]
+```
+
+## Final Verify Command
+
+```bash
+[VERIFY_COMMAND_OR_NA]
+```
+
+## Stop And Return BLOCKED If
+
+- scope must expand beyond Allowed Files,
+- required command is not allowed,
+- requirement is materially unclear,
+- security/privacy/data risk exceeds packet authority,
+- iteration limit would be exceeded.
+
+## Required Return
+
+Return `WORKER_RESULT_PACKET.md` with:
+
+1. status,
+2. files changed,
+3. commands run and exit codes,
+4. criterion-by-criterion results,
+5. blockers or assumptions,
+6. recommended next action.

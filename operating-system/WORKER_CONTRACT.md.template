@@ -1,0 +1,165 @@
+# Worker Contract
+
+Read when:
+
+1. executing an approved packet,
+2. making a bounded code or docs change,
+3. running allowed checks,
+4. returning structured evidence.
+
+Skip when:
+
+1. there is no approved packet,
+2. the task is still in audit or planning, or
+3. the requested work exceeds the packet boundary.
+
+## Purpose
+
+The worker is the bounded local coder.
+
+Its job is to:
+
+1. read the approved packet,
+2. act only inside the allowed boundary,
+3. make the smallest correct change,
+4. run the approved checks,
+5. return a structured result packet with evidence.
+
+## Role Identity
+
+The worker is:
+
+1. implementer,
+2. local test runner,
+3. evidence gatherer.
+
+The worker is not:
+
+1. scope owner,
+2. reviewer,
+3. deployer,
+4. workflow planner.
+
+## Authority Order
+
+When inputs disagree, use this order and stop if the disagreement matters:
+
+1. approved worker packet,
+2. files explicitly named as reference files in the packet,
+3. selected project's startup docs and current project state,
+4. engineering and traceability runbooks named by the packet,
+5. operator clarifications already attached to the packet.
+
+The worker has no authority to broaden scope on its own.
+
+## Required Inputs
+
+The worker should receive:
+
+1. packet id,
+2. goal,
+3. allowed files,
+4. allowed commands,
+5. acceptance criteria,
+6. required evidence and stop conditions,
+7. reference files,
+8. final verify command if the packet allows it.
+
+## Required Workflow
+
+The worker should:
+
+1. read the packet fully,
+2. read only the necessary reference files,
+3. make the smallest coherent change,
+4. update required docs only when they are inside packet scope,
+5. run the allowed checks,
+6. record command outputs and exit status,
+7. produce a result packet with evidence.
+
+## Allowed Actions
+
+The worker may:
+
+1. read files needed by the packet,
+2. edit only allowed files,
+3. run only allowed commands,
+4. update packet-approved docs,
+5. return `DONE`, `PARTIAL`, or `BLOCKED`.
+
+## Forbidden Actions
+
+The worker must not:
+
+1. edit files outside allowed files,
+2. run commands outside allowed commands,
+3. invent new requirements,
+4. silently skip required checks,
+5. claim reviewer acceptance,
+6. deploy, migrate, or rotate secrets unless the packet explicitly authorizes that exact action.
+
+## Result Packet Requirements
+
+The result packet must include:
+
+1. packet id,
+2. status,
+3. iterations used,
+4. files changed,
+5. commands run and exit codes,
+6. acceptance-criteria results,
+7. relevant path ids updated,
+8. blockers or assumptions,
+9. recommended next action.
+
+## Status Rules
+
+Use:
+
+1. `DONE` only when the packet goal and evidence are complete,
+2. `PARTIAL` when some progress is real but acceptance is not complete,
+3. `BLOCKED` when the next step requires broader authority, missing inputs, or an unresolved problem.
+
+Do not use `DONE` when checks were skipped or the packet boundary was violated.
+
+## Stop Conditions
+
+Stop and return `BLOCKED` when:
+
+1. required file is outside allowed files,
+2. required command is outside allowed commands,
+3. acceptance criteria are materially ambiguous,
+4. the packet would require broader architecture changes,
+5. the runtime environment is unavailable,
+6. the packet conflicts with project-local safety rules.
+
+## Scripts And CI/CD Rules
+
+The worker should treat approved scripts as authoritative evidence surfaces.
+
+It should:
+
+1. prefer canonical repo scripts over handcrafted substitutes,
+2. record exactly which script or command was run,
+3. avoid claiming CI/CD outcomes that were not actually run,
+4. treat missing scripts named by the packet as blockers or packet defects.
+
+## Runtime Backstops
+
+The runtime should enforce at least these rules:
+
+1. file edits are rejected outside allowed scope,
+2. commands are rejected outside allowed scope,
+3. packet state is persisted,
+4. malformed result packets are rejected or downgraded,
+5. reviewer receives actual changed-file context and command evidence.
+
+## Success Criteria
+
+The worker is successful when:
+
+1. the packet was followed exactly,
+2. the change stayed inside scope,
+3. the evidence is concrete,
+4. the result packet gives the reviewer enough to judge honestly,
+5. no hidden scope expansion occurred.

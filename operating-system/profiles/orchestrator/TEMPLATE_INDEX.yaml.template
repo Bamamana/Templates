@@ -1,0 +1,212 @@
+version: v0.1-operating-system-orchestrator-draft
+purpose: Machine-readable inventory for the reduced Templates operating system orchestrator profile
+profile: ORCHESTRATOR
+canonical_startup: AI_AGENT.md
+destination_when_applied: docs/TEMPLATE_INDEX.yaml
+read_order:
+  - AI_AGENT.md
+  - docs/SESSION_BRIEF.md
+  - docs/CONTEXT_ROUTING.md
+  - docs/PROJECT_STATE.md
+  - docs/TEMPLATE_AUDIT_MANIFEST.yaml
+  - docs/ORCHESTRATOR_CONTRACT.md
+  - docs/ENGINEERING_RUNBOOK.md
+  - docs/OPERATIONS_RUNBOOK.md
+  - docs/OPERATOR_DASHBOARD.md
+
+core_templates:
+  - template: AI_AGENT.md.template
+    destination: AI_AGENT.md
+    purpose: Orchestrator-profile startup contract
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: SESSION_BRIEF.md.template
+    destination: docs/SESSION_BRIEF.md
+    purpose: Compact startup snapshot
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: CONTEXT_ROUTING.md.template
+    destination: docs/CONTEXT_ROUTING.md
+    purpose: Deeper-doc trigger map for orchestrated startup
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: PROJECT_STATE.md.template
+    destination: docs/PROJECT_STATE.md
+    purpose: Current phase, plan, architecture, risks, and next action
+    required_by_tier: [A, B, C]
+    read_when: Current state or next step is unclear
+    skip_when: Narrow bounded work already has clear state
+
+  - template: ENGINEERING_RUNBOOK.md.template
+    destination: docs/ENGINEERING_RUNBOOK.md
+    purpose: Commands, tests, scripts, CI/CD, and verify rules
+    required_by_tier: [A, B, C]
+    read_when: Implementing, validating, or changing repo behavior
+    skip_when: Never for implementation work
+
+  - template: OPERATIONS_RUNBOOK.md.template
+    destination: docs/OPERATIONS_RUNBOOK.md
+    purpose: Secrets, deploy, rollback, incident, release, and risk rules
+    required_by_tier: [A, B, C]
+    read_when: Operational or release work is touched
+    skip_when: Purely local coding with no operational concern
+
+  - template: TEMPLATE_LIFECYCLE.md.template
+    destination: docs/TEMPLATE_LIFECYCLE.md
+    purpose: Adoption, migration, validation, placeholder, and upgrade rules
+    required_by_tier: [A, B, C]
+    read_when: Auditing, adopting, migrating, or upgrading the operating system
+    skip_when: No lifecycle concern is touched
+
+  - template: TEMPLATE_INDEX.yaml.template
+    destination: docs/TEMPLATE_INDEX.yaml
+    purpose: Machine-readable orchestrator-profile inventory
+    required_by_tier: [A, B, C]
+    read_when: Audit inventory or startup coverage needs checking
+    skip_when: Never for audits
+
+  - template: TEMPLATE_AUDIT_MANIFEST.yaml.template
+    destination: docs/TEMPLATE_AUDIT_MANIFEST.yaml
+    purpose: Machine-readable audit checklist for the reduced operating system
+    required_by_tier: [A, B, C]
+    read_when: Running or reviewing an operating-system audit
+    skip_when: Never for audits
+
+  - template: MASTER_TRACEABILITY_TABLE.md.template
+    destination: docs/MASTER_TRACEABILITY_TABLE.md
+    purpose: Runtime pathway and evidence map
+    required_by_tier: [B, C]
+    read_when: Runtime pathways or smoke evidence change
+    skip_when: Tier A doc-only work
+
+  - template: AUDITOR_CONTRACT.md.template
+    destination: docs/AUDITOR_CONTRACT.md
+    purpose: Audit-lane role contract
+    required_by_tier: [A, B, C]
+    read_when: Running or reviewing an audit
+    skip_when: Routine coding work
+
+  - template: ORCHESTRATOR_CONTRACT.md.template
+    destination: docs/ORCHESTRATOR_CONTRACT.md
+    purpose: Planning, packet-authority, and operator-handshake contract
+    required_by_tier: [A, B, C]
+    read_when: Choosing or reviewing the next bounded slice
+    skip_when: Pure worker execution
+
+  - template: WORKER_CONTRACT.md.template
+    destination: docs/WORKER_CONTRACT.md
+    purpose: Bounded implementation contract
+    required_by_tier: [A, B, C]
+    read_when: Worker execution begins
+    skip_when: No worker lane is used
+
+  - template: REVIEWER_CONTRACT.md.template
+    destination: docs/REVIEWER_CONTRACT.md
+    purpose: Artifact and result review contract
+    required_by_tier: [A, B, C]
+    read_when: Judging an audit, plan, or result artifact
+    skip_when: No review decision is being made
+
+  - template: OPERATOR_DASHBOARD.md.template
+    destination: docs/OPERATOR_DASHBOARD.md
+    purpose: Plain-English operator decision and rollback surface
+    required_by_tier: [A, B, C]
+    read_when: Operator asks what now, approval is needed, or repeated failure needs a tie-breaker view
+    skip_when: Never for orchestrated operator-facing work
+
+  - template: CLOSING_CHECKLIST.md.template
+    destination: docs/CLOSING_CHECKLIST.md
+    purpose: Explicit final closeout gate
+    required_by_tier: [A, B, C]
+    read_when: Final handoff or done claim is being made
+    skip_when: Work is still actively blocked and only a status update is needed
+
+  - template: INVESTIGATOR_PROTOCOL.md.template
+    destination: docs/INVESTIGATOR_PROTOCOL.md
+    purpose: Escalation workflow for repeated blocked, contradictory, or regression-causing work
+    required_by_tier: [A, B, C]
+    read_when: Escalation trigger fires or repeated failure needs a higher-tier investigation pass
+    skip_when: Routine packet flow
+
+  - template: LOCAL_WORKER_HEALTH.md.template
+    destination: docs/LOCAL_WORKER_HEALTH.md
+    purpose: Local worker readiness, degraded-mode rules, and endpoint smoke record
+    required_by_tier: [A, B, C]
+    read_when: Worker lane is being configured, validated, or troubleshot
+    skip_when: No local worker lane is used
+
+  - template: WORKER_TASK_PACKET.md.template
+    destination: docs/WORKER_TASK_PACKET.md
+    purpose: Structured bounded work packet
+    required_by_tier: [A, B, C]
+    read_when: Issuing delegated work
+    skip_when: No delegated work is being issued
+
+  - template: WORKER_RESULT_PACKET.md.template
+    destination: docs/WORKER_RESULT_PACKET.md
+    purpose: Structured bounded result packet
+    required_by_tier: [A, B, C]
+    read_when: Reviewing delegated work outcome
+    skip_when: No delegated work result exists
+
+  - template: REVIEW_CHECKLIST.md.template
+    destination: docs/REVIEW_CHECKLIST.md
+    purpose: Concrete review gate checklist
+    required_by_tier: [A, B, C]
+    read_when: Returning ACCEPT, REPAIR, REJECT, or ESCALATE
+    skip_when: No review decision is needed
+
+  - template: STATE_LEDGER_PROTOCOL.md.template
+    destination: docs/STATE_LEDGER_PROTOCOL.md
+    purpose: Packet lifecycle, session budget, and review-state protocol
+    required_by_tier: [A, B, C]
+    read_when: Packet lifecycle or session-state changes
+    skip_when: Non-delegated work with no orchestration state
+
+  - template: scripts/validate_operating_system.sh.template
+    destination: scripts/validate_operating_system.sh
+    purpose: Validate required operating-system files, scripts, placeholders, and CI expectations
+    required_by_tier: [A, B, C]
+    read_when: Validating adoption or running CI safeguards
+    skip_when: Never when operating-system governance is in use
+
+  - template: scripts/verify.sh.template
+    destination: scripts/verify.sh
+    purpose: Baseline local verification gate
+    required_by_tier: [A, B, C]
+    read_when: Proving local correctness before handoff
+    skip_when: Never for meaningful code changes
+
+  - template: scripts/enforce_doc_updates.sh.template
+    destination: scripts/enforce_doc_updates.sh
+    purpose: Same-change documentation and changelog enforcement
+    required_by_tier: [B, C]
+    read_when: Validating behavior or implementation changes in git history
+    skip_when: Tier A work or repos that enforce this rule elsewhere with rationale
+
+  - template: scripts/predeploy_full_suite.sh.template
+    destination: scripts/predeploy_full_suite.sh
+    purpose: Stronger release-readiness gate beyond baseline verify
+    required_by_tier: [C]
+    read_when: Release or predeploy proof is needed
+    skip_when: Lower tiers or repos with equivalent external gating and rationale
+
+  - template: .github/workflows/CI_BASELINE.yml.template
+    destination: .github/workflows/ci.yml
+    purpose: Baseline CI that mirrors or strengthens local verify
+    required_by_tier: [B, C]
+    read_when: Wiring CI/CD for operating-system compliance
+    skip_when: Never for orchestrated higher-tier repos that use CI
+
+  - template: .github/workflows/CI_PREDEPLOY.yml.template
+    destination: .github/workflows/ci.predeploy.yml
+    purpose: Stronger CI gate for predeploy or release-sensitive workflows
+    required_by_tier: [C]
+    read_when: Release-critical or stronger predeploy gating is required
+    skip_when: Lower tiers or repos without a separate predeploy lane

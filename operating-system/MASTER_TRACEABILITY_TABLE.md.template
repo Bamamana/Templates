@@ -1,0 +1,56 @@
+# Master Traceability Table ([PROJECT_NAME])
+
+Read when: a change touches an entrypoint, workflow, side effect, data path, or runtime-visible behavior pathway.
+Skip when: Tier A doc-only work with no runtime behavior.
+
+Purpose: keep runtime behavior tied to explicit evidence instead of memory.
+
+## Path ID Format
+
+- `<TYPE>-<SCOPE>-<NN>` such as `API-AUTH-01`, `UI-DASH-02`, `JOB-SYNC-01`
+- Common types: `UI`, `API`, `CRON`, `JOB`, `CLI`, `WORKER`, `DB`, `WEB`
+
+## Rules
+
+1. Every active runtime pathway has exactly one Path ID row.
+2. Every row has Smoke Coverage: `Automated`, `Manual`, or `N/A` with rationale.
+3. A bounded packet touching a Path ID cannot be treated as done until evidence is updated.
+4. New behavior adds a Path ID row in the same change.
+5. Removed behavior is marked retired in `CHANGELOG.md`.
+6. Review must verify the rows claimed in the result artifact.
+7. `Coverage pending` is not a valid done state.
+8. Manual rows must point to concrete runbooks or exact observable steps.
+9. State Mutation Index locations must be real repo paths.
+10. UI-visible rows need browser coverage or a concrete manual click path with expected result.
+11. Data-mutating rows need rollback or snapshot evidence, or an explicit N/A rationale.
+
+## Master Traceability Table
+
+| Path ID | Entry Point | Function Chain | Side Effects | Expected Outcome | Smoke Coverage | Smoke Command / Runbook |
+|---|---|---|---|---|---|---|
+| CLI-VERIFY-01 | `[VERIFY_COMMAND]` | verify gate | none | Project validation exits 0 | Automated | `[VERIFY_COMMAND]` |
+| UI-EXAMPLE-01 | Example visible workflow | route -> component -> action | UI/API/write as applicable | Operator can observe expected result | Manual | Manual: open local URL, click primary action, confirm expected visible result |
+
+## State Mutation Index
+
+Rules:
+
+- Replace `TBD` before any Tier B/C runtime change is treated as done.
+- Locations must be real files or directories in this repo.
+- List mutating routes, services, jobs, scripts, and UI actions touched by work.
+
+| Location | Function | Mutation Type | Affected Data |
+|---|---|---|---|
+| N/A | No mutating runtime path recorded yet | N/A | N/A |
+
+## Coverage Completion Checklist
+
+- [ ] Every touched Path ID appears in the table
+- [ ] Every touched row has Smoke Coverage status
+- [ ] No touched row says `Coverage pending`
+- [ ] Smoke command or runbook evidence is recorded
+- [ ] Manual rows point to concrete runbooks or exact steps
+- [ ] State Mutation Index paths exist in the repo
+- [ ] UI rows include visible expected result evidence
+- [ ] Data-mutating rows include snapshot or rollback evidence or rationale
+- [ ] Retired pathways are noted in `CHANGELOG.md`

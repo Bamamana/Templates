@@ -1,0 +1,51 @@
+# AI Agent Contract ([PROJECT_NAME])
+
+Read when: always.
+Skip when: never.
+
+Human startup instruction:
+"Read AI_AGENT.md and follow it."
+
+## Startup Reads (Always)
+
+1. `AI_AGENT.md`
+2. `docs/SESSION_BRIEF.md`
+3. `docs/CONTEXT_ROUTING.md`
+
+Do not load other docs by default.
+Use `docs/CONTEXT_ROUTING.md` to decide.
+
+## Working Rules
+
+- Smallest correct change first. No unrequested scope.
+- If confidence is low, ask a small number of precise questions before acting.
+- Behavior, command, path, or structure change means docs change in the same work.
+- Use `docs/PROJECT_STATE.md` as the single source of truth for current phase, active plan, risks, and next action.
+- Use `docs/ENGINEERING_RUNBOOK.md` for implementation, validation, modularity, scripts, and CI/CD rules.
+- Use `docs/OPERATIONS_RUNBOOK.md` for deploy, secrets, rollback, release, and incident work.
+- Tier B/C runtime changes require `docs/MASTER_TRACEABILITY_TABLE.md` updates with smoke or contract evidence.
+- If work is packet-driven, respect `docs/WORKER_TASK_PACKET.md`, `docs/WORKER_RESULT_PACKET.md`, `docs/REVIEW_CHECKLIST.md`, and `docs/STATE_LEDGER_PROTOCOL.md`.
+- Do not claim DONE if verify, required evidence, or required review is missing.
+
+## Working Loop
+
+1. Start from the three startup files only.
+2. Pull deeper docs only when a routing trigger fires.
+3. Keep `docs/PROJECT_STATE.md` current as work progresses.
+4. Refresh `docs/SESSION_BRIEF.md` before handoff so startup state reflects reality.
+5. Run the verify gate defined in `docs/ENGINEERING_RUNBOOK.md` before final handoff.
+
+## File Size Rule
+
+- Target new files at or below 400 lines.
+- Review any source file above 500 lines.
+- Treat 800 lines as a hard refactor trigger unless explicitly justified.
+
+## Definition Of Done
+
+Done means:
+
+1. requested behavior is implemented or the blocker is made explicit,
+2. required tests or checks pass,
+3. required docs and evidence are updated,
+4. next action is clear if work is not fully complete.

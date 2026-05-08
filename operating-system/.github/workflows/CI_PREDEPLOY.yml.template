@@ -1,0 +1,50 @@
+name: CI Predeploy Gate
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  predeploy-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Optional setup and install
+        run: |
+          set -euo pipefail
+          run_if_real() {
+            local label="$1"
+            local command_text="$2"
+            if [[ -z "$command_text" || "$command_text" == "N/A" ]]; then
+              echo "[ci][SKIP] $label"
+              return 0
+            fi
+            if [[ "$command_text" =~ ^\[[A-Z0-9_]+\]$ ]]; then
+              echo "[ci][FAIL] Unresolved placeholder for $label: $command_text"
+              exit 1
+            fi
+            echo "[ci] -> $label"
+            eval "$command_text"
+          }
+          run_if_real "setup" "[CI_SETUP_COMMANDS_OR_NA]"
+          run_if_real "install dependencies" "[CI_INSTALL_COMMAND_OR_NA]"
+
+      - name: Run predeploy full suite
+        run: |
+          set -euo pipefail
+          if [[ -f scripts/predeploy_full_suite.sh ]]; then
+            chmod +x scripts/predeploy_full_suite.sh
+            bash scripts/predeploy_full_suite.sh
+          elif [[ -f scripts/verify.sh ]]; then
+            bash scripts/verify.sh
+          else
+            echo "[ci][FAIL] Neither scripts/predeploy_full_suite.sh nor scripts/verify.sh exists."
+            exit 1
+          fi
+
+      - name: Operating-system validation
+        if: ${{ hashFiles('scripts/validate_operating_system.sh') != '' }}
+        run: bash scripts/validate_operating_system.sh .

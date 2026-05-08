@@ -1,0 +1,145 @@
+# Operations Runbook ([PROJECT_NAME])
+
+Read when:
+
+1. deploying,
+2. hardening,
+3. reviewing security or privacy posture,
+4. handling incidents,
+5. preparing releases.
+
+Skip when:
+
+1. the work is purely coding and no operational or release concern is touched.
+
+## Purpose
+
+This is the single operations and release runbook.
+
+It owns:
+
+1. secrets rules,
+2. deploy and rollback rules,
+3. security automation expectations,
+4. observability and incident expectations,
+5. release evidence,
+6. lightweight risk tracking.
+
+## Source-Of-Truth Boundaries
+
+1. `PROJECT_STATE.md` owns current milestone and high-level system snapshot.
+2. `ENGINEERING_RUNBOOK.md` owns coding, testing, verify, and CI/CD execution policy.
+3. This file owns deploy, security, release, and incident expectations.
+
+## 1) Tier Requirements
+
+- Tier A: baseline controls only unless risk justifies more.
+- Tier B: baseline plus strong recommended controls.
+- Tier C: all required controls and real rollback discipline.
+
+## 2) Secrets Rules
+
+- No secrets in source control.
+- No secrets in docs, changelogs, packets, or logs.
+- Separate local, staging, and production values.
+- Keep secret ownership explicit.
+- If sensitive material is exposed, treat removal and rotation as mandatory follow-up.
+
+## 3) Deployment And Rollback
+
+### Preconditions
+
+- Verify gate passes.
+- Required environment/config values are present.
+- Rollback path is known.
+- Backup or snapshot path is real when persistent data is at risk.
+
+### Deploy Steps
+
+1. Pull or prepare the release candidate.
+2. Apply environment values safely.
+3. Start or update services.
+4. Run smoke checks.
+5. Confirm post-deploy health.
+
+### Rollback Steps
+
+1. Stop the bad release safely.
+2. Restore the prior known-good version.
+3. Restore backup if needed.
+4. Re-run smoke checks.
+5. Record what failed and what changes next.
+
+## 4) Security Automation
+
+| Surface | Command | Required |
+|---|---|---|
+| Secret scan | [SECRET_SCAN_COMMAND_OR_NA] | Required when secrets risk exists |
+| Dependency scan | [SCA_COMMAND_OR_NA] | Strongly recommended |
+| Static analysis | [SAST_COMMAND_OR_NA] | Strongly recommended |
+| Container/image scan | [IMAGE_SCAN_COMMAND_OR_NA] | If containers are used |
+| SBOM / provenance | [SBOM_COMMAND_OR_NA] | Tier C or supply-chain-sensitive work |
+
+If policy promises a scan but there is no real command or CI gate, that is a real gap.
+
+## 5) CI/CD Security And Release Rules
+
+- CI/CD should enforce the same or stronger safeguards than local handoff.
+- Fail on critical vulnerabilities when policy requires it.
+- Fail on secret exposure when policy requires it.
+- Record any exception process with owner and expiry.
+- Do not describe a release safeguard as present if CI/CD only has placeholder jobs.
+
+## 6) Observability And Incident Basics
+
+- Availability signal:
+- Latency signal:
+- Error-rate signal:
+- Alert channel:
+- Log retention policy:
+- Correlation/request-id strategy:
+
+### Incident Minimum Evidence
+
+Record at least:
+
+1. time,
+2. affected component,
+3. request or trace identifier when available,
+4. operator or system action taken,
+5. next prevention step.
+
+### Incident Flow
+
+1. Triage severity.
+2. Contain impact.
+3. Recover service.
+4. Record cause and prevention action.
+
+## 7) Release Evidence
+
+Every meaningful release should have:
+
+1. verify gate result,
+2. smoke or targeted test evidence,
+3. changelog entry,
+4. rollback note,
+5. post-deploy health evidence.
+
+## 8) Risk Register
+
+| ID | Risk | Likelihood | Impact | Owner | Mitigation | Status |
+|---|---|---:|---:|---|---|---|
+| R-001 | [RISK] | [1-5] | [1-5] | [OWNER] | [ACTION] | [OPEN/MONITORING/CLOSED] |
+
+Escalate unresolved high-risk items before release.
+
+## 9) Update Rules
+
+Update this file when:
+
+1. deploy path changes,
+2. rollback path changes,
+3. security scan policy changes,
+4. CI/CD release gates change,
+5. incident or risk posture changes materially.

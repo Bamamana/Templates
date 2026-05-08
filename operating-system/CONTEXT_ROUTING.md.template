@@ -1,0 +1,48 @@
+# Context Routing Map ([PROJECT_NAME])
+
+Read when: always at session start.
+Skip when: never.
+
+Start with only:
+
+1. `AI_AGENT.md`
+2. `docs/SESSION_BRIEF.md`
+3. `docs/CONTEXT_ROUTING.md`
+
+Pull deeper docs only on triggers.
+
+## Doc Triggers
+
+| Doc | Load when |
+|---|---|
+| `docs/PROJECT_STATE.md` | scope, milestone, current phase, risk, or next action is unclear |
+| `docs/ENGINEERING_RUNBOOK.md` | implementation, commands, tests, CI/CD, verify, or modularity rules are needed |
+| `docs/OPERATIONS_RUNBOOK.md` | deploy, secrets, rollback, release, incident, or risk review is needed |
+| `docs/TEMPLATE_LIFECYCLE.md` | adoption, migration, validation, placeholders, or upgrade rules are needed |
+| `docs/TEMPLATE_INDEX.yaml` | audit inventory or required operating-system artifact coverage is needed |
+| `docs/MASTER_TRACEABILITY_TABLE.md` | runtime pathway, smoke evidence, or state mutation coverage changes |
+| `docs/AUDITOR_CONTRACT.md` | running or reviewing an audit |
+| `docs/ORCHESTRATOR_CONTRACT.md` | choosing the next bounded slice or reviewing packet authority |
+| `docs/WORKER_CONTRACT.md` | executing bounded implementation work |
+| `docs/REVIEWER_CONTRACT.md` | judging an audit, plan, or result artifact |
+| `docs/WORKER_TASK_PACKET.md` | issuing bounded work |
+| `docs/WORKER_RESULT_PACKET.md` | reviewing returned bounded work |
+| `docs/REVIEW_CHECKLIST.md` | deciding ACCEPT, REPAIR, REJECT, or ESCALATE |
+| `docs/STATE_LEDGER_PROTOCOL.md` | packet lifecycle, session budget, or review-state rules are needed |
+| `CHANGELOG.md` | documenting or checking behavior history |
+
+## Event Triggers
+
+| Event | Load / Run |
+|---|---|
+| Startup state feels stale | `docs/PROJECT_STATE.md` then refresh `docs/SESSION_BRIEF.md` |
+| Audit or retrofit work starts | `docs/TEMPLATE_LIFECYCLE.md` + `docs/TEMPLATE_INDEX.yaml` + `docs/AUDITOR_CONTRACT.md` |
+| Next step is unclear | `docs/PROJECT_STATE.md` + `docs/ORCHESTRATOR_CONTRACT.md` |
+| Implementation starts | `docs/ENGINEERING_RUNBOOK.md` |
+| Deploy, release, security, or incident work starts | `docs/OPERATIONS_RUNBOOK.md` |
+| New or changed runtime pathway | `docs/MASTER_TRACEABILITY_TABLE.md` |
+| Issue a bounded packet | `docs/WORKER_TASK_PACKET.md` + `docs/WORKER_CONTRACT.md` + `docs/STATE_LEDGER_PROTOCOL.md` |
+| Worker returns a result | `docs/WORKER_RESULT_PACKET.md` + `docs/REVIEW_CHECKLIST.md` + `docs/REVIEWER_CONTRACT.md` + `docs/STATE_LEDGER_PROTOCOL.md` |
+| Final handoff or DONE claim | `docs/REVIEW_CHECKLIST.md` + `docs/PROJECT_STATE.md` |
+
+If more than three deeper docs are needed before the first edit, stop and check whether the task is too broad for one slice.

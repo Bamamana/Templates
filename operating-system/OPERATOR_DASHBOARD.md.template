@@ -1,0 +1,119 @@
+# Operator Dashboard ([PROJECT_NAME])
+
+Read when:
+
+1. the operator asks what now,
+2. reviewed work is ready for approval,
+3. repeated failure or escalation needs a plain-English tie-breaker view,
+4. rollback or stop decisions are on the table.
+
+Skip when:
+
+1. there is no operator-facing decision to make.
+
+## Purpose
+
+This is the plain-English control surface for a non-coder operator.
+
+It summarizes:
+
+1. current project status,
+2. next safe action,
+3. what pass or fail means,
+4. what choices the operator can safely make,
+5. rollback readiness,
+6. recent evidence.
+
+This file is not a replacement for technical artifacts.
+It is the operator-safe summary of them.
+
+## Current Status
+
+- Project state: GREEN / YELLOW / RED
+- Current milestone:
+- Active packet: none / `P-YYYY-MM-DD-NN`
+- Last verified:
+- Local worker health: OK / DEGRADED / OFFLINE / UNKNOWN
+- Review status: none / pending / accepted / repair / rejected / escalated
+- Runtime mirror status: current / refreshed / fallback / invalid
+
+## Next Safe Action
+
+- Recommended action:
+- Why this is safe:
+- Command to run, if any:
+
+```bash
+[NEXT_COMMAND_OR_NA]
+```
+
+## What Pass Looks Like
+
+- 
+
+## What Fail Means
+
+- 
+
+## Operator Decision Menu
+
+Choose one. Do not approve raw code without reviewed evidence.
+
+| Choice | Meaning |
+|---|---|
+| accept reviewed result | Review passed, verify passed, and rollback is known |
+| ask for repair | One narrow issue remains and a bounded follow-up is safe |
+| escalate to investigator | Root cause is unclear or repeated failure needs higher-tier analysis |
+| choose tie-breaker option | Worker and investigator disagree after repeated cycles |
+| rollback | Restore last known-good state |
+| stop | Halt until the open question is answered |
+
+## Rollback
+
+- Last known-good commit:
+- Current branch:
+- Rollback command:
+
+```bash
+git revert <commit-or-range>
+```
+
+- Data rollback needed? NO / YES + notes:
+- Data snapshot or dump available? NO / YES + path:
+- Data restore command or runbook:
+
+## Tie-Breaker Options
+
+Use only after `docs/INVESTIGATOR_PROTOCOL.md` returns `TIE-BREAKER-HALT`.
+
+| Option | Plain-English meaning | Risk | Cost |
+|---|---|---|---|
+| A |  | LOW / MED / HIGH | LOW / MED / HIGH |
+| B |  | LOW / MED / HIGH | LOW / MED / HIGH |
+| C |  | LOW / MED / HIGH | LOW / MED / HIGH |
+
+## Do-Not-Touch Areas
+
+- 
+
+## Open Decisions For Operator
+
+- 
+
+## Recent Evidence
+
+- Verify gate:
+- Targeted tests:
+- Smoke tests:
+- Review outcome:
+- Investigator outcome:
+
+## Update Rules
+
+Update this file when:
+
+1. review status changes,
+2. the recommended next action changes,
+3. rollback readiness changes,
+4. a tie-breaker or stop decision is needed,
+5. local worker health changes materially.

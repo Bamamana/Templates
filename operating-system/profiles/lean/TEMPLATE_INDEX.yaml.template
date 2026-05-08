@@ -1,0 +1,132 @@
+version: v0.1-operating-system-lean-draft
+purpose: Machine-readable inventory for the reduced Templates operating system lean profile
+profile: LEAN
+canonical_startup: AI_AGENT.md
+destination_when_applied: docs/TEMPLATE_INDEX.yaml
+read_order:
+  - AI_AGENT.md
+  - docs/SESSION_BRIEF.md
+  - docs/CONTEXT_ROUTING.md
+  - docs/PROJECT_STATE.md
+  - docs/ENGINEERING_RUNBOOK.md
+  - docs/OPERATIONS_RUNBOOK.md
+
+core_templates:
+  - template: AI_AGENT.md.template
+    destination: AI_AGENT.md
+    purpose: Lean-profile startup contract
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: SESSION_BRIEF.md.template
+    destination: docs/SESSION_BRIEF.md
+    purpose: Compact startup snapshot
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: CONTEXT_ROUTING.md.template
+    destination: docs/CONTEXT_ROUTING.md
+    purpose: Deeper-doc trigger map for lean startup
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: PROJECT_STATE.md.template
+    destination: docs/PROJECT_STATE.md
+    purpose: Current phase, plan, risks, and next action
+    required_by_tier: [A, B, C]
+    read_when: Current state or next step is unclear
+    skip_when: Narrow bounded work already has clear state
+
+  - template: ENGINEERING_RUNBOOK.md.template
+    destination: docs/ENGINEERING_RUNBOOK.md
+    purpose: Commands, tests, scripts, CI/CD, and verify rules
+    required_by_tier: [A, B, C]
+    read_when: Implementing, validating, or changing repo behavior
+    skip_when: Never for implementation work
+
+  - template: OPERATIONS_RUNBOOK.md.template
+    destination: docs/OPERATIONS_RUNBOOK.md
+    purpose: Secrets, deploy, rollback, incident, release, and risk rules
+    required_by_tier: [A, B, C]
+    read_when: Operational or release work is touched
+    skip_when: Purely local coding with no operational concern
+
+  - template: TEMPLATE_LIFECYCLE.md.template
+    destination: docs/TEMPLATE_LIFECYCLE.md
+    purpose: Adoption, migration, validation, placeholder, and upgrade rules
+    required_by_tier: [A, B, C]
+    read_when: Auditing, adopting, migrating, or upgrading the operating system
+    skip_when: No lifecycle concern is touched
+
+  - template: TEMPLATE_INDEX.yaml.template
+    destination: docs/TEMPLATE_INDEX.yaml
+    purpose: Machine-readable lean-profile inventory
+    required_by_tier: [A, B, C]
+    read_when: Audit inventory or startup coverage needs checking
+    skip_when: Never for audits
+
+  - template: TEMPLATE_AUDIT_MANIFEST.yaml.template
+    destination: docs/TEMPLATE_AUDIT_MANIFEST.yaml
+    purpose: Machine-readable audit checklist for the reduced operating system
+    required_by_tier: [A, B, C]
+    read_when: Running or reviewing an operating-system audit
+    skip_when: Never for audits
+
+  - template: MASTER_TRACEABILITY_TABLE.md.template
+    destination: docs/MASTER_TRACEABILITY_TABLE.md
+    purpose: Runtime pathway and evidence map
+    required_by_tier: [B, C]
+    read_when: Runtime pathways or smoke evidence change
+    skip_when: Tier A doc-only work
+
+  - template: CLOSING_CHECKLIST.md.template
+    destination: docs/CLOSING_CHECKLIST.md
+    purpose: Explicit final closeout gate
+    required_by_tier: [A, B, C]
+    read_when: Final handoff or done claim is being made
+    skip_when: Work is still actively blocked and only a status update is needed
+
+  - template: scripts/validate_operating_system.sh.template
+    destination: scripts/validate_operating_system.sh
+    purpose: Validate required operating-system files, scripts, placeholders, and CI expectations
+    required_by_tier: [A, B, C]
+    read_when: Validating adoption or running CI safeguards
+    skip_when: Never when operating-system governance is in use
+
+  - template: scripts/verify.sh.template
+    destination: scripts/verify.sh
+    purpose: Baseline local verification gate
+    required_by_tier: [A, B, C]
+    read_when: Proving local correctness before handoff
+    skip_when: Never for meaningful code changes
+
+  - template: scripts/enforce_doc_updates.sh.template
+    destination: scripts/enforce_doc_updates.sh
+    purpose: Same-change documentation and changelog enforcement
+    required_by_tier: [B, C]
+    read_when: Validating behavior or implementation changes in git history
+    skip_when: Tier A work or repos that enforce this rule elsewhere with rationale
+
+  - template: scripts/predeploy_full_suite.sh.template
+    destination: scripts/predeploy_full_suite.sh
+    purpose: Stronger release-readiness gate beyond baseline verify
+    required_by_tier: [C]
+    read_when: Release or predeploy proof is needed
+    skip_when: Lower tiers or repos with equivalent external gating and rationale
+
+  - template: .github/workflows/CI_BASELINE.yml.template
+    destination: .github/workflows/ci.yml
+    purpose: Baseline CI that mirrors or strengthens local verify
+    required_by_tier: [B, C]
+    read_when: Wiring CI/CD for operating-system compliance
+    skip_when: Tier A repos without CI by design and with rationale
+
+  - template: .github/workflows/CI_PREDEPLOY.yml.template
+    destination: .github/workflows/ci.predeploy.yml
+    purpose: Stronger CI gate for predeploy or release-sensitive workflows
+    required_by_tier: [C]
+    read_when: Release-critical or stronger predeploy gating is required
+    skip_when: Lower tiers or repos without a separate predeploy lane

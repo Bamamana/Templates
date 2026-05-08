@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="${1:-.}"
+cd "$project_root"
+
+ALLOWLIST_FILE="scripts/placeholder_allowlist.txt"
+
+fail() {
+  echo "[validate-os][FAIL] $1"
+  exit 1
+}
+
+warn() {
+  echo "[validate-os][WARN] $1"
+}
+
+pass() {
+  echo "[validate-os][PASS] $1"
+}
+
+require_file() {
+  local file="$1"
+  [[ -f "$file" ]] || fail "Missing required file: $file"
+}
+
+extract_project_state_field() {
+  local label="$1"
+  local value
+  value="$(grep -E "^[[:space:]]*-[[:space:]]*${label}:" docs/PROJECT_STATE.md | head -n1 | sed -E "s/^[[:space:]]*-[[:space:]]*${label}:[[:space:]]*//")"
+  printf '%s' "$value"
+}
+
+required_files=(
+  "AI_AGENT.md"
+  "docs/PROJECT_STATE.md"
+  "docs/ENGINEERING_RUNBOOK.md"
+  "docs/OPERATIONS_RUNBOOK.md"
+  "docs/TEMPLATE_LIFECYCLE.md"
+  "docs/TEMPLATE_INDEX.yaml"
+  "docs/TEMPLATE_AUDIT_MANIFEST.yaml"
+  "CHANGELOG.md"
+  "scripts/validate_operating_system.sh"
+  "scripts/verify.sh"
+)
+
+for file in "${required_files[@]}"; do
+  require_file "$file"
+done
+pass "Core operating-system files exist"
+
+selected_tier="$(extract_project_state_field "Selected tier")"
+operating_profile="$(extract_project_state_field "Operating profile")"
+
+case "$selected_tier" in
+  TIER_A_STATIC|TIER_B_STANDARD|TIER_C_PRODUCTION_CRITICAL)
+    pass "Selected tier is set to $selected_tier"
+    ;;
+  ""|*"["*|*"]"*)
+    fail "docs/PROJECT_STATE.md has an unresolved or missing Selected tier"
+    ;;
+  *)
+    fail "docs/PROJECT_STATE.md has an unknown Selected tier: $selected_tier"
+    ;;
+esac
+
+case "$operating_profile" in
+  DEFAULT|LEAN|ORCHESTRATOR)
+    pass "Operating profile is set to $operating_profile"
+    ;;
+  ""|*"["*|*"]"*)
+    fail "docs/PROJECT_STATE.md has an unresolved or missing Operating profile"
+    ;;
+  *)
+    fail "docs/PROJECT_STATE.md has an unknown Operating profile: $operating_profile"
+    ;;
+esac
+
+scan_paths=(
+  "AI_AGENT.md"
+  "docs/PROJECT_STATE.md"
+  "docs/ENGINEERING_RUNBOOK.md"
+  "docs/OPERATIONS_RUNBOOK.md"
+  "docs/TEMPLATE_LIFECYCLE.md"
+  "docs/TEMPLATE_INDEX.yaml"
+  "docs/TEMPLATE_AUDIT_MANIFEST.yaml"
+  "CHANGELOG.md"
+  "scripts/validate_operating_system.sh"
+  "scripts/verify.sh"
+)
+
+if [[ "$operating_profile" == "LEAN" || "$operating_profile" == "ORCHESTRATOR" ]]; then
+  require_file "docs/SESSION_BRIEF.md"
+  require_file "docs/CONTEXT_ROUTING.md"
+  grep -q "## Event Triggers" "docs/CONTEXT_ROUTING.md" || fail "docs/CONTEXT_ROUTING.md must include an ## Event Triggers section"
+  if grep -Eq '^-[[:space:]]+(Phase|Milestone|Status|Next item|Next command|Last verified):[[:space:]]*$' "docs/SESSION_BRIEF.md"; then
+    fail "docs/SESSION_BRIEF.md has unset startup fields; refresh it from docs/PROJECT_STATE.md before handoff"
+  fi
+  scan_paths+=("docs/SESSION_BRIEF.md" "docs/CONTEXT_ROUTING.md")
+  pass "Routed startup files are present"
+fi
+
+if [[ "$selected_tier" == "TIER_B_STANDARD" || "$selected_tier" == "TIER_C_PRODUCTION_CRITICAL" ]]; then
+  require_file "docs/MASTER_TRACEABILITY_TABLE.md"
+  grep -q "| Path ID |" "docs/MASTER_TRACEABILITY_TABLE.md" || fail "docs/MASTER_TRACEABILITY_TABLE.md must include a Path ID table"
+  grep -q "Smoke Coverage" "docs/MASTER_TRACEABILITY_TABLE.md" || fail "docs/MASTER_TRACEABILITY_TABLE.md must include Smoke Coverage"
+  require_file ".github/workflows/ci.yml"
+  grep -q "scripts/verify.sh" ".github/workflows/ci.yml" || fail ".github/workflows/ci.yml must run scripts/verify.sh"
+  scan_paths+=("docs/MASTER_TRACEABILITY_TABLE.md" ".github/workflows/ci.yml")
+  pass "Tier B/C traceability and CI baseline are present"
+fi
+
+if [[ "$selected_tier" == "TIER_C_PRODUCTION_CRITICAL" ]]; then
+  require_file "scripts/predeploy_full_suite.sh"
+  require_file ".github/workflows/ci.predeploy.yml"
+  grep -q "predeploy_full_suite.sh\|scripts/verify.sh" ".github/workflows/ci.predeploy.yml" || fail ".github/workflows/ci.predeploy.yml must run the predeploy or verify gate"
+  scan_paths+=("scripts/predeploy_full_suite.sh" ".github/workflows/ci.predeploy.yml")
+  pass "Tier C predeploy gating is present"
+fi
+
+if [[ "$operating_profile" == "ORCHESTRATOR" ]]; then
+  orchestrator_files=(
+    "docs/AUDITOR_CONTRACT.md"
+    "docs/ORCHESTRATOR_CONTRACT.md"
+    "docs/WORKER_CONTRACT.md"
+    "docs/REVIEWER_CONTRACT.md"
+    "docs/WORKER_TASK_PACKET.md"
+    "docs/WORKER_RESULT_PACKET.md"
+    "docs/REVIEW_CHECKLIST.md"
+    "docs/STATE_LEDGER_PROTOCOL.md"
+    "docs/state/packet_ledger.json"
+    "docs/state/session_budget.json"
+    "scripts/orchestrator_state.py"
+  )
+  for file in "${orchestrator_files[@]}"; do
+    require_file "$file"
+  done
+  scan_paths+=("docs/AUDITOR_CONTRACT.md" "docs/ORCHESTRATOR_CONTRACT.md" "docs/WORKER_CONTRACT.md" "docs/REVIEWER_CONTRACT.md" "docs/WORKER_TASK_PACKET.md" "docs/WORKER_RESULT_PACKET.md" "docs/REVIEW_CHECKLIST.md" "docs/STATE_LEDGER_PROTOCOL.md")
+  pass "Orchestrator profile contracts and state files are present"
+fi
+
+if [[ -f "scripts/enforce_doc_updates.sh" ]]; then
+  scan_paths+=("scripts/enforce_doc_updates.sh")
+  pass "Same-change doc guard exists"
+else
+  warn "scripts/enforce_doc_updates.sh is missing; higher-tier projects should add it"
+fi
+
+grep -q '^version:' "docs/TEMPLATE_INDEX.yaml" || fail "docs/TEMPLATE_INDEX.yaml must declare a version"
+grep -q '^version:' "docs/TEMPLATE_AUDIT_MANIFEST.yaml" || fail "docs/TEMPLATE_AUDIT_MANIFEST.yaml must declare a version"
+grep -q '^artifact:' "docs/TEMPLATE_AUDIT_MANIFEST.yaml" || fail "docs/TEMPLATE_AUDIT_MANIFEST.yaml must declare an audit artifact"
+pass "Template index and audit manifest include core metadata"
+
+if ! grep -q "## \[Unreleased\]" CHANGELOG.md; then
+  fail "CHANGELOG.md missing [Unreleased] section"
+fi
+pass "Changelog structure looks valid"
+
+placeholder_hits_file="$(mktemp)"
+placeholder_filtered_file="$(mktemp)"
+
+grep -nE '\\[[A-Z0-9_]+\\]' "${scan_paths[@]}" > "$placeholder_hits_file" 2>/dev/null || true
+
+python3 - "$placeholder_hits_file" "$ALLOWLIST_FILE" "$placeholder_filtered_file" <<'PY'
+import pathlib
+import re
+import sys
+
+hits_path = pathlib.Path(sys.argv[1])
+allowlist_path = pathlib.Path(sys.argv[2])
+filtered_path = pathlib.Path(sys.argv[3])
+
+allowed = set()
+if allowlist_path.exists():
+    for raw in allowlist_path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        token = line[1:-1] if line.startswith("[") and line.endswith("]") else line
+        allowed.add(token)
+
+token_re = re.compile(r"\[([A-Z0-9_]+)\]")
+out = []
+for raw in hits_path.read_text(encoding="utf-8").splitlines():
+    tokens = token_re.findall(raw)
+    unresolved = [token for token in tokens if token not in allowed]
+    if unresolved:
+        out.append(f"{raw} :: unresolved={','.join(sorted(set(unresolved)))}")
+
+filtered_path.write_text("\n".join(out), encoding="utf-8")
+PY
+
+if [[ -s "$placeholder_filtered_file" ]]; then
+  echo "[validate-os][FAIL] Unresolved placeholders found:"
+  cat "$placeholder_filtered_file"
+  exit 1
+fi
+pass "No unresolved placeholders remain in required files"
+
+if [[ -f "scripts/verify.sh" ]]; then
+  bash -n "scripts/verify.sh"
+  pass "scripts/verify.sh parses cleanly"
+fi
+
+if [[ -f "scripts/predeploy_full_suite.sh" ]]; then
+  bash -n "scripts/predeploy_full_suite.sh"
+  pass "scripts/predeploy_full_suite.sh parses cleanly"
+fi
+
+pass "Operating-system validation passed"

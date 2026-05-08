@@ -1,0 +1,137 @@
+# Project State ([PROJECT_NAME])
+
+Read when:
+
+1. starting a session,
+2. checking current milestone or next action,
+3. clarifying scope or architecture,
+4. syncing `SESSION_BRIEF.md`.
+
+Skip when:
+
+1. the task is purely external to the project, or
+2. a narrower artifact already answers the question exactly.
+
+## Purpose
+
+This is the single project-state source of truth.
+
+It merges the jobs currently split across project canvas, game plan, and high-level architecture/state docs.
+
+Use this file for:
+
+1. current execution state,
+2. mission and scope,
+3. active plan,
+4. architecture and stack snapshot,
+5. current risks and open questions.
+
+Do not use this file for:
+
+1. reusable operating-system rules,
+2. low-level packet contracts,
+3. deployment runbooks,
+4. long lists of repeated command syntax.
+
+## Source-Of-Truth Boundaries
+
+1. `SESSION_BRIEF.md` is generated from this file or derived from it.
+2. `AI_MEMORY.md` stores durable preferences and lessons, not live plan state.
+3. `ENGINEERING_RUNBOOK.md` stores execution rules, scripts, and CI/CD expectations.
+4. `MASTER_TRACEABILITY_TABLE.md` stores pathway coverage evidence, not milestone prose.
+
+## 1) Current Execution State
+
+- Current phase: [0/1/2/3/4]
+- Current milestone: [WHAT_IS_ACTIVE_NOW]
+- Current status: [NOT_STARTED/IN_PROGRESS/BLOCKED/DONE]
+- Next unchecked item: [EXACT_NEXT_ITEM]
+- Next command: [NEXT_COMMAND]
+- Last verified at: [YYYY-MM-DD HH:MM TZ]
+
+## 2) Mission
+
+- Project goal:
+- Why now:
+- Primary users/operators:
+- Plain-language success statement:
+
+## 3) Tier And Operating Profile
+
+- Selected tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
+- Tier rationale:
+- Operating profile: [DEFAULT/LEAN/ORCHESTRATOR]
+- Workflow mode if relevant: [LEVEL_1/LEVEL_2/LEVEL_3/NOT_APPLICABLE]
+
+## 4) Scope
+
+### In Scope
+
+- 
+
+### Out Of Scope
+
+- 
+
+### Acceptance Boundary Notes
+
+- What counts as done for the current milestone:
+- What should not be pulled into the current slice:
+
+## 5) Active Plan
+
+- [ ] [first concrete step]
+- [ ] [next concrete step]
+- [ ] [third concrete step]
+
+## 6) Architecture Snapshot
+
+- System type: [STATIC_SITE/MONOLITH/SERVICE/MULTI_SERVICE/EXTENSION/OTHER]
+- Primary runtime:
+- Primary language:
+- Major framework(s):
+- Storage/data model:
+- External integrations:
+- Key boundaries and subsystems:
+
+## 7) Stack And Dependency Snapshot
+
+| Area | Current selection | Reason / constraint |
+|---|---|---|
+| Language | [VALUE] | [RATIONALE] |
+| Runtime | [VALUE] | [RATIONALE] |
+| Framework | [VALUE] | [RATIONALE] |
+| Testing | [VALUE] | [RATIONALE] |
+| Build/package | [VALUE] | [RATIONALE] |
+| Infra/deploy | [VALUE] | [RATIONALE] |
+
+## 8) Validation Surfaces
+
+- Verify gate: [VERIFY_COMMAND]
+- Fast smoke: [SMOKE_COMMAND_OR_NA]
+- Focused test: [TARGETED_TEST_COMMAND_OR_NA]
+- Manual smoke required areas:
+- CI entrypoint:
+
+## 9) Risk Snapshot
+
+- Top risk:
+- Why it matters:
+- Mitigation:
+- Fallback:
+
+## 10) Open Questions / Decisions Needed
+
+- 
+
+## 11) Update Rules
+
+Update this file when:
+
+1. current milestone changes,
+2. next action changes,
+3. scope changes,
+4. major architecture or stack assumptions change,
+5. top risks or blockers change.
+
+Do not leave this file stale and try to recover state from chat memory.

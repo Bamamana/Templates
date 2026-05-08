@@ -1,0 +1,545 @@
+{
+  "schemaVersion": 1,
+  "mirrorId": "operating-system-runtime",
+  "defaultTargetRoot": "vendor/operating-system",
+  "statusFile": "runtime-status.json",
+  "manifestCopyName": "RUNTIME_MIRROR_MANIFEST.json.template",
+  "hashAlgorithm": "sha256",
+  "sourceOrder": {
+    "runtime": [
+      "mirror"
+    ],
+    "refresh": [
+      "master-templates-source"
+    ],
+    "fallback": "last-validated-mirror"
+  },
+  "refreshTriggers": [
+    "audit-startup",
+    "first-packet-generation",
+    "verify",
+    "package",
+    "release",
+    "explicit-update"
+  ],
+  "validation": {
+    "requireAllTargetFiles": true,
+    "requireManifestCopy": true,
+    "requireStatusFile": true,
+    "compareSourceHashesWhenSourceIsAvailable": true,
+    "stopOnMissingSource": true,
+    "stopOnMissingTarget": true,
+    "stopOnHashDrift": true,
+    "allowExtraFiles": true
+  },
+  "entries": [
+    {
+      "id": "template-index-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/orchestrator-template/TEMPLATE_INDEX.yaml.template",
+      "mirrorPath": "orchestrator-template/TEMPLATE_INDEX.yaml.template",
+      "requiredBy": [
+        "loadTemplatesSource.templateIndex",
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "commands-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/orchestrator-template/COMMANDS.md.template",
+      "mirrorPath": "orchestrator-template/COMMANDS.md.template",
+      "requiredBy": [
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "vision-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/orchestrator-template/VISION.md.template",
+      "mirrorPath": "orchestrator-template/VISION.md.template",
+      "requiredBy": [
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "worker-task-packet-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/orchestrator-template/WORKER_TASK_PACKET.md.template",
+      "mirrorPath": "orchestrator-template/WORKER_TASK_PACKET.md.template",
+      "requiredBy": [
+        "loadTemplatesSource.workerTaskPacketTemplate",
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "worker-result-packet-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/orchestrator-template/WORKER_RESULT_PACKET.md.template",
+      "mirrorPath": "orchestrator-template/WORKER_RESULT_PACKET.md.template",
+      "requiredBy": [
+        "loadTemplatesSource.workerResultPacketTemplate",
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "operator-dashboard-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/orchestrator-template/OPERATOR_DASHBOARD.md.template",
+      "mirrorPath": "orchestrator-template/OPERATOR_DASHBOARD.md.template",
+      "requiredBy": [
+        "loadTemplatesSource.operatorDashboardTemplate",
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "state-ledger-protocol-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/orchestrator-template/STATE_LEDGER_PROTOCOL.md.template",
+      "mirrorPath": "orchestrator-template/STATE_LEDGER_PROTOCOL.md.template",
+      "requiredBy": [
+        "loadTemplatesSource.stateLedgerProtocolTemplate",
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "template-audit-manifest-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/orchestrator-template/TEMPLATE_AUDIT_MANIFEST.yaml.template",
+      "mirrorPath": "orchestrator-template/TEMPLATE_AUDIT_MANIFEST.yaml.template",
+      "requiredBy": [
+        "loadTemplatesSource.templateAuditManifest",
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "template-adoption-walkthrough-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/TEMPLATE_ADOPTION_WALKTHROUGH.md.template",
+      "mirrorPath": "TEMPLATE_ADOPTION_WALKTHROUGH.md.template",
+      "requiredBy": [
+        "loadTemplatesSource.templateAdoptionWalkthrough",
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "template-profile-migration-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/TEMPLATE_PROFILE_MIGRATION.md.template",
+      "mirrorPath": "TEMPLATE_PROFILE_MIGRATION.md.template",
+      "requiredBy": [
+        "loadTemplatesSource.templateProfileMigration",
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "orchestrator-state-script-compat",
+      "phase": 1,
+      "track": "current-runner-compat",
+      "sourcePath": "templates-v2/scripts/orchestrator_state.py.template",
+      "mirrorPath": "scripts/orchestrator_state.py.template",
+      "requiredBy": [
+        "scripts/templates_snapshot.ts"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "ai-agent",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/AI_AGENT.md.template",
+      "mirrorPath": "AI_AGENT.md.template",
+      "requiredBy": [
+        "future-startup-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "session-brief",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/SESSION_BRIEF.md.template",
+      "mirrorPath": "SESSION_BRIEF.md.template",
+      "requiredBy": [
+        "future-startup-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "context-routing",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/CONTEXT_ROUTING.md.template",
+      "mirrorPath": "CONTEXT_ROUTING.md.template",
+      "requiredBy": [
+        "future-startup-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "lean-ai-agent",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/profiles/lean/AI_AGENT.md.template",
+      "mirrorPath": "profiles/lean/AI_AGENT.md.template",
+      "requiredBy": [
+        "future-profile-selector",
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "lean-template-index",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/profiles/lean/TEMPLATE_INDEX.yaml.template",
+      "mirrorPath": "profiles/lean/TEMPLATE_INDEX.yaml.template",
+      "requiredBy": [
+        "future-profile-selector",
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "orchestrator-ai-agent",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/profiles/orchestrator/AI_AGENT.md.template",
+      "mirrorPath": "profiles/orchestrator/AI_AGENT.md.template",
+      "requiredBy": [
+        "future-profile-selector",
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "orchestrator-template-index",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/profiles/orchestrator/TEMPLATE_INDEX.yaml.template",
+      "mirrorPath": "profiles/orchestrator/TEMPLATE_INDEX.yaml.template",
+      "requiredBy": [
+        "future-profile-selector",
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "template-index",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/TEMPLATE_INDEX.yaml.template",
+      "mirrorPath": "TEMPLATE_INDEX.yaml.template",
+      "requiredBy": [
+        "future-audit-loader",
+        "future-startup-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "template-audit-manifest",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/TEMPLATE_AUDIT_MANIFEST.yaml.template",
+      "mirrorPath": "TEMPLATE_AUDIT_MANIFEST.yaml.template",
+      "requiredBy": [
+        "future-audit-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "auditor-contract",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/AUDITOR_CONTRACT.md.template",
+      "mirrorPath": "AUDITOR_CONTRACT.md.template",
+      "requiredBy": [
+        "future-auditor-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "orchestrator-contract",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/ORCHESTRATOR_CONTRACT.md.template",
+      "mirrorPath": "ORCHESTRATOR_CONTRACT.md.template",
+      "requiredBy": [
+        "future-orchestrator-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "worker-contract",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/WORKER_CONTRACT.md.template",
+      "mirrorPath": "WORKER_CONTRACT.md.template",
+      "requiredBy": [
+        "future-worker-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "reviewer-contract",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/REVIEWER_CONTRACT.md.template",
+      "mirrorPath": "REVIEWER_CONTRACT.md.template",
+      "requiredBy": [
+        "future-reviewer-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "operator-dashboard",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/OPERATOR_DASHBOARD.md.template",
+      "mirrorPath": "OPERATOR_DASHBOARD.md.template",
+      "requiredBy": [
+        "future-orchestrator-loader",
+        "future-operator-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "closing-checklist",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/CLOSING_CHECKLIST.md.template",
+      "mirrorPath": "CLOSING_CHECKLIST.md.template",
+      "requiredBy": [
+        "future-reviewer-loader",
+        "future-handoff-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "investigator-protocol",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/INVESTIGATOR_PROTOCOL.md.template",
+      "mirrorPath": "INVESTIGATOR_PROTOCOL.md.template",
+      "requiredBy": [
+        "future-reviewer-loader",
+        "future-investigator-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "local-worker-health",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/LOCAL_WORKER_HEALTH.md.template",
+      "mirrorPath": "LOCAL_WORKER_HEALTH.md.template",
+      "requiredBy": [
+        "future-orchestrator-loader",
+        "future-worker-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "project-state",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/PROJECT_STATE.md.template",
+      "mirrorPath": "PROJECT_STATE.md.template",
+      "requiredBy": [
+        "future-startup-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "engineering-runbook",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/ENGINEERING_RUNBOOK.md.template",
+      "mirrorPath": "ENGINEERING_RUNBOOK.md.template",
+      "requiredBy": [
+        "future-worker-loader",
+        "future-reviewer-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "operations-runbook",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/OPERATIONS_RUNBOOK.md.template",
+      "mirrorPath": "OPERATIONS_RUNBOOK.md.template",
+      "requiredBy": [
+        "future-release-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "template-lifecycle",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/TEMPLATE_LIFECYCLE.md.template",
+      "mirrorPath": "TEMPLATE_LIFECYCLE.md.template",
+      "requiredBy": [
+        "future-audit-loader",
+        "future-startup-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "worker-task-packet",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/WORKER_TASK_PACKET.md.template",
+      "mirrorPath": "WORKER_TASK_PACKET.md.template",
+      "requiredBy": [
+        "future-orchestrator-loader",
+        "future-worker-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "worker-result-packet",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/WORKER_RESULT_PACKET.md.template",
+      "mirrorPath": "WORKER_RESULT_PACKET.md.template",
+      "requiredBy": [
+        "future-worker-loader",
+        "future-reviewer-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "review-checklist",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/REVIEW_CHECKLIST.md.template",
+      "mirrorPath": "REVIEW_CHECKLIST.md.template",
+      "requiredBy": [
+        "future-reviewer-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "master-traceability-table",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/MASTER_TRACEABILITY_TABLE.md.template",
+      "mirrorPath": "MASTER_TRACEABILITY_TABLE.md.template",
+      "requiredBy": [
+        "future-worker-loader",
+        "future-reviewer-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "state-ledger-protocol",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/STATE_LEDGER_PROTOCOL.md.template",
+      "mirrorPath": "STATE_LEDGER_PROTOCOL.md.template",
+      "requiredBy": [
+        "future-orchestrator-loader",
+        "future-reviewer-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "validate-operating-system-script",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/scripts/validate_operating_system.sh.template",
+      "mirrorPath": "scripts/validate_operating_system.sh.template",
+      "requiredBy": [
+        "future-audit-loader",
+        "future-verify-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "verify-script-template",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/scripts/verify.sh.template",
+      "mirrorPath": "scripts/verify.sh.template",
+      "requiredBy": [
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "enforce-doc-updates-script",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/scripts/enforce_doc_updates.sh.template",
+      "mirrorPath": "scripts/enforce_doc_updates.sh.template",
+      "requiredBy": [
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "predeploy-full-suite-script",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/scripts/predeploy_full_suite.sh.template",
+      "mirrorPath": "scripts/predeploy_full_suite.sh.template",
+      "requiredBy": [
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "runtime-mirror-policy",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/RUNTIME_MIRROR_POLICY.md.template",
+      "mirrorPath": "RUNTIME_MIRROR_POLICY.md.template",
+      "requiredBy": [
+        "future-runtime-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "sync-runtime-mirror-script",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/scripts/sync_runtime_mirror.sh.template",
+      "mirrorPath": "scripts/sync_runtime_mirror.sh.template",
+      "requiredBy": [
+        "future-runtime-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "check-runtime-mirror-script",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/scripts/check_runtime_mirror.sh.template",
+      "mirrorPath": "scripts/check_runtime_mirror.sh.template",
+      "requiredBy": [
+        "future-runtime-loader"
+      ],
+      "action": "copy"
+    }
+  ]
+}

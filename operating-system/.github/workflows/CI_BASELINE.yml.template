@@ -1,0 +1,82 @@
+name: CI Baseline
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Optional setup and install
+        run: |
+          set -euo pipefail
+          run_if_real() {
+            local label="$1"
+            local command_text="$2"
+            if [[ -z "$command_text" || "$command_text" == "N/A" ]]; then
+              echo "[ci][SKIP] $label"
+              return 0
+            fi
+            if [[ "$command_text" =~ ^\[[A-Z0-9_]+\]$ ]]; then
+              echo "[ci][FAIL] Unresolved placeholder for $label: $command_text"
+              exit 1
+            fi
+            echo "[ci] -> $label"
+            eval "$command_text"
+          }
+          run_if_real "setup" "[CI_SETUP_COMMANDS_OR_NA]"
+          run_if_real "install dependencies" "[CI_INSTALL_COMMAND_OR_NA]"
+
+      - name: Verify gate
+        run: |
+          set -euo pipefail
+          chmod +x scripts/verify.sh
+          bash scripts/verify.sh
+
+      - name: Operating-system validation
+        if: ${{ hashFiles('scripts/validate_operating_system.sh') != '' }}
+        run: bash scripts/validate_operating_system.sh .
+
+      - name: Documentation update enforcement
+        if: ${{ hashFiles('scripts/enforce_doc_updates.sh') != '' }}
+        run: |
+          set -euo pipefail
+          BASE_REF="${{ github.base_ref }}"
+          if [[ -z "$BASE_REF" ]]; then
+            BASE_REF="${{ github.event.repository.default_branch }}"
+          fi
+          git fetch --depth=1 origin "$BASE_REF"
+          bash scripts/enforce_doc_updates.sh --against "origin/$BASE_REF"
+
+  security:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Optional security scans
+        run: |
+          set -euo pipefail
+          run_if_real() {
+            local label="$1"
+            local command_text="$2"
+            if [[ -z "$command_text" || "$command_text" == "N/A" ]]; then
+              echo "[ci][SKIP] $label"
+              return 0
+            fi
+            if [[ "$command_text" =~ ^\[[A-Z0-9_]+\]$ ]]; then
+              echo "[ci][FAIL] Unresolved placeholder for $label: $command_text"
+              exit 1
+            fi
+            echo "[ci] -> $label"
+            eval "$command_text"
+          }
+          run_if_real "secret scan" "[SECRET_SCAN_COMMAND_OR_NA]"
+          run_if_real "dependency scan" "[SCA_COMMAND_OR_NA]"
+          run_if_real "static analysis" "[SAST_COMMAND_OR_NA]"

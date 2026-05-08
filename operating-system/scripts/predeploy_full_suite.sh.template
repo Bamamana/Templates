@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
+run_if_real() {
+  local label="$1"
+  local command_text="$2"
+
+  if [[ -z "$command_text" || "$command_text" == "N/A" ]]; then
+    echo "[predeploy][SKIP] $label"
+    return 0
+  fi
+
+  if [[ "$command_text" =~ ^\[[A-Z0-9_]+\]$ ]]; then
+    echo "[predeploy][FAIL] Unresolved placeholder for $label: $command_text" >&2
+    return 1
+  fi
+
+  echo "[predeploy] -> $label"
+  eval "$command_text"
+}
+
+count=0
+for script in scripts/smoke_*_refactor.sh; do
+  [[ -f "$script" ]] || continue
+  echo "[predeploy] -> $script"
+  bash "$script"
+  count=$((count + 1))
+done
+
+echo "[predeploy] -> baseline verify"
+bash scripts/verify.sh
+
+run_if_real "secret scan" "[SECRET_SCAN_COMMAND_OR_NA]"
+run_if_real "dependency scan" "[SCA_COMMAND_OR_NA]"
+run_if_real "static analysis" "[SAST_COMMAND_OR_NA]"
+run_if_real "image scan" "[IMAGE_SCAN_COMMAND_OR_NA]"
+run_if_real "sbom or provenance" "[SBOM_COMMAND_OR_NA]"
+
+echo "[predeploy][PASS] Full suite passed"
+echo "[predeploy] Smoke lanes run: $count"

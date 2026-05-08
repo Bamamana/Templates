@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SOURCE_ROOT="${SOURCE_ROOT:-$(cd "${OS_ROOT}/.." && pwd)}"
+MANIFEST_PATH="${MANIFEST_PATH:-${OS_ROOT}/RUNTIME_MIRROR_MANIFEST.json.template}"
+TARGET_ROOT="${TARGET_ROOT:-}"
+MAX_PHASE="${MAX_PHASE:-2}"
+
+if [[ -z "${TARGET_ROOT}" ]]; then
+  echo "[check_runtime_mirror] TARGET_ROOT is required" >&2
+  exit 2
+fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "[check_runtime_mirror] python3 is required" >&2
+  exit 2
+fi
+
+python3 - "${MANIFEST_PATH}" "${SOURCE_ROOT}" "${TARGET_ROOT}" "${MAX_PHASE}" <<'PY'
+import hashlib
+import json
+import os
+import sys
+
+manifest_path, source_root, target_root, max_phase = sys.argv[1:5]
+max_phase = int(max_phase)
+
+with open(manifest_path, "r", encoding="utf-8") as handle:
+    manifest = json.load(handle)
+
+def sha256_file(file_path: str) -> str:
+    digest = hashlib.sha256()
+    with open(file_path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+missing_targets = []
+missing_sources = []
+drift = []
+
+source_available = os.path.isdir(source_root)
+
+for entry in manifest["entries"]:
+    if entry.get("action", "copy") != "copy":
+        continue
+    if int(entry.get("phase", 1)) > max_phase:
+        continue
+
+    source_path = os.path.join(source_root, entry["sourcePath"])
+    target_path = os.path.join(target_root, entry["mirrorPath"])
+
+    if not os.path.isfile(target_path):
+      missing_targets.append(entry["mirrorPath"])
+      continue
+
+    if source_available:
+        if not os.path.isfile(source_path):
+            missing_sources.append(entry["sourcePath"])
+            continue
+        if sha256_file(source_path) != sha256_file(target_path):
+            drift.append(entry["mirrorPath"])
+
+manifest_copy = os.path.join(target_root, manifest["manifestCopyName"])
+status_file = os.path.join(target_root, manifest["statusFile"])
+
+if not os.path.isfile(manifest_copy):
+    missing_targets.append(manifest["manifestCopyName"])
+
+if not os.path.isfile(status_file):
+    missing_targets.append(manifest["statusFile"])
+
+if missing_targets:
+    print("[check_runtime_mirror] target mirror is incomplete:", file=sys.stderr)
+    for item in missing_targets:
+        print(f"- {item}", file=sys.stderr)
+    sys.exit(1)
+
+if missing_sources:
+    print("[check_runtime_mirror] source root is incomplete:", file=sys.stderr)
+    for item in missing_sources:
+        print(f"- {item}", file=sys.stderr)
+    sys.exit(1)
+
+if drift:
+    print("[check_runtime_mirror] drift detected:", file=sys.stderr)
+    for item in drift:
+        print(f"- {item}", file=sys.stderr)
+    sys.exit(1)
+
+if source_available:
+    print(f"[check_runtime_mirror] mirror matches source for phase <= {max_phase}")
+else:
+    print(f"[check_runtime_mirror] source unavailable; fallback mirror is structurally valid for phase <= {max_phase}")
+PY

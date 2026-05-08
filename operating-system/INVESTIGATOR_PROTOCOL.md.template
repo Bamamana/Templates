@@ -1,0 +1,98 @@
+# Investigator Protocol ([PROJECT_NAME])
+
+Read when:
+
+1. the worker returns `BLOCKED` twice on the same slice,
+2. review returns `ESCALATE`,
+3. test honesty fails,
+4. accepted work causes a visible regression,
+5. an architectural question exceeds the current packet.
+
+Skip when:
+
+1. this is the first blocked result,
+2. the issue is routine lint, type, or formatting repair,
+3. the issue is a local runtime outage or worker infrastructure problem.
+
+## Purpose
+
+This is the higher-tier investigation workflow for failures the normal orchestrator plus worker loop cannot resolve safely.
+
+## When To Invoke
+
+- Worker returned `BLOCKED` at least twice on the same Path ID or slice.
+- Root cause remains unclear after review.
+- Test honesty failure is detected.
+- A real regression appears after accepted work.
+- A spec or architecture decision is missing and blocks safe progress.
+
+Do not invoke for:
+
+- first blocked result,
+- routine acceptance review,
+- formatting or lint cleanup,
+- local worker outage, reboot, model download, or unreachable endpoint.
+
+## Investigator Packet
+
+```text
+INVESTIGATOR PACKET
+- Origin Packet ID: P-YYYY-MM-DD-NN
+- Failure Mode: REPEATED-BLOCKED | TEST-HONESTY | REGRESSION | ARCH-UNCLEAR
+- Path IDs in scope:
+- Files investigator may read:
+- Files investigator may modify: none | listed files | direct-fix allowed
+- Question to answer:
+- Required output: ROOT-CAUSE | NEW-WORKER-PACKET | DIRECT-FIX | SPEC-AMENDMENT | TIE-BREAKER-HALT
+```
+
+## Output Modes
+
+### ROOT-CAUSE
+
+Return analysis plus a corrected bounded packet.
+
+### NEW-WORKER-PACKET
+
+Decompose the problem into smaller safer packets.
+
+### DIRECT-FIX
+
+Direct fix is allowed only when:
+
+1. the fix is small,
+2. another worker loop is more expensive or less safe,
+3. the investigator still respects the same evidence and review rules.
+
+### SPEC-AMENDMENT
+
+Use when the original packet or spec was wrong and safe work requires an amended written direction.
+
+### TIE-BREAKER-HALT
+
+Use when investigator and worker still cannot resolve the same slice after two full investigator cycles, or when the disagreement depends on environment facts that the models cannot verify honestly.
+
+Return a plain-English operator summary with:
+
+1. what the worker believes,
+2. what the investigator believes,
+3. what evidence supports each side,
+4. the lowest-risk pause point,
+5. three operator choices with risk and cost labels.
+
+Do not issue a third investigator-derived packet without explicit human choice.
+
+## Cycle And Cost Limits
+
+- Track every invocation in the state ledger and session budget when used.
+- If investigator use becomes frequent, stop and improve packet quality or worker readiness.
+- After two investigator cycles on the same slice, return `TIE-BREAKER-HALT` and update `docs/OPERATOR_DASHBOARD.md`.
+
+## Required Follow-Through
+
+After any investigator outcome:
+
+1. persist the result in the review or state artifact,
+2. update packet state,
+3. update operator-facing status when the outcome affects the next decision,
+4. keep the next step bounded.

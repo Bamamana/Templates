@@ -1,0 +1,191 @@
+version: v0.1-operating-system-draft
+artifact: docs/TEMPLATE_AUDIT_REPORT.md
+purpose: Machine-readable checklist for auditing a project against the reduced operating-system standard
+source_of_truth: operating-system-runtime-mirror
+
+required_report_sections:
+  - Summary
+  - Current Tier And Profile
+  - Template Source
+  - Required Artifacts
+  - Missing Artifacts
+  - Missing Scripts
+  - Missing CI/CD
+  - Placeholder Gaps
+  - Validation Gaps
+  - Recommended Packet Queue
+  - Stop Conditions
+  - Review Summary
+  - Reviewer Missed Items
+  - Audit Loop History
+  - Plain Language Status
+
+checklist_items:
+  - id: startup-ai-agent
+    title: Canonical startup contract present
+    category: startup
+    required_by_tier: [A, B, C]
+    expected_paths: [AI_AGENT.md]
+    evidence_rule: file exists and reflects the project-specific operating-system contract
+    severity: high
+
+  - id: startup-project-state
+    title: Project state present
+    category: startup
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/PROJECT_STATE.md]
+    evidence_rule: file exists and records current phase, tier, profile, and next action
+    severity: high
+
+  - id: startup-session-brief
+    title: Session brief present for routed startup
+    category: startup
+    required_by_tier: [A, B, C]
+    required_by_profile: [LEAN, ORCHESTRATOR]
+    expected_paths: [docs/SESSION_BRIEF.md]
+    evidence_rule: file exists and is current enough to resume work
+    severity: high
+
+  - id: startup-context-routing
+    title: Context routing present for routed startup
+    category: startup
+    required_by_tier: [A, B, C]
+    required_by_profile: [LEAN, ORCHESTRATOR]
+    expected_paths: [docs/CONTEXT_ROUTING.md]
+    evidence_rule: file exists and routes major doc and event triggers
+    severity: high
+
+  - id: runbook-engineering
+    title: Engineering runbook present
+    category: runbooks
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/ENGINEERING_RUNBOOK.md]
+    evidence_rule: commands, verify, testing, scripts, and CI expectations are documented
+    severity: high
+
+  - id: runbook-operations
+    title: Operations runbook present
+    category: runbooks
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/OPERATIONS_RUNBOOK.md]
+    evidence_rule: deploy, rollback, security, release, and incident expectations are documented
+    severity: high
+
+  - id: lifecycle-template
+    title: Lifecycle guide present
+    category: lifecycle
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/TEMPLATE_LIFECYCLE.md]
+    evidence_rule: adoption, validation, placeholder, and upgrade rules are documented
+    severity: medium
+
+  - id: inventory-template-index
+    title: Template index present
+    category: inventory
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/TEMPLATE_INDEX.yaml]
+    evidence_rule: machine-readable inventory exists and matches the intended operating-system profile
+    severity: high
+
+  - id: inventory-audit-manifest
+    title: Audit manifest present
+    category: inventory
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/TEMPLATE_AUDIT_MANIFEST.yaml]
+    evidence_rule: machine-readable audit checklist exists for this operating-system pack
+    severity: high
+
+  - id: qa-traceability
+    title: Traceability table present when tier requires runtime evidence
+    category: qa
+    required_by_tier: [B, C]
+    expected_paths: [docs/MASTER_TRACEABILITY_TABLE.md]
+    evidence_rule: runtime pathway and smoke evidence table exists
+    severity: high
+
+  - id: orch-contracts
+    title: Orchestrator role contracts present
+    category: orchestrator
+    required_by_tier: [A, B, C]
+    required_by_profile: [ORCHESTRATOR]
+    expected_paths:
+      - docs/AUDITOR_CONTRACT.md
+      - docs/ORCHESTRATOR_CONTRACT.md
+      - docs/WORKER_CONTRACT.md
+      - docs/REVIEWER_CONTRACT.md
+    evidence_rule: explicit role boundaries exist for audit, orchestration, worker execution, and review
+    severity: high
+
+  - id: orch-packets
+    title: Orchestrator packet artifacts present
+    category: orchestrator
+    required_by_tier: [A, B, C]
+    required_by_profile: [ORCHESTRATOR]
+    expected_paths:
+      - docs/WORKER_TASK_PACKET.md
+      - docs/WORKER_RESULT_PACKET.md
+      - docs/REVIEW_CHECKLIST.md
+      - docs/STATE_LEDGER_PROTOCOL.md
+    evidence_rule: bounded packet flow and review gates are documented
+    severity: high
+
+  - id: orch-state-files
+    title: Orchestrator state files present
+    category: orchestrator
+    required_by_tier: [A, B, C]
+    required_by_profile: [ORCHESTRATOR]
+    expected_paths:
+      - docs/state/packet_ledger.json
+      - docs/state/session_budget.json
+      - scripts/orchestrator_state.py
+    evidence_rule: packet lifecycle state is persisted and script-managed
+    severity: high
+
+  - id: script-validate-os
+    title: Operating-system validator exists
+    category: scripts
+    required_by_tier: [A, B, C]
+    expected_paths: [scripts/validate_operating_system.sh]
+    evidence_rule: project can validate applied operating-system artifacts structurally
+    severity: high
+
+  - id: script-verify
+    title: Verify gate exists
+    category: scripts
+    required_by_tier: [A, B, C]
+    expected_paths: [scripts/verify.sh]
+    expected_commands: [bash scripts/verify.sh]
+    evidence_rule: project has a real local proof gate
+    severity: high
+
+  - id: script-doc-guard
+    title: Same-change doc guard exists
+    category: scripts
+    required_by_tier: [B, C]
+    expected_paths: [scripts/enforce_doc_updates.sh]
+    evidence_rule: implementation changes are blocked when docs and changelog are stale
+    severity: medium
+
+  - id: script-predeploy
+    title: Predeploy gate exists for higher-risk work
+    category: scripts
+    required_by_tier: [C]
+    expected_paths: [scripts/predeploy_full_suite.sh]
+    evidence_rule: release-readiness gate is stronger than baseline verify
+    severity: medium
+
+  - id: cicd-baseline
+    title: Baseline CI exists
+    category: ci-cd
+    required_by_tier: [B, C]
+    expected_paths: [.github/workflows/ci.yml]
+    evidence_rule: CI runs the same or stronger proof than local verify
+    severity: medium
+
+  - id: cicd-predeploy
+    title: Predeploy CI exists for highest-risk work
+    category: ci-cd
+    required_by_tier: [C]
+    expected_paths: [.github/workflows/ci.predeploy.yml]
+    evidence_rule: release-sensitive work has an explicit stronger CI gate
+    severity: medium
