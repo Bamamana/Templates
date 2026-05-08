@@ -20,6 +20,7 @@ This file is part of the reusable orchestrator base. New projects should start f
 - If confidence < 90%, ask 1-3 precise clarifying questions before acting.
 - If the user's directive lacks specific acceptance criteria, do not write a broad plan or feature spec. Ask 1-3 multiple-choice clarifying questions first.
 - Smallest correct change first. No unrequested scope.
+- Before guessing a routine repo command, load `docs/COMMANDS.md` via `docs/CONTEXT_ROUTING.md`.
 - Behavior change => targeted test added or updated.
 - Behavior, command, path, or structure change => docs updated in the same change.
 - Run verify gate before handoff: `[VERIFY_COMMAND]`.

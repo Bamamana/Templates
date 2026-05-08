@@ -80,6 +80,13 @@ core_templates:
     read_when: Implementing, validating, or troubleshooting delegated work
     skip_when: Never
 
+  - template: COMMANDS.md.template
+    destination: docs/COMMANDS.md
+    purpose: Fast AI-friendly command index for routine verify, focused test, package, and runner commands
+    required_by_tier: [A, B, C]
+    read_when: A regular repo command is needed and the active artifact does not already name it
+    skip_when: The current doc already contains the exact command to run
+
   - template: ORCHESTRATION_MAP.md.template
     destination: docs/ORCHESTRATION_MAP.md
     purpose: Source of truth for cloud orchestrator, local worker, investigator, token policy, and escalation rules

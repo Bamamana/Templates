@@ -1,0 +1,68 @@
+# Command Index ([PROJECT_NAME])
+
+Read when: a routine repo command is needed quickly and the current task doc does not already name it.
+Skip when: the active artifact already gives the exact command to run.
+
+Purpose: give AI agents and operators one fast command index so they do not keep rediscovering verify, package, runner, and packet commands from multiple docs.
+
+This file is the quick index.
+Deeper workflow rules still live in:
+
+- `docs/ENGINEERING_PLAYBOOK.md`
+- `docs/PACKET_LIFECYCLE.md` or equivalent workflow docs
+- `docs/DEPLOYMENT_AND_TESTING.md` or equivalent setup/runbook docs
+
+## Most Used
+
+| Goal | Command | Notes |
+|---|---|---|
+| Canonical verify gate | `[VERIFY_COMMAND]` | Run before handoff |
+| Sync session brief from game plan | `bash scripts/sync_session_brief.sh` | Do not hand-edit `docs/SESSION_BRIEF.md` |
+| Validate orchestrator state ledger | `python3 scripts/orchestrator_state.py validate` | Packet/state health |
+| Validate template placeholders and structure | `bash scripts/validate_templates.sh .` | Local template validation |
+| Check template drift against source pack | `bash scripts/check_template_drift.sh . /path/to/templates-v2` | Update the source-pack path for this repo |
+| Enforce same-change docs policy | `bash scripts/enforce_doc_updates.sh` | Use when behavior/commands/paths changed |
+| Validate context budget | `bash scripts/validate_context_budget.sh` | Startup-context size gate |
+
+## Runner CLI
+
+```bash
+npm run runner -- example-config
+npm run runner -- config validate --project .
+npm run runner -- inspect --project .
+npm run runner -- plan --project . --mode orchestrator --prompt "Describe the work"
+npm run runner -- graph dry-run --project . --mode orchestrator --prompt "Describe the work"
+npm run runner -- packet validate --project .
+```
+
+## Packet Lifecycle
+
+```bash
+npm run runner -- packet init --project /path/to/project
+npm run runner -- packet issue --project /path/to/project --title "Small bounded task" --goal "Do one clearly scoped thing" --allowed-files "src/file.ts,docs/GAME_PLAN.md" --allowed-commands "npm run check" --acceptance "change made,check passes,docs updated if needed"
+npm run runner -- packet result --project /path/to/project --id P-YYYYMMDD-HHMMSS --status DONE --summary "Implemented the bounded task." --changed-files "src/file.ts" --checks-run "npm run check"
+npm run runner -- packet review --project /path/to/project --id P-YYYYMMDD-HHMMSS --decision ACCEPT --summary "Accepted after checks passed."
+npm run runner -- packet close --project /path/to/project --id P-YYYYMMDD-HHMMSS --reason "Accepted and complete."
+```
+
+## Repo-Specific Focused Tests
+
+Fill this section with the exact focused test commands that exist in the project.
+Do not leave the AI to infer these from `package.json` every session.
+
+- Add each `npm run test:*` or repo-owned smoke command here as soon as it becomes part of the normal workflow.
+- Remove commands that are retired.
+- Keep the smallest useful test first and the full verify gate separate.
+
+## Packaging / Local Install
+
+If this project packages a local extension, app, or deployable artifact, list that command here.
+
+- Replace this section with the repo's exact package/build and local-install commands, or mark it `N/A` if the project has no packaged local artifact.
+
+## Suggested Use Order
+
+1. Need the normal handoff gate: run `[VERIFY_COMMAND]`.
+2. Need one narrow check: run the smallest focused test listed above.
+3. Need to inspect/dry-run the orchestrator without UI: use `npm run runner -- ...`.
+4. Need deeper semantics for why a command matters: open `docs/ENGINEERING_PLAYBOOK.md` or the project runbook.

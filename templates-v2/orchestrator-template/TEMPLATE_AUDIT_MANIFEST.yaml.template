@@ -74,6 +74,14 @@ checklist_items:
     evidence_rule: commands and validation loop are documented
     severity: high
 
+  - id: workflow-commands-index
+    title: Commands index present
+    category: workflow
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/COMMANDS.md]
+    evidence_rule: routine repo commands are documented in one AI-friendly index
+    severity: medium
+
   - id: workflow-orchestration-map
     title: Orchestration map present
     category: workflow
