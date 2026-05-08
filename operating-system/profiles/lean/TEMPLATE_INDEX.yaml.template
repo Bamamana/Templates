@@ -96,6 +96,20 @@ core_templates:
     read_when: Validating adoption or running CI safeguards
     skip_when: Never when operating-system governance is in use
 
+  - template: scripts/sync_session_brief.sh.template
+    destination: scripts/sync_session_brief.sh
+    purpose: Generate routed startup brief from project state
+    required_by_tier: [A, B, C]
+    read_when: Session brief needs refresh
+    skip_when: Routed startup is not used
+
+  - template: scripts/validate_context_budget.sh.template
+    destination: scripts/validate_context_budget.sh
+    purpose: Enforce always-on startup context budget
+    required_by_tier: [A, B, C]
+    read_when: Startup files change or context budget is reviewed
+    skip_when: Routed startup is not used
+
   - template: scripts/verify.sh.template
     destination: scripts/verify.sh
     purpose: Baseline local verification gate

@@ -14,7 +14,8 @@ Purpose: make orchestration state visible in repo artifacts instead of trusting 
 - `docs/packets/reviewed/` - persisted review notes
 - `docs/packets/archived/` - optional closed-packet archive
 
-Use the project script that owns state-ledger operations to initialize and validate these artifacts.
+Use `python3 scripts/orchestrator_state.py init` to initialize ledgers and packet directories.
+Use `python3 scripts/orchestrator_state.py validate` before handoff or session close.
 
 ## Packet Lifecycle
 
@@ -94,3 +95,9 @@ Before handoff or session close:
 2. reviewed done packets have explicit outcome,
 3. session budget reflects investigator and packet usage,
 4. packet folders match the ledger state closely enough to audit.
+
+The validation command is:
+
+```bash
+python3 scripts/orchestrator_state.py validate
+```

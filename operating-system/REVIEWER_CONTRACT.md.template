@@ -69,7 +69,9 @@ Judge whether the written plan artifact:
 1. reflects accepted audit facts,
 2. defines a safe next step,
 3. avoids broadening scope,
-4. stays readable for the operator.
+4. uses the same rolling `docs/ORCHESTRATOR_PLAN.md` artifact when orchestrator profile is used,
+5. states reviewer decision, next packet, auto-continue setting, and stop conditions, and
+6. stays readable for the operator.
 
 ### 3. Result review
 

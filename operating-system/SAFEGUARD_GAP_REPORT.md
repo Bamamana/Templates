@@ -15,6 +15,8 @@ There are no major unknown families left.
 
 There are no remaining identified structural or profile-fidelity gaps inside this sandbox.
 
+The machine-readable audit manifest, applied-project validator, context routing map, and runtime mirror manifest now include the operator dashboard, closing checklist, investigator protocol, local worker health, state seeds, startup/state helper scripts, and CI workflow templates where the reduced OS marks them required.
+
 The only remaining follow-through after this phase is future adoption work in LangGraph and eventual retirement of compatibility-only exports.
 
 ## Coverage Summary
@@ -23,11 +25,14 @@ The only remaining follow-through after this phase is future adoption work in La
 |---|---|---|---|
 | Worker task packet | `WORKER_TASK_PACKET.md.template` | covered | Core bounded work contract exists. |
 | Worker result packet | `WORKER_RESULT_PACKET.md.template` | covered | Core result artifact exists. |
+| Rolling orchestrator plan | `ORCHESTRATOR_PLAN.md.template` | covered | Reviewer-accepted plan bridge exists between audit and packet issuance. |
 | Post-coding review gate | `REVIEWER_CONTRACT.md.template` + `REVIEW_CHECKLIST.md.template` | covered | Review logic and concrete checklist both exist. |
 | State ledger protocol | `STATE_LEDGER_PROTOCOL.md.template` | covered | Packet/session state protocol exists. |
+| Packet ledger and session budget seeds | `packet_ledger.json.template` + `session_budget.json.template` | covered | Runtime state can initialize without legacy template files. |
 | Audit manifest | `TEMPLATE_AUDIT_MANIFEST.yaml.template` | covered | Reduced audit inventory exists. |
 | Startup contract family | `AI_AGENT.md.template` + `SESSION_BRIEF.md.template` + `CONTEXT_ROUTING.md.template` | covered | Reduced startup set exists. |
 | Engineering and operations safeguards | `ENGINEERING_RUNBOOK.md.template` + `OPERATIONS_RUNBOOK.md.template` + scripts + CI templates | covered | Validate, verify, doc guard, predeploy, and CI are present. |
+| Routed startup helpers | `scripts/sync_session_brief.sh.template` + `scripts/validate_context_budget.sh.template` | covered | Lean/orchestrator startup refresh and context-budget checks are executable from OS. |
 | Operator dashboard | `OPERATOR_DASHBOARD.md.template` | covered | Explicit operator decision and rollback surface now exists. |
 | Closing checklist | `CLOSING_CHECKLIST.md.template` | covered | Explicit closeout PASS/FAIL gate now exists. |
 | Investigator protocol | `INVESTIGATOR_PROTOCOL.md.template` | covered | Dedicated escalation workflow and tie-breaker protocol now exist. |

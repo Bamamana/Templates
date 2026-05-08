@@ -75,6 +75,11 @@ These are the current LangGraph-facing surfaces that must stay grounded during m
 
 They should not expand the long-term runtime surface unless a real consumer still needs them.
 
+Phase 2 must also mirror:
+
+1. CI workflow templates used by operating-system application and validation, because `TEMPLATE_INDEX.yaml` treats CI/CD as part of the operating-system contract for Tier B/C projects.
+2. packet/session state seeds and helper scripts, because orchestrator and routed-startup contracts must be executable from the mirror without falling back to legacy `templates-v2` files.
+
 ## 5) Sync Contract
 
 The sync command must:

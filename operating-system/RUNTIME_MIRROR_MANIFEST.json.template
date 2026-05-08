@@ -289,6 +289,18 @@
       "action": "copy"
     },
     {
+      "id": "orchestrator-plan",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/ORCHESTRATOR_PLAN.md.template",
+      "mirrorPath": "ORCHESTRATOR_PLAN.md.template",
+      "requiredBy": [
+        "future-orchestrator-loader",
+        "future-reviewer-loader"
+      ],
+      "action": "copy"
+    },
+    {
       "id": "worker-contract",
       "phase": 2,
       "track": "operating-system-native",
@@ -464,6 +476,30 @@
       "action": "copy"
     },
     {
+      "id": "packet-ledger-seed",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/packet_ledger.json.template",
+      "mirrorPath": "packet_ledger.json.template",
+      "requiredBy": [
+        "future-orchestrator-loader",
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "session-budget-seed",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/session_budget.json.template",
+      "mirrorPath": "session_budget.json.template",
+      "requiredBy": [
+        "future-orchestrator-loader",
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
       "id": "validate-operating-system-script",
       "phase": 2,
       "track": "operating-system-native",
@@ -471,6 +507,42 @@
       "mirrorPath": "scripts/validate_operating_system.sh.template",
       "requiredBy": [
         "future-audit-loader",
+        "future-verify-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "orchestrator-state-script",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/scripts/orchestrator_state.py.template",
+      "mirrorPath": "scripts/orchestrator_state.py.template",
+      "requiredBy": [
+        "future-orchestrator-loader",
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "sync-session-brief-script",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/scripts/sync_session_brief.sh.template",
+      "mirrorPath": "scripts/sync_session_brief.sh.template",
+      "requiredBy": [
+        "future-startup-loader",
+        "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "validate-context-budget-script",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/scripts/validate_context_budget.sh.template",
+      "mirrorPath": "scripts/validate_context_budget.sh.template",
+      "requiredBy": [
+        "future-startup-loader",
         "future-verify-loader"
       ],
       "action": "copy"
@@ -505,6 +577,30 @@
       "mirrorPath": "scripts/predeploy_full_suite.sh.template",
       "requiredBy": [
         "future-apply-pack"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "ci-baseline-template",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/.github/workflows/CI_BASELINE.yml.template",
+      "mirrorPath": ".github/workflows/CI_BASELINE.yml.template",
+      "requiredBy": [
+        "future-apply-pack",
+        "future-verify-loader"
+      ],
+      "action": "copy"
+    },
+    {
+      "id": "ci-predeploy-template",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/.github/workflows/CI_PREDEPLOY.yml.template",
+      "mirrorPath": ".github/workflows/CI_PREDEPLOY.yml.template",
+      "requiredBy": [
+        "future-apply-pack",
+        "future-release-loader"
       ],
       "action": "copy"
     },

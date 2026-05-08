@@ -39,6 +39,7 @@ required_files=(
   "docs/TEMPLATE_LIFECYCLE.md"
   "docs/TEMPLATE_INDEX.yaml"
   "docs/TEMPLATE_AUDIT_MANIFEST.yaml"
+  "docs/CLOSING_CHECKLIST.md"
   "CHANGELOG.md"
   "scripts/validate_operating_system.sh"
   "scripts/verify.sh"
@@ -84,6 +85,7 @@ scan_paths=(
   "docs/TEMPLATE_LIFECYCLE.md"
   "docs/TEMPLATE_INDEX.yaml"
   "docs/TEMPLATE_AUDIT_MANIFEST.yaml"
+  "docs/CLOSING_CHECKLIST.md"
   "CHANGELOG.md"
   "scripts/validate_operating_system.sh"
   "scripts/verify.sh"
@@ -92,11 +94,15 @@ scan_paths=(
 if [[ "$operating_profile" == "LEAN" || "$operating_profile" == "ORCHESTRATOR" ]]; then
   require_file "docs/SESSION_BRIEF.md"
   require_file "docs/CONTEXT_ROUTING.md"
+  require_file "scripts/sync_session_brief.sh"
+  require_file "scripts/validate_context_budget.sh"
   grep -q "## Event Triggers" "docs/CONTEXT_ROUTING.md" || fail "docs/CONTEXT_ROUTING.md must include an ## Event Triggers section"
   if grep -Eq '^-[[:space:]]+(Phase|Milestone|Status|Next item|Next command|Last verified):[[:space:]]*$' "docs/SESSION_BRIEF.md"; then
     fail "docs/SESSION_BRIEF.md has unset startup fields; refresh it from docs/PROJECT_STATE.md before handoff"
   fi
-  scan_paths+=("docs/SESSION_BRIEF.md" "docs/CONTEXT_ROUTING.md")
+  bash -n "scripts/sync_session_brief.sh"
+  bash -n "scripts/validate_context_budget.sh"
+  scan_paths+=("docs/SESSION_BRIEF.md" "docs/CONTEXT_ROUTING.md" "scripts/sync_session_brief.sh" "scripts/validate_context_budget.sh")
   pass "Routed startup files are present"
 fi
 
@@ -122,8 +128,12 @@ if [[ "$operating_profile" == "ORCHESTRATOR" ]]; then
   orchestrator_files=(
     "docs/AUDITOR_CONTRACT.md"
     "docs/ORCHESTRATOR_CONTRACT.md"
+    "docs/ORCHESTRATOR_PLAN.md"
     "docs/WORKER_CONTRACT.md"
     "docs/REVIEWER_CONTRACT.md"
+    "docs/OPERATOR_DASHBOARD.md"
+    "docs/INVESTIGATOR_PROTOCOL.md"
+    "docs/LOCAL_WORKER_HEALTH.md"
     "docs/WORKER_TASK_PACKET.md"
     "docs/WORKER_RESULT_PACKET.md"
     "docs/REVIEW_CHECKLIST.md"
@@ -135,9 +145,19 @@ if [[ "$operating_profile" == "ORCHESTRATOR" ]]; then
   for file in "${orchestrator_files[@]}"; do
     require_file "$file"
   done
-  scan_paths+=("docs/AUDITOR_CONTRACT.md" "docs/ORCHESTRATOR_CONTRACT.md" "docs/WORKER_CONTRACT.md" "docs/REVIEWER_CONTRACT.md" "docs/WORKER_TASK_PACKET.md" "docs/WORKER_RESULT_PACKET.md" "docs/REVIEW_CHECKLIST.md" "docs/STATE_LEDGER_PROTOCOL.md")
+  grep -q "## Current Status" "docs/OPERATOR_DASHBOARD.md" || fail "docs/OPERATOR_DASHBOARD.md must include a ## Current Status section"
+  grep -q "## Approved Backlog" "docs/ORCHESTRATOR_PLAN.md" || fail "docs/ORCHESTRATOR_PLAN.md must include a ## Approved Backlog section"
+  grep -q "## Auto-Continue" "docs/ORCHESTRATOR_PLAN.md" || fail "docs/ORCHESTRATOR_PLAN.md must include a ## Auto-Continue section"
+  grep -q "## When To Invoke" "docs/INVESTIGATOR_PROTOCOL.md" || fail "docs/INVESTIGATOR_PROTOCOL.md must include a ## When To Invoke section"
+  grep -q "## Minimum Health Checks" "docs/LOCAL_WORKER_HEALTH.md" || fail "docs/LOCAL_WORKER_HEALTH.md must include a ## Minimum Health Checks section"
+  python3 -m py_compile "scripts/orchestrator_state.py"
+  python3 "scripts/orchestrator_state.py" validate
+  scan_paths+=("docs/AUDITOR_CONTRACT.md" "docs/ORCHESTRATOR_CONTRACT.md" "docs/ORCHESTRATOR_PLAN.md" "docs/WORKER_CONTRACT.md" "docs/REVIEWER_CONTRACT.md" "docs/OPERATOR_DASHBOARD.md" "docs/INVESTIGATOR_PROTOCOL.md" "docs/LOCAL_WORKER_HEALTH.md" "docs/WORKER_TASK_PACKET.md" "docs/WORKER_RESULT_PACKET.md" "docs/REVIEW_CHECKLIST.md" "docs/STATE_LEDGER_PROTOCOL.md" "scripts/orchestrator_state.py")
   pass "Orchestrator profile contracts and state files are present"
 fi
+
+grep -q "## Closing Gate" "docs/CLOSING_CHECKLIST.md" || fail "docs/CLOSING_CHECKLIST.md must include a ## Closing Gate section"
+pass "Closing checklist is present"
 
 if [[ -f "scripts/enforce_doc_updates.sh" ]]; then
   scan_paths+=("scripts/enforce_doc_updates.sh")

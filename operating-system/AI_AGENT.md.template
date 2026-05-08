@@ -25,7 +25,8 @@ Use `docs/CONTEXT_ROUTING.md` to decide.
 - Use `docs/OPERATIONS_RUNBOOK.md` for deploy, secrets, rollback, release, and incident work.
 - Tier B/C runtime changes require `docs/MASTER_TRACEABILITY_TABLE.md` updates with smoke or contract evidence.
 - If work is packet-driven, respect `docs/WORKER_TASK_PACKET.md`, `docs/WORKER_RESULT_PACKET.md`, `docs/REVIEW_CHECKLIST.md`, and `docs/STATE_LEDGER_PROTOCOL.md`.
-- Do not claim DONE if verify, required evidence, or required review is missing.
+- Use `docs/CLOSING_CHECKLIST.md` before claiming work is done.
+- Do not claim DONE if closeout, verify, required evidence, or required review is missing.
 
 ## Working Loop
 
@@ -34,6 +35,7 @@ Use `docs/CONTEXT_ROUTING.md` to decide.
 3. Keep `docs/PROJECT_STATE.md` current as work progresses.
 4. Refresh `docs/SESSION_BRIEF.md` before handoff so startup state reflects reality.
 5. Run the verify gate defined in `docs/ENGINEERING_RUNBOOK.md` before final handoff.
+6. Complete `docs/CLOSING_CHECKLIST.md` before a final done claim.
 
 ## File Size Rule
 
@@ -48,4 +50,5 @@ Done means:
 1. requested behavior is implemented or the blocker is made explicit,
 2. required tests or checks pass,
 3. required docs and evidence are updated,
-4. next action is clear if work is not fully complete.
+4. closeout has no required `FAIL` items,
+5. next action is clear if work is not fully complete.

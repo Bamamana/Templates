@@ -49,6 +49,7 @@ Each current file should end up in one of these buckets:
 2. `CLOSING_CHECKLIST.md.template`
 3. `INVESTIGATOR_PROTOCOL.md.template`
 4. `LOCAL_WORKER_HEALTH.md.template`
+5. `ORCHESTRATOR_PLAN.md.template`
 
 ### Packets and state
 
@@ -56,6 +57,8 @@ Each current file should end up in one of these buckets:
 2. `WORKER_RESULT_PACKET.md.template`
 3. `STATE_LEDGER_PROTOCOL.md.template`
 4. `TEMPLATE_AUDIT_MANIFEST.yaml.template`
+5. `packet_ledger.json.template`
+6. `session_budget.json.template`
 
 ### Runtime and sync
 
@@ -63,6 +66,9 @@ Each current file should end up in one of these buckets:
 2. `RUNTIME_MIRROR_MANIFEST.json.template`
 3. `scripts/sync_runtime_mirror.sh.template` or equivalent
 4. `scripts/check_runtime_mirror.sh.template` or equivalent
+5. `scripts/orchestrator_state.py.template`
+6. `scripts/sync_session_brief.sh.template`
+7. `scripts/validate_context_budget.sh.template`
 
 ## Current To Target Map
 
@@ -147,6 +153,7 @@ Each current file should end up in one of these buckets:
 |---|---|---|---|
 | `templates-v2/orchestrator-template/ORCHESTRATION_MAP.md.template` | `ORCHESTRATOR_CONTRACT.md.template` | merge | Stable role split and routing rules. |
 | `templates-v2/orchestrator-template/SCENARIO_PLAYBOOK.md.template` | `ORCHESTRATOR_CONTRACT.md.template` | merge | Workflow-level routing belongs in orchestrator contract. |
+| LangGraph project `docs/ORCHESTRATOR_PLAN.md` | `ORCHESTRATOR_PLAN.md.template` | move into OS | Rolling plan artifact is the approval bridge between audit and packets. |
 | `templates-v2/orchestrator-template/OPERATOR_DASHBOARD.md.template` | `OPERATOR_DASHBOARD.md.template` | keep | Non-coder operator approval and rollback is a distinct safeguard surface. |
 | `templates-v2/orchestrator-template/VISION.md.template` | compatibility-only export | keep temporarily | OS mission and workflow intent now live in `README.md` plus role contracts; standalone vision file is no longer core OS surface. |
 
@@ -172,10 +179,10 @@ Each current file should end up in one of these buckets:
 | Current file | Target artifact | Action | Notes |
 |---|---|---|---|
 | `templates-v2/orchestrator-template/STATE_LEDGER_PROTOCOL.md.template` | `STATE_LEDGER_PROTOCOL.md.template` | keep | Core runtime state contract. |
-| `templates-v2/orchestrator-template/packet_ledger.json.template` | state seed | keep | Runtime state seed, not narrative doc. |
-| `templates-v2/orchestrator-template/session_budget.json.template` | state seed | keep | Runtime state seed. |
-| `templates-v2/scripts/orchestrator_state.py.template` | runtime script | keep | Needed by LangGraph and orchestrator pattern. |
-| `templates-v2/scripts/sync_session_brief.sh.template` | runtime script | keep | Needed for lean startup state. |
+| `templates-v2/orchestrator-template/packet_ledger.json.template` | `packet_ledger.json.template` | keep | Runtime state seed, not narrative doc. |
+| `templates-v2/orchestrator-template/session_budget.json.template` | `session_budget.json.template` | keep | Runtime state seed. |
+| `templates-v2/scripts/orchestrator_state.py.template` | `scripts/orchestrator_state.py.template` | keep | Needed by LangGraph and orchestrator pattern. |
+| `templates-v2/scripts/sync_session_brief.sh.template` | `scripts/sync_session_brief.sh.template` | keep | Needed for lean startup state. |
 
 ### Validation and mirror-control scripts
 
@@ -184,7 +191,7 @@ Each current file should end up in one of these buckets:
 | `templates-v2/scripts/bootstrap_agent_ready.sh.template` | separate compatibility tool | keep temporarily | Useful while old pack remains active. |
 | `templates-v2/scripts/validate_templates.sh.template` | `scripts/validate_operating_system.sh.template` plus `scripts/check_runtime_mirror.sh.template` | split | Separate applied-project validation from runtime mirror validation. |
 | `templates-v2/scripts/check_template_drift.sh.template` | `scripts/check_runtime_mirror.sh.template` | merge | Drift check belongs in mirror validation. |
-| `templates-v2/scripts/validate_context_budget.sh.template` | keep | Still needed for startup discipline. |
+| `templates-v2/scripts/validate_context_budget.sh.template` | `scripts/validate_context_budget.sh.template` | keep | Still needed for startup discipline. |
 | `templates-v2/scripts/report_context_size.sh.template` | keep optional | Diagnostic helper. |
 | `templates-v2/scripts/enforce_doc_updates.sh.template` | keep | Strong safeguard; should remain. |
 | `templates-v2/scripts/predeploy_full_suite.sh.template` | keep | Strong safeguard; should remain. |
@@ -238,6 +245,12 @@ If we want LangGraph to behave consistently first, these are the highest-priorit
 21. `CLOSING_CHECKLIST.md.template`
 22. `INVESTIGATOR_PROTOCOL.md.template`
 23. `LOCAL_WORKER_HEALTH.md.template`
+24. `ORCHESTRATOR_PLAN.md.template`
+25. `packet_ledger.json.template`
+26. `session_budget.json.template`
+27. `scripts/orchestrator_state.py.template`
+28. `scripts/sync_session_brief.sh.template`
+29. `scripts/validate_context_budget.sh.template`
 
 This subset is what should drive LangGraph role behavior and template-audit behavior first.
 

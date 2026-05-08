@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Auto-generate docs/SESSION_BRIEF.md from docs/PROJECT_STATE.md.
+#
+# Usage:
+#   bash scripts/sync_session_brief.sh
+#   bash scripts/sync_session_brief.sh --source docs/PROJECT_STATE.md
+#
+# Designed for routed startup: PROJECT_STATE owns live execution state, and this
+# script keeps the compact startup brief aligned with that source.
+set -euo pipefail
+
+SOURCE=""
+TARGET="docs/SESSION_BRIEF.md"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --source) SOURCE="$2"; shift 2 ;;
+    --target) TARGET="$2"; shift 2 ;;
+    -h|--help) sed -n '2,11p' "$0"; exit 0 ;;
+    *) echo "[sync][FAIL] Unknown arg: $1" >&2; exit 2 ;;
+  esac
+done
+
+if [[ -z "$SOURCE" ]]; then
+  if [[ -f "docs/PROJECT_STATE.md" ]]; then
+    SOURCE="docs/PROJECT_STATE.md"
+  elif [[ -f "docs/GAME_PLAN.md" ]]; then
+    SOURCE="docs/GAME_PLAN.md"
+  elif [[ -f "docs/PROJECT_CANVAS.md" ]]; then
+    SOURCE="docs/PROJECT_CANVAS.md"
+  else
+    echo "[sync][FAIL] No project state source found. Create docs/PROJECT_STATE.md." >&2
+    exit 1
+  fi
+fi
+
+if [[ ! -f "$SOURCE" ]]; then
+  echo "[sync][FAIL] Source not found: $SOURCE" >&2
+  exit 1
+fi
+
+PROJECT_NAME="$(basename "$PWD")"
+
+python3 - "$SOURCE" "$TARGET" "$PROJECT_NAME" <<'PY'
+import datetime
+import pathlib
+import re
+import sys
+
+source = pathlib.Path(sys.argv[1])
+target = pathlib.Path(sys.argv[2])
+project = sys.argv[3]
+text = source.read_text(encoding="utf-8")
+
+
+def find(label: str, default: str = "(not set)") -> str:
+    pattern = rf"^\s*-?\s*(?:Current\s+)?{re.escape(label)}\s*:\s*(.+?)\s*$"
+    match = re.search(pattern, text, re.MULTILINE | re.IGNORECASE)
+    if not match:
+        return default
+    value = match.group(1).strip().strip("`")
+    return value if value else default
+
+
+def section_first_bullet(header: str) -> str:
+    match = re.search(rf"##\s*\d*\)?\s*{re.escape(header)}[^\n]*\n((?:[^\n#]+\n?)+)", text, re.IGNORECASE)
+    if not match:
+        return ""
+    bullet = re.search(r"^-\s*(.+?)\s*$", match.group(1), re.MULTILINE)
+    return bullet.group(1).strip() if bullet else ""
+
+phase = find("phase")
+milestone = find("milestone")
+status = find("status")
+next_item = find("Next unchecked item")
+if next_item == "(not set)":
+    next_item = find("Next unchecked checklist item")
+if next_item == "(not set)":
+    next_item = find("Next item")
+if next_item == "(not set)":
+    next_item = find("Next action")
+next_command = find("Next command")
+if next_command == "(not set)":
+    next_command = find("Next command to run")
+last_verified = find("Last verified at")
+if last_verified == "(not set)":
+    last_verified = find("Last verified")
+
+risk = section_first_bullet("Risk Snapshot") or "(none recorded)"
+now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M %Z").strip()
+
+content = f"""# Session Brief ({project})
+
+Read when: always at session start.
+Skip when: never.
+
+> Auto-generated from `{source}` by `scripts/sync_session_brief.sh`.
+> Do not hand-edit; edit the source doc and re-run the sync.
+> Last sync: {now}
+
+## Now
+
+- Phase: {phase}
+- Milestone: {milestone}
+- Status: {status}
+- Next item: {next_item}
+- Next command: {next_command}
+- Last verified: {last_verified}
+
+## Focus
+
+- Active objective: {milestone}
+- In-scope area: see `{source}` section "Scope"
+- Known blocker or risk: {risk}
+
+## Quick Guardrails
+
+- Verify gate: see `docs/ENGINEERING_RUNBOOK.md`
+- Operational risk or release change: see `docs/OPERATIONS_RUNBOOK.md`
+- Runtime pathway change: see `docs/MASTER_TRACEABILITY_TABLE.md`
+- Packeted work: see `docs/WORKER_TASK_PACKET.md` and `docs/STATE_LEDGER_PROTOCOL.md`
+
+## Notes For Next Session
+
+- Update `docs/PROJECT_STATE.md` first when the phase, milestone, or next action changes.
+- Refresh this brief before handoff.
+"""
+
+target.parent.mkdir(parents=True, exist_ok=True)
+target.write_text(content, encoding="utf-8")
+print(f"[sync] wrote {target} from {source}")
+PY

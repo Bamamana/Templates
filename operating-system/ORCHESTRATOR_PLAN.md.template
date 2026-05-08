@@ -1,0 +1,127 @@
+# Orchestrator Plan ([PROJECT_NAME])
+
+Read when:
+
+1. turning an accepted audit or operator request into bounded work,
+2. reviewing the next implementation step before packet issuance,
+3. resuming orchestrated work after interruption,
+4. deciding whether auto-continue is allowed.
+
+Skip when:
+
+1. the project is not using the orchestrator profile, or
+2. a worker already has an active packet and no planning decision is needed.
+
+## Purpose
+
+This is the rolling written plan artifact for orchestrated work.
+
+It translates plain-language operator intent and accepted audit facts into the next safe packet.
+It is the approval bridge between audit and worker execution.
+
+The operator should be able to understand the plan without reading raw diffs, packet schemas, or code.
+
+## Summary
+
+- Operator goal:
+- Current recommendation:
+- Plain-language reason:
+
+## Audit Source
+
+- Audit artifact: `docs/TEMPLATE_AUDIT_REPORT.md` / N/A
+- Audit review decision: ACCEPT / REPAIR / REJECT / ESCALATE / N/A
+- Audit source version or mirror status:
+
+## Workflow Mode
+
+- Mode: DIRECT_LOCAL / ORCHESTRATED / AUDIT_ONLY / INVESTIGATION / HALTED
+- Why this mode is appropriate:
+- Operator approval needed before worker packet? YES / NO
+
+## Current Status
+
+- Project state: GREEN / YELLOW / RED
+- Current milestone:
+- Active packet: none / `P-YYYY-MM-DD-NN`
+- Last reviewer decision: none / ACCEPT / REPAIR / REJECT / ESCALATE
+- Last verified:
+
+## Current Step
+
+- Step ID:
+- Objective:
+- Status: NOT_STARTED / READY_FOR_REVIEW / APPROVED_FOR_PACKET / BLOCKED / DONE
+- What must be true before packet issuance:
+
+## Approved Backlog
+
+| Order | Backlog item | Source | Status | Notes |
+|---|---|---|---|---|
+| 1 |  | audit / operator / reviewer | proposed / approved / blocked / done | |
+
+## Next Packet
+
+- Packet ID or draft ID:
+- Goal:
+- Allowed files:
+- Reference files:
+- Required commands:
+- Required evidence:
+- Stop conditions:
+
+## Last Completed Packet
+
+- Packet ID:
+- Result: DONE / PARTIAL / BLOCKED / N/A
+- Reviewer decision: ACCEPT / REPAIR / REJECT / ESCALATE / N/A
+- Evidence summary:
+
+## Reviewer Decision
+
+- Plan review decision: ACCEPT / REPAIR / REJECT / ESCALATE / PENDING
+- Reviewer summary:
+- Required repair before packet issuance:
+
+## Auto-Continue
+
+- Auto-continue enabled: NO / YES
+- Limit: stop after accepted packet / continue through approved backlog item count / halt on any repair
+- Rationale:
+
+Default is NO.
+Do not continue to the next packet automatically unless the operator explicitly approved that mode.
+
+## Stop Conditions
+
+Stop before worker execution if:
+
+1. runtime mirror is invalid or stale,
+2. audit or plan review is required but not accepted,
+3. allowed files or commands are unclear,
+4. worker health is not acceptable for the task,
+5. security, privacy, data, deploy, or destructive risk exceeds the packet,
+6. the operator needs to choose between meaningful product options.
+
+## Open Questions
+
+- 
+
+## Notes / History
+
+| Date | Event | Decision / Evidence |
+|---|---|---|
+| YYYY-MM-DD | Plan created | |
+
+## Update Rules
+
+Update this same file when:
+
+1. an audit is accepted or repaired,
+2. the next packet changes,
+3. reviewer returns REPAIR, REJECT, or ESCALATE,
+4. operator approval changes the backlog or auto-continue setting,
+5. orchestrated work pauses or resumes.
+
+Do not create competing plan summaries when this file exists.
+Repair this same artifact so the operator and models have one current planning truth.

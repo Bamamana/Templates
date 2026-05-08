@@ -55,6 +55,17 @@ checklist_items:
     evidence_rule: file exists and routes major doc and event triggers
     severity: high
 
+  - id: startup-routed-scripts
+    title: Routed startup helper scripts present
+    category: startup
+    required_by_tier: [A, B, C]
+    required_by_profile: [LEAN, ORCHESTRATOR]
+    expected_paths:
+      - scripts/sync_session_brief.sh
+      - scripts/validate_context_budget.sh
+    evidence_rule: session brief refresh and startup context budget checks are executable
+    severity: medium
+
   - id: runbook-engineering
     title: Engineering runbook present
     category: runbooks
@@ -111,9 +122,10 @@ checklist_items:
     expected_paths:
       - docs/AUDITOR_CONTRACT.md
       - docs/ORCHESTRATOR_CONTRACT.md
+      - docs/ORCHESTRATOR_PLAN.md
       - docs/WORKER_CONTRACT.md
       - docs/REVIEWER_CONTRACT.md
-    evidence_rule: explicit role boundaries exist for audit, orchestration, worker execution, and review
+    evidence_rule: explicit role boundaries and rolling plan artifact exist for audit, orchestration, worker execution, and review
     severity: high
 
   - id: orch-packets
@@ -126,7 +138,43 @@ checklist_items:
       - docs/WORKER_RESULT_PACKET.md
       - docs/REVIEW_CHECKLIST.md
       - docs/STATE_LEDGER_PROTOCOL.md
+      - scripts/orchestrator_state.py
     evidence_rule: bounded packet flow and review gates are documented
+    severity: high
+
+  - id: closeout-checklist
+    title: Final closeout checklist present
+    category: closeout
+    required_by_tier: [A, B, C]
+    expected_paths: [docs/CLOSING_CHECKLIST.md]
+    evidence_rule: explicit PASS/FAIL/N/A closeout gate exists before any done claim
+    severity: high
+
+  - id: orch-operator-dashboard
+    title: Operator dashboard present for orchestrated handoff
+    category: orchestrator
+    required_by_tier: [A, B, C]
+    required_by_profile: [ORCHESTRATOR]
+    expected_paths: [docs/OPERATOR_DASHBOARD.md]
+    evidence_rule: plain-English operator decision, rollback, status, and tie-breaker surface exists
+    severity: high
+
+  - id: orch-investigator-protocol
+    title: Investigator protocol present for escalation
+    category: orchestrator
+    required_by_tier: [A, B, C]
+    required_by_profile: [ORCHESTRATOR]
+    expected_paths: [docs/INVESTIGATOR_PROTOCOL.md]
+    evidence_rule: repeated blocked, contradictory, escalated, or regression-causing work has a bounded escalation workflow
+    severity: high
+
+  - id: orch-local-worker-health
+    title: Local worker health present before worker delegation
+    category: orchestrator
+    required_by_tier: [A, B, C]
+    required_by_profile: [ORCHESTRATOR]
+    expected_paths: [docs/LOCAL_WORKER_HEALTH.md]
+    evidence_rule: worker readiness, secret boundary, degraded/offline rules, and health evidence are documented
     severity: high
 
   - id: orch-state-files

@@ -50,6 +50,8 @@ Reviewer should have:
 ## 5) Plan-Specific Check
 
 - [ ] Plan reflects accepted audit or current state.
+- [ ] Plan is the same rolling `docs/ORCHESTRATOR_PLAN.md` artifact when orchestrator profile is used.
+- [ ] Plan includes current step, approved backlog, next packet, reviewer decision, auto-continue setting, and stop conditions.
 - [ ] Next step is the smallest safe slice.
 - [ ] Operator-facing explanation is plain language.
 - [ ] Stop conditions are still intact.

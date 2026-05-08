@@ -39,17 +39,23 @@ It exists so we can design the operating system, reduce template bloat, and defi
 28. `scripts/verify.sh.template` - local verify gate template
 29. `scripts/enforce_doc_updates.sh.template` - same-change docs enforcement template
 30. `scripts/predeploy_full_suite.sh.template` - stronger release-readiness gate template
-31. `.github/workflows/CI_BASELINE.yml.template` - baseline CI template
-32. `.github/workflows/CI_PREDEPLOY.yml.template` - stronger predeploy CI template
-33. `SAFEGUARD_GAP_REPORT.md` - current orchestrator-template safeguard coverage versus the reduced operating system
-34. `OPERATOR_DASHBOARD.md.template` - plain-English operator decision and rollback surface
-35. `CLOSING_CHECKLIST.md.template` - explicit final closeout gate
-36. `INVESTIGATOR_PROTOCOL.md.template` - escalation workflow and tie-breaker protocol
-37. `LOCAL_WORKER_HEALTH.md.template` - local worker readiness and degraded-mode artifact
-38. `profiles/lean/AI_AGENT.md.template` - lean-profile startup contract variant
-39. `profiles/lean/TEMPLATE_INDEX.yaml.template` - lean-profile inventory variant
-40. `profiles/orchestrator/AI_AGENT.md.template` - orchestrator-profile startup contract variant
-41. `profiles/orchestrator/TEMPLATE_INDEX.yaml.template` - orchestrator-profile inventory variant
+31. `scripts/orchestrator_state.py.template` - packet ledger and session-budget state manager
+32. `scripts/sync_session_brief.sh.template` - routed-startup brief sync helper
+33. `scripts/validate_context_budget.sh.template` - always-on startup context budget check
+34. `packet_ledger.json.template` - orchestrator packet ledger seed
+35. `session_budget.json.template` - orchestrator session-budget seed
+36. `ORCHESTRATOR_PLAN.md.template` - rolling reviewed plan artifact for orchestrated work
+37. `.github/workflows/CI_BASELINE.yml.template` - baseline CI template
+38. `.github/workflows/CI_PREDEPLOY.yml.template` - stronger predeploy CI template
+39. `SAFEGUARD_GAP_REPORT.md` - current orchestrator-template safeguard coverage versus the reduced operating system
+40. `OPERATOR_DASHBOARD.md.template` - plain-English operator decision and rollback surface
+41. `CLOSING_CHECKLIST.md.template` - explicit final closeout gate
+42. `INVESTIGATOR_PROTOCOL.md.template` - escalation workflow and tie-breaker protocol
+43. `LOCAL_WORKER_HEALTH.md.template` - local worker readiness and degraded-mode artifact
+44. `profiles/lean/AI_AGENT.md.template` - lean-profile startup contract variant
+45. `profiles/lean/TEMPLATE_INDEX.yaml.template` - lean-profile inventory variant
+46. `profiles/orchestrator/AI_AGENT.md.template` - orchestrator-profile startup contract variant
+47. `profiles/orchestrator/TEMPLATE_INDEX.yaml.template` - orchestrator-profile inventory variant
 
 ## Mission
 
@@ -264,6 +270,7 @@ Proposed packet and review surface:
 4. `STATE_LEDGER_PROTOCOL.md.template`
 5. `CLOSING_CHECKLIST.md.template`
 6. `INVESTIGATOR_PROTOCOL.md.template`
+7. `ORCHESTRATOR_PLAN.md.template`
 
 Proposed operator and worker-readiness surface:
 
@@ -279,8 +286,15 @@ Proposed automation surface:
 5. `scripts/enforce_doc_updates.sh.template`
 6. `scripts/predeploy_full_suite.sh.template`
 7. `scripts/validate_context_budget.sh.template`
-8. `.github/workflows/CI_BASELINE.yml.template`
-9. `.github/workflows/CI_PREDEPLOY.yml.template`
+8. `scripts/sync_session_brief.sh.template`
+9. `scripts/orchestrator_state.py.template`
+10. `.github/workflows/CI_BASELINE.yml.template`
+11. `.github/workflows/CI_PREDEPLOY.yml.template`
+
+Proposed state-seed surface:
+
+1. `packet_ledger.json.template`
+2. `session_budget.json.template`
 
 The point is not to freeze these exact names yet.
 The point is to reduce the operating system to a smaller set of stronger artifacts.
@@ -292,7 +306,7 @@ These should remain per-project instantiated artifacts, not one shared global fi
 1. `AI_AGENT.md`
 2. `docs/SESSION_BRIEF.md`
 3. `docs/CONTEXT_ROUTING.md`
-4. `docs/GAME_PLAN.md` or equivalent live plan
+4. `docs/PROJECT_STATE.md`
 5. `docs/MASTER_TRACEABILITY_TABLE.md`
 6. `docs/COMMANDS.md`
 7. `CHANGELOG.md`

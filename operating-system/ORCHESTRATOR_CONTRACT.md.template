@@ -65,7 +65,7 @@ The orchestrator should receive:
 1. selected project startup docs,
 2. relevant operating-system contracts,
 3. latest accepted audit artifact when applicable,
-4. latest accepted plan artifact when applicable,
+4. latest accepted `docs/ORCHESTRATOR_PLAN.md` when applicable,
 5. packet/result/review history when applicable,
 6. current operator request,
 7. current runtime-mirror status.
@@ -81,6 +81,9 @@ The orchestrator must:
 5. route to worker, reviewer, or investigator appropriately,
 6. stop on high-risk or unclear work,
 7. summarize outcomes plainly for the operator.
+
+For orchestrated implementation, the rolling plan artifact is `docs/ORCHESTRATOR_PLAN.md`.
+Update that same file during plan repair or resume instead of creating competing plan summaries.
 
 ## Forbidden Actions
 
@@ -98,7 +101,7 @@ The orchestrator must not:
 Every packet issued by the orchestrator must be:
 
 1. bounded,
-2. traceable to written artifacts,
+2. traceable to accepted audit facts, `docs/ORCHESTRATOR_PLAN.md`, or the current operator directive,
 3. clear about allowed files and commands,
 4. explicit about required evidence,
 5. explicit about stop conditions,

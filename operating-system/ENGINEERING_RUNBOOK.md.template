@@ -53,6 +53,20 @@ Use it for:
 | Predeploy gate | [PREDEPLOY_COMMAND_OR_NA] | Release/readiness proof |
 | Sync session brief | [SYNC_SESSION_BRIEF_COMMAND_OR_NA] | If routed startup is used |
 
+### Command Selection Checklist
+
+Use this checklist before searching the repo or inventing a command.
+
+1. Check the table above for the exact command for the goal.
+2. If the command is `N/A`, do not search for an alternative unless the packet or operator asks for that proof.
+3. If the command is a placeholder, stop and report the missing command as an adoption gap.
+4. Prefer the narrowest command that proves the touched behavior before running the full verify gate.
+5. Run `scripts/verify.sh` before handoff for meaningful code changes unless the task is explicitly blocked.
+6. For orchestrated packets, use only commands listed in the approved packet unless the orchestrator amends the packet.
+7. Record command, exit result, and short evidence summary in the result or closeout artifact.
+
+Do not spend time rediscovering package-manager commands when this runbook already names the project command surface.
+
 ## 2) Modularity Rules
 
 - Soft review trigger: 500 lines.
@@ -98,7 +112,8 @@ These scripts are first-class safeguards, not optional documentation decoration.
 | `scripts/test_targeted.sh` | Narrow regression or feature proof | Preferred |
 | `scripts/sync_session_brief.sh` | Sync current-state brief from source state doc | If routed startup is used |
 | `scripts/validate_context_budget.sh` | Keep always-on startup context within budget | If routed startup is used |
-| `scripts/check_template_drift.sh` | Detect drift against template/runtime source | If template governance is in use |
+| `scripts/check_runtime_mirror.sh` | Detect runtime mirror drift against the operating-system manifest | If template governance is in use |
+| `scripts/orchestrator_state.py` | Initialize and validate packet ledger, packet folders, and session budget | If orchestrator profile is used |
 | `scripts/enforce_doc_updates.sh` | Fail if behavior changes without docs updates | Strongly recommended |
 | `scripts/predeploy_full_suite.sh` | Composite release-readiness gate | Strongly recommended |
 

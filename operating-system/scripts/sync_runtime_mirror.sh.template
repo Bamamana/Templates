@@ -29,11 +29,15 @@ max_phase = int(sys.argv[2])
 with open(manifest_path, "r", encoding="utf-8") as handle:
     manifest = json.load(handle)
 
+selected = {}
 for entry in manifest["entries"]:
     if entry.get("action", "copy") != "copy":
         continue
     if int(entry.get("phase", 1)) > max_phase:
         continue
+    selected[entry["mirrorPath"]] = entry
+
+for entry in selected.values():
     print("\t".join([entry["id"], entry["sourcePath"], entry["mirrorPath"]]))
 PY
 )

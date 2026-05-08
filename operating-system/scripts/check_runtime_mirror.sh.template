@@ -42,13 +42,16 @@ missing_sources = []
 drift = []
 
 source_available = os.path.isdir(source_root)
+selected = {}
 
 for entry in manifest["entries"]:
     if entry.get("action", "copy") != "copy":
         continue
     if int(entry.get("phase", 1)) > max_phase:
         continue
+    selected[entry["mirrorPath"]] = entry
 
+for entry in selected.values():
     source_path = os.path.join(source_root, entry["sourcePath"])
     target_path = os.path.join(target_root, entry["mirrorPath"])
 
