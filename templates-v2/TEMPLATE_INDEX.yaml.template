@@ -56,6 +56,13 @@ core_templates:
     read_when: Implementing, testing, validating, or troubleshooting
     skip_when: Never
 
+  - template: COMMANDS.md.template
+    destination: docs/COMMANDS.md
+    purpose: Fast AI-friendly command index for routine verify, test, run, package, and maintenance commands
+    required_by_tier: [A, B, C]
+    read_when: A regular repo command is needed and the current artifact does not already name it
+    skip_when: The active artifact already contains the exact command to run
+
   - template: OPS_SECURITY_RELEASE.md.template
     destination: docs/OPS_SECURITY_RELEASE.md
     purpose: Tiered ops/security/release/observability/risk controls

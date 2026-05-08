@@ -57,6 +57,7 @@ Target profile / pathway:
 - `docs/PROJECT_CANVAS.md`
 - `docs/TECH_STACK.md`
 - `docs/ENGINEERING_PLAYBOOK.md`
+- `docs/COMMANDS.md`
 - `docs/OPS_SECURITY_RELEASE.md`
 - `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C; Tier A may mark N/A)
 - `docs/PLACEHOLDER_REFERENCE.md`
@@ -67,8 +68,8 @@ Target profile / pathway:
 - `CHANGELOG.md` (with `Unreleased`)
 
 **Copy from:** `templates-v2/*.template` per `APPLY_CHECKLIST.md` § 1.
-**Trigger registered (already default):** present in `docs/CONTEXT_ROUTING.md` § Doc Triggers.
-**Proves it works:** `ls AI_AGENT.md docs/AI_MEMORY.md docs/PROJECT_CANVAS.md docs/ENGINEERING_PLAYBOOK.md CHANGELOG.md`
+**Trigger to register in `docs/CONTEXT_ROUTING.md` § Event Triggers (if routed startup docs are in use):** "Need a routine repo command quickly" → `docs/COMMANDS.md`
+**Proves it works:** `ls AI_AGENT.md docs/AI_MEMORY.md docs/PROJECT_CANVAS.md docs/ENGINEERING_PLAYBOOK.md docs/COMMANDS.md CHANGELOG.md`
 - [ ] All present, or N/A:
 
 ---
@@ -120,6 +121,8 @@ Target profile / pathway:
 | Release/predeploy prep | N/A unless this repo has a release/predeploy gate | Add rationale | Runtime/deploy path |
 
 - [ ] Every active app/service has a named validation gate or an explicit N/A rationale.
+
+If `docs/COMMANDS.md` exists, keep the final gate names in sync there so future sessions do not have to rediscover them from this walkthrough.
 
 ---
 

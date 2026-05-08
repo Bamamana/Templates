@@ -1,0 +1,41 @@
+# Command Index ([PROJECT_NAME])
+
+Read when: a routine repo command is needed quickly and the current task doc does not already name it.
+Skip when: the active artifact already gives the exact command to run.
+
+Purpose: give AI agents and operators one thin, authoritative place for the commands used repeatedly in normal work so future sessions do not have to rediscover them from multiple docs.
+
+This file is the quick index.
+Keep it updated when verify, test, run, package, deploy, or maintenance commands change.
+
+## Core Commands
+
+| Goal | Command | Notes |
+|---|---|---|
+| Canonical verify gate | `[VERIFY_COMMAND]` | Required before handoff |
+| Regenerate AI/system context | `[AI_CONTEXT_COMMAND]` | If this project uses `AI_CONTEXT.md` |
+| Template drift check | `bash scripts/check_template_drift.sh . /path/to/templates-v2` | Update the source-pack path for this repo |
+| Template validation | `bash scripts/validate_templates.sh .` | If this project ships the validator |
+| Same-change doc enforcement | `bash scripts/enforce_doc_updates.sh` | If this project ships the guardrail |
+| Predeploy/release gate | `bash scripts/predeploy_full_suite.sh` | Use `N/A` if the repo has no predeploy gate |
+
+## Repo-Specific Commands
+
+Replace the placeholders below with the exact commands that exist in the project.
+Delete rows that do not apply.
+
+| Goal | Command | Notes |
+|---|---|---|
+| Install/setup | `REPLACE_ME` | Example: `npm install` |
+| Fast smoke | `REPLACE_ME` | Smallest useful confidence check |
+| Focused regression | `REPLACE_ME` | Narrow test for the touched behavior |
+| Local run/dev server | `REPLACE_ME` | Example: app or dev server start |
+| Package/build artifact | `REPLACE_ME` | Example: extension/app/package build |
+| Local install artifact | `REPLACE_ME or N/A` | Example: install latest VSIX |
+
+## Suggested Use Order
+
+1. Need the normal handoff gate: run `[VERIFY_COMMAND]`.
+2. Need one narrow behavior check: run the smallest focused command listed above.
+3. Need setup or local runtime behavior: use the exact install/run/package commands listed above.
+4. Need deeper semantics for why a command matters: open `docs/ENGINEERING_PLAYBOOK.md` or the project runbook.

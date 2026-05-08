@@ -39,6 +39,7 @@ If the project is Tier A, use `--tier TIER_A_STATIC`. If it touches auth, privac
 
 Update these first:
 - `AI_AGENT.md`: tier rationale, verify command, local-worker availability.
+- `docs/COMMANDS.md`: verify gate, packet lifecycle commands, package/build command, and local install command if any.
 - `docs/GAME_PLAN.md`: phase, milestone, next unchecked item, stop conditions.
 - `docs/ORCHESTRATION_MAP.md`: safe worker domains, high-risk cloud-owned domains, validation bottlenecks.
 - `docs/MASTER_TRACEABILITY_TABLE.md`: real Path IDs and smoke evidence.
@@ -90,6 +91,8 @@ python3 scripts/orchestrator_state.py review \
 ```
 
 ## 5) Final Carryover Gate
+
+Before handoff, confirm `docs/COMMANDS.md` matches the real verify, packet, and packaging/install commands the project now uses.
 
 ```bash
 python3 scripts/orchestrator_state.py validate

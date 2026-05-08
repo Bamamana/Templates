@@ -13,6 +13,7 @@ Skip when: templates are already applied and validated.
 - [ ] `PROJECT_CANVAS.md.template` copied to `docs/PROJECT_CANVAS.md`
 - [ ] `TECH_STACK.md.template` copied to `docs/TECH_STACK.md`
 - [ ] `ENGINEERING_PLAYBOOK.md.template` copied to `docs/ENGINEERING_PLAYBOOK.md`
+- [ ] `COMMANDS.md.template` copied to `docs/COMMANDS.md`
 - [ ] `OPS_SECURITY_RELEASE.md.template` copied to `docs/OPS_SECURITY_RELEASE.md`
 - [ ] `CHANGELOG.md.template` copied to `CHANGELOG.md`
 - [ ] `QUICKSTART_5_MIN.md.template` copied to `docs/QUICKSTART_5_MIN.md`
