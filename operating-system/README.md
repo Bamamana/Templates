@@ -13,49 +13,51 @@ It exists so we can design the operating system, reduce template bloat, and defi
 2. `FILE_MAP.md` - exact current-to-target mapping from `templates-v2` into the reduced operating-system structure
 3. `RUNTIME_MIRROR.md` - sync, packaging, fallback, and runtime-loading rules for LangGraph
 4. `LANGGRAPH_ADOPTION_NOTES.md` - how to move LangGraph onto the operating system later without changing it yet
-5. `AUDITOR_CONTRACT.md.template` - audit lane role contract
-6. `ORCHESTRATOR_CONTRACT.md.template` - premium planner and decision-maker contract
-7. `WORKER_CONTRACT.md.template` - bounded local coder contract
-8. `REVIEWER_CONTRACT.md.template` - artifact and result review contract
-9. `PROJECT_STATE.md.template` - merged current-state, plan, and architecture artifact
-10. `ENGINEERING_RUNBOOK.md.template` - merged commands, testing, modularity, scripts, and CI/CD artifact
-11. `TEMPLATE_LIFECYCLE.md.template` - merged adoption, migration, validation, placeholders, quickstart, and upgrade artifact
-12. `OPERATIONS_RUNBOOK.md.template` - secrets, deploy, rollback, incident, release, and risk artifact
-13. `WORKER_TASK_PACKET.md.template` - bounded work packet artifact
-14. `WORKER_RESULT_PACKET.md.template` - bounded result artifact
-15. `REVIEW_CHECKLIST.md.template` - review gate checklist artifact
-16. `RUNTIME_MIRROR_POLICY.md.template` - concrete runtime mirror source-order and validation policy
-17. `RUNTIME_MIRROR_MANIFEST.json.template` - machine-readable mirrored file manifest
-18. `scripts/sync_runtime_mirror.sh.template` - runtime mirror refresh script template
-19. `scripts/check_runtime_mirror.sh.template` - runtime mirror validation script template
-20. `AI_AGENT.md.template` - reduced canonical startup contract
-21. `SESSION_BRIEF.md.template` - compact current-session startup snapshot
-22. `CONTEXT_ROUTING.md.template` - reduced deeper-doc trigger map
-23. `TEMPLATE_INDEX.yaml.template` - machine-readable inventory for the reduced operating system
-24. `MASTER_TRACEABILITY_TABLE.md.template` - runtime pathway and smoke evidence table
-25. `STATE_LEDGER_PROTOCOL.md.template` - packet and session-state protocol
-26. `TEMPLATE_AUDIT_MANIFEST.yaml.template` - machine-readable audit checklist for the reduced operating system
-27. `scripts/validate_operating_system.sh.template` - applied-project operating-system validator
-28. `scripts/verify.sh.template` - local verify gate template
-29. `scripts/enforce_doc_updates.sh.template` - same-change docs enforcement template
-30. `scripts/predeploy_full_suite.sh.template` - stronger release-readiness gate template
-31. `scripts/orchestrator_state.py.template` - packet ledger and session-budget state manager
-32. `scripts/sync_session_brief.sh.template` - routed-startup brief sync helper
-33. `scripts/validate_context_budget.sh.template` - always-on startup context budget check
-34. `packet_ledger.json.template` - orchestrator packet ledger seed
-35. `session_budget.json.template` - orchestrator session-budget seed
-36. `ORCHESTRATOR_PLAN.md.template` - rolling reviewed plan artifact for orchestrated work
-37. `.github/workflows/CI_BASELINE.yml.template` - baseline CI template
-38. `.github/workflows/CI_PREDEPLOY.yml.template` - stronger predeploy CI template
-39. `SAFEGUARD_GAP_REPORT.md` - current orchestrator-template safeguard coverage versus the reduced operating system
-40. `OPERATOR_DASHBOARD.md.template` - plain-English operator decision and rollback surface
-41. `CLOSING_CHECKLIST.md.template` - explicit final closeout gate
-42. `INVESTIGATOR_PROTOCOL.md.template` - escalation workflow and tie-breaker protocol
-43. `LOCAL_WORKER_HEALTH.md.template` - local worker readiness and degraded-mode artifact
-44. `profiles/lean/AI_AGENT.md.template` - lean-profile startup contract variant
-45. `profiles/lean/TEMPLATE_INDEX.yaml.template` - lean-profile inventory variant
-46. `profiles/orchestrator/AI_AGENT.md.template` - orchestrator-profile startup contract variant
-47. `profiles/orchestrator/TEMPLATE_INDEX.yaml.template` - orchestrator-profile inventory variant
+5. `LANGGRAPH_INCORPORATION_PLAN.md` - phase-by-phase bridge from this OS into LangGraph
+6. `LANGGRAPH_SESSION_HANDOFF.md` - current cross-session status while LangGraph incorporates this OS
+7. `AUDITOR_CONTRACT.md.template` - audit lane role contract
+8. `ORCHESTRATOR_CONTRACT.md.template` - premium planner and decision-maker contract
+9. `WORKER_CONTRACT.md.template` - bounded local coder contract
+10. `REVIEWER_CONTRACT.md.template` - artifact and result review contract
+11. `PROJECT_STATE.md.template` - merged current-state, plan, and architecture artifact
+12. `ENGINEERING_RUNBOOK.md.template` - merged commands, testing, modularity, scripts, and CI/CD artifact
+13. `TEMPLATE_LIFECYCLE.md.template` - merged adoption, migration, validation, placeholders, quickstart, and upgrade artifact
+14. `OPERATIONS_RUNBOOK.md.template` - secrets, deploy, rollback, incident, release, and risk artifact
+15. `WORKER_TASK_PACKET.md.template` - bounded work packet artifact
+16. `WORKER_RESULT_PACKET.md.template` - bounded result artifact
+17. `REVIEW_CHECKLIST.md.template` - review gate checklist artifact
+18. `RUNTIME_MIRROR_POLICY.md.template` - concrete runtime mirror source-order and validation policy
+19. `RUNTIME_MIRROR_MANIFEST.json.template` - machine-readable mirrored file manifest
+20. `scripts/sync_runtime_mirror.sh.template` - runtime mirror refresh script template
+21. `scripts/check_runtime_mirror.sh.template` - runtime mirror validation script template
+22. `AI_AGENT.md.template` - reduced canonical startup contract
+23. `SESSION_BRIEF.md.template` - compact current-session startup snapshot
+24. `CONTEXT_ROUTING.md.template` - reduced deeper-doc trigger map
+25. `TEMPLATE_INDEX.yaml.template` - machine-readable inventory for the reduced operating system
+26. `MASTER_TRACEABILITY_TABLE.md.template` - runtime pathway and smoke evidence table
+27. `STATE_LEDGER_PROTOCOL.md.template` - packet and session-state protocol
+28. `TEMPLATE_AUDIT_MANIFEST.yaml.template` - machine-readable audit checklist for the reduced operating system
+29. `scripts/validate_operating_system.sh.template` - applied-project operating-system validator
+30. `scripts/verify.sh.template` - local verify gate template
+31. `scripts/enforce_doc_updates.sh.template` - same-change docs enforcement template
+32. `scripts/predeploy_full_suite.sh.template` - stronger release-readiness gate template
+33. `scripts/orchestrator_state.py.template` - packet ledger and session-budget state manager
+34. `scripts/sync_session_brief.sh.template` - routed-startup brief sync helper
+35. `scripts/validate_context_budget.sh.template` - always-on startup context budget check
+36. `packet_ledger.json.template` - orchestrator packet ledger seed
+37. `session_budget.json.template` - orchestrator session-budget seed
+38. `ORCHESTRATOR_PLAN.md.template` - rolling reviewed plan artifact for orchestrated work
+39. `.github/workflows/CI_BASELINE.yml.template` - baseline CI template
+40. `.github/workflows/CI_PREDEPLOY.yml.template` - stronger predeploy CI template
+41. `SAFEGUARD_GAP_REPORT.md` - current orchestrator-template safeguard coverage versus the reduced operating system
+42. `OPERATOR_DASHBOARD.md.template` - plain-English operator decision and rollback surface
+43. `CLOSING_CHECKLIST.md.template` - explicit final closeout gate
+44. `INVESTIGATOR_PROTOCOL.md.template` - escalation workflow and tie-breaker protocol
+45. `LOCAL_WORKER_HEALTH.md.template` - local worker readiness and degraded-mode artifact
+46. `profiles/lean/AI_AGENT.md.template` - lean-profile startup contract variant
+47. `profiles/lean/TEMPLATE_INDEX.yaml.template` - lean-profile inventory variant
+48. `profiles/orchestrator/AI_AGENT.md.template` - orchestrator-profile startup contract variant
+49. `profiles/orchestrator/TEMPLATE_INDEX.yaml.template` - orchestrator-profile inventory variant
 
 ## Mission
 

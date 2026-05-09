@@ -636,6 +636,18 @@
         "future-runtime-loader"
       ],
       "action": "copy"
+    },
+    {
+      "id": "langgraph-session-handoff",
+      "phase": 2,
+      "track": "operating-system-native",
+      "sourcePath": "operating-system/LANGGRAPH_SESSION_HANDOFF.md",
+      "mirrorPath": "LANGGRAPH_SESSION_HANDOFF.md",
+      "requiredBy": [
+        "new-session-continuity",
+        "future-runtime-loader"
+      ],
+      "action": "copy"
     }
   ]
 }
