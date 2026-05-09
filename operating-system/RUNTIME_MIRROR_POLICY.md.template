@@ -58,18 +58,18 @@ Every successful sync should produce:
 
 ## 4) Current Consumer Mapping
 
-These are the current LangGraph-facing surfaces that must stay grounded during migration.
+These are the current LangGraph-facing surfaces that must stay grounded in the reduced operating system.
 
-| Current consumer surface | Current source today | Operating-system destination | Migration note |
+| Current consumer surface | Operating-system source | Runtime destination | Note |
 |---|---|---|---|
-| `templateIndex` | `templates-v2/orchestrator-template/TEMPLATE_INDEX.yaml.template` | `TEMPLATE_INDEX.yaml.template` | OS-native inventory is now drafted in this sandbox. |
-| `templateAuditManifest` | `templates-v2/orchestrator-template/TEMPLATE_AUDIT_MANIFEST.yaml.template` | `TEMPLATE_AUDIT_MANIFEST.yaml.template` | OS-native audit manifest is now drafted in this sandbox. |
-| `templateAdoptionWalkthrough` | `templates-v2/TEMPLATE_ADOPTION_WALKTHROUGH.md.template` | `TEMPLATE_LIFECYCLE.md.template` | Lifecycle absorbs adoption walkthrough. |
-| `templateProfileMigration` | `templates-v2/TEMPLATE_PROFILE_MIGRATION.md.template` | `TEMPLATE_LIFECYCLE.md.template` | Lifecycle absorbs profile migration. |
-| `workerTaskPacketTemplate` | `templates-v2/orchestrator-template/WORKER_TASK_PACKET.md.template` | `WORKER_TASK_PACKET.md.template` | OS-native packet is already drafted. |
-| `workerResultPacketTemplate` | `templates-v2/orchestrator-template/WORKER_RESULT_PACKET.md.template` | `WORKER_RESULT_PACKET.md.template` | OS-native packet is already drafted. |
-| `operatorDashboardTemplate` | `templates-v2/orchestrator-template/OPERATOR_DASHBOARD.md.template` | `OPERATOR_DASHBOARD.md.template` | OS-native operator dashboard is now drafted in this sandbox. |
-| `stateLedgerProtocolTemplate` | `templates-v2/orchestrator-template/STATE_LEDGER_PROTOCOL.md.template` | `STATE_LEDGER_PROTOCOL.md.template` | OS-native protocol is now drafted in this sandbox. |
+| `templateIndex` | `TEMPLATE_INDEX.yaml.template` | `TEMPLATE_INDEX.yaml.template` | OS-native inventory. |
+| `templateAuditManifest` | `TEMPLATE_AUDIT_MANIFEST.yaml.template` | `TEMPLATE_AUDIT_MANIFEST.yaml.template` | OS-native audit manifest. |
+| `templateAdoptionWalkthrough` | `TEMPLATE_LIFECYCLE.md.template` | `TEMPLATE_LIFECYCLE.md.template` | Lifecycle guidance. |
+| `templateProfileMigration` | `TEMPLATE_LIFECYCLE.md.template` | `TEMPLATE_LIFECYCLE.md.template` | Profile and adoption guidance. |
+| `workerTaskPacketTemplate` | `WORKER_TASK_PACKET.md.template` | `WORKER_TASK_PACKET.md.template` | Bounded task packet. |
+| `workerResultPacketTemplate` | `WORKER_RESULT_PACKET.md.template` | `WORKER_RESULT_PACKET.md.template` | Bounded result packet. |
+| `operatorDashboardTemplate` | `OPERATOR_DASHBOARD.md.template` | `OPERATOR_DASHBOARD.md.template` | Plain-English operator surface. |
+| `stateLedgerProtocolTemplate` | `STATE_LEDGER_PROTOCOL.md.template` | `STATE_LEDGER_PROTOCOL.md.template` | Packet/state protocol. |
 
 `COMMANDS.md.template` and `VISION.md.template` remain compatibility exports only.
 
@@ -78,7 +78,7 @@ They should not expand the long-term runtime surface unless a real consumer stil
 Phase 2 must also mirror:
 
 1. CI workflow templates used by operating-system application and validation, because `TEMPLATE_INDEX.yaml` treats CI/CD as part of the operating-system contract for Tier B/C projects.
-2. packet/session state seeds and helper scripts, because orchestrator and routed-startup contracts must be executable from the mirror without falling back to legacy `templates-v2` files.
+2. packet/session state seeds and helper scripts, because orchestrator and routed-startup contracts must be executable from the mirror without external fallback files.
 
 ## 5) Sync Contract
 

@@ -24,10 +24,6 @@ done
 if [[ -z "$SOURCE" ]]; then
   if [[ -f "docs/PROJECT_STATE.md" ]]; then
     SOURCE="docs/PROJECT_STATE.md"
-  elif [[ -f "docs/GAME_PLAN.md" ]]; then
-    SOURCE="docs/GAME_PLAN.md"
-  elif [[ -f "docs/PROJECT_CANVAS.md" ]]; then
-    SOURCE="docs/PROJECT_CANVAS.md"
   else
     echo "[sync][FAIL] No project state source found. Create docs/PROJECT_STATE.md." >&2
     exit 1

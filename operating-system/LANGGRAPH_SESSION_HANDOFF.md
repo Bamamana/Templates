@@ -5,7 +5,7 @@ Skip when: the task is unrelated to LangGraph, runtime mirrors, orchestrator con
 
 ## Purpose
 
-Keep the current migration state visible while LangGraph-Orchestrator-Runner is being moved from the legacy `templates-v2` contract toward the reduced `Templates/operating-system` contract.
+Keep the current migration state visible while LangGraph-Orchestrator-Runner enforces the reduced `Templates/operating-system` contract.
 
 This file is a temporary working handoff. Update it after each meaningful incorporation phase until LangGraph fully reads and enforces the operating-system contracts from its runtime mirror.
 
@@ -26,14 +26,14 @@ As of 2026-05-08:
 
 1. LangGraph has a validated `vendor/operating-system` runtime mirror.
 2. LangGraph cloud auditor/orchestrator prompt support reads the validated mirror through `loadOperatingSystemSource(configRoot)`.
-3. Lean adoption/bootstrap now reads `vendor/operating-system` and writes the OS-native lean baseline (`PROJECT_STATE.md`, runbooks, validators, and compact startup docs) instead of legacy `templates-v2` source paths.
+3. Lean adoption/bootstrap reads `vendor/operating-system` and writes the OS-native lean baseline (`PROJECT_STATE.md`, runbooks, validators, and compact startup docs).
 4. Worker packet drafts receive the OS `WORKER_TASK_PACKET` template through the cloud-plan path.
 5. Worker, audit, and plan reviewer handoffs receive OS `REVIEW_CHECKLIST` context.
 6. Plan review also receives the OS `ORCHESTRATOR_PLAN` template.
 7. Packet lifecycle now enforces one active packet at a time before issuing new packets and during validation.
 8. Prompt support receives OS `CLOSING_CHECKLIST` and `OPERATOR_DASHBOARD` contracts.
 9. Packet closeout now requires an `ACCEPT` review before LangGraph records the packet as closed.
-10. Planner/startup state now prefers OS-native `PROJECT_STATE.md`, writes chunked execution plans to `ORCHESTRATOR_PLAN.md`, and treats legacy `GAME_PLAN.md` as fallback compatibility only.
+10. Planner/startup state uses OS-native `PROJECT_STATE.md` and writes chunked execution plans to `ORCHESTRATOR_PLAN.md`.
 
 ## Verification Evidence
 
@@ -72,7 +72,7 @@ Continue state enforcement and role-contract migration:
 
 1. Expand packet lifecycle validation toward the OS `STATE_LEDGER_PROTOCOL`.
 2. Make closeout and operator handoff read OS `CLOSING_CHECKLIST` / `OPERATOR_DASHBOARD` contracts.
-3. Smoke test the OS-native planner/state path in VS Code and decide whether old `docs/GAME_PLAN.md` project artifacts should be archived after compatibility is proven.
+3. Smoke test the OS-native planner/state path in VS Code after cleanup.
 4. Keep tests focused and update `npm run verify` when a new enforcement path becomes canonical.
 
 ## Documentation Policy During Migration
