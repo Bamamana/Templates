@@ -26,7 +26,7 @@ Pull deeper docs only on triggers.
 | `docs/ORCHESTRATOR_PLAN.md` | planning, repairing, approving, or resuming orchestrated work before packet issuance |
 | `docs/WORKER_CONTRACT.md` | executing bounded implementation work |
 | `docs/REVIEWER_CONTRACT.md` | judging an audit, plan, or result artifact |
-| `docs/OPERATOR_DASHBOARD.md` | operator approval, rollback, plain-English status, or tie-breaker choices are needed |
+| `docs/OPERATOR_DASHBOARD.md` | operator direction, rollback, plain-English status, or tie-breaker choices are needed |
 | `docs/CLOSING_CHECKLIST.md` | final handoff, closeout, or done-claim evidence is needed |
 | `docs/INVESTIGATOR_PROTOCOL.md` | repeated blocked, contradictory, escalated, or regression-causing work needs investigation |
 | `docs/LOCAL_WORKER_HEALTH.md` | configuring, validating, or troubleshooting the local worker lane |
@@ -51,7 +51,7 @@ Pull deeper docs only on triggers.
 | Worker returns a result | `docs/WORKER_RESULT_PACKET.md` + `docs/REVIEW_CHECKLIST.md` + `docs/REVIEWER_CONTRACT.md` + `docs/STATE_LEDGER_PROTOCOL.md` |
 | Worker lane setup or outage | `docs/LOCAL_WORKER_HEALTH.md` + `docs/ORCHESTRATOR_CONTRACT.md` |
 | Repeated blocked, escalated, or contradictory result | `docs/INVESTIGATOR_PROTOCOL.md` + `docs/STATE_LEDGER_PROTOCOL.md` + `docs/OPERATOR_DASHBOARD.md` |
-| Operator approval, rollback, or plain-English status needed | `docs/OPERATOR_DASHBOARD.md` + `docs/PROJECT_STATE.md` |
+| Operator direction, rollback, or plain-English status needed | `docs/OPERATOR_DASHBOARD.md` + `docs/PROJECT_STATE.md` |
 | Final handoff or DONE claim | `docs/CLOSING_CHECKLIST.md` + `docs/REVIEW_CHECKLIST.md` + `docs/PROJECT_STATE.md` |
 
 If more than three deeper docs are needed before the first edit, stop and check whether the task is too broad for one slice.

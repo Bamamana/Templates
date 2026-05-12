@@ -30,7 +30,7 @@ As of 2026-05-08:
 4. Worker packet drafts receive the OS `WORKER_TASK_PACKET` template through the cloud-plan path.
 5. Worker, audit, and plan reviewer handoffs receive OS `REVIEW_CHECKLIST` context.
 6. Plan review also receives the OS `ORCHESTRATOR_PLAN` template.
-7. Packet lifecycle now enforces one active packet at a time before issuing new packets and during validation.
+7. Packet lifecycle allows Run-first to issue or continue bounded packets even when older issued packets remain stale; validation still checks packet shape and review/result consistency.
 8. Prompt support receives OS `CLOSING_CHECKLIST` and `OPERATOR_DASHBOARD` contracts.
 9. Packet closeout now requires an `ACCEPT` review before LangGraph records the packet as closed.
 10. Planner/startup state uses OS-native `PROJECT_STATE.md` and writes chunked execution plans to `ORCHESTRATOR_PLAN.md`.

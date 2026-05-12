@@ -288,7 +288,6 @@ def validate(root: Path) -> list[str]:
         errors.append("packet_ledger.json must contain a packets list")
 
     packet_ids: set[str] = set()
-    active_count = 0
     for index, packet in enumerate(ledger.get("packets", [])):
         prefix = f"packet[{index}]"
         packet_id = packet.get("packet_id")
@@ -303,7 +302,6 @@ def validate(root: Path) -> list[str]:
         if lifecycle not in ALLOWED_LIFECYCLE:
             errors.append(f"{packet_id}: invalid lifecycle_state {lifecycle!r}")
         if lifecycle in {"ISSUED", "RESULT_RETURNED"}:
-            active_count += 1
             for required in ("issued_at", "last_event_at", "timeout_minutes"):
                 if required not in packet:
                     errors.append(f"{packet_id}: active packet missing {required}")
@@ -336,9 +334,6 @@ def validate(root: Path) -> list[str]:
         limit = limits.get(key)
         if limit is not None and value > limit:
             errors.append(f"session budget exceeded: {key}={value} limit={limit}")
-
-    if active_count > 1:
-        errors.append(f"more than one active packet found: {active_count}")
 
     return errors
 

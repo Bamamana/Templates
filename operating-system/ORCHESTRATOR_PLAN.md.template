@@ -3,21 +3,21 @@
 Read when:
 
 1. turning an accepted audit or operator request into bounded work,
-2. reviewing the next implementation step before packet issuance,
+2. reviewing or revising the next implementation step before packet issuance,
 3. resuming orchestrated work after interruption,
 4. deciding whether auto-continue is allowed.
 
 Skip when:
 
 1. the project is not using the orchestrator profile, or
-2. a worker already has an active packet and no planning decision is needed.
+2. a local worker is already executing a bounded packet and no planning decision is needed.
 
 ## Purpose
 
 This is the rolling written plan artifact for orchestrated work.
 
 It translates plain-language operator intent and accepted audit facts into the next safe packet.
-It is the approval bridge between audit and worker execution.
+It is the Run-first bridge between Orchestrator decisions and bounded local worker execution.
 
 The operator should be able to understand the plan without reading raw diffs, packet schemas, or code.
 
@@ -37,7 +37,7 @@ The operator should be able to understand the plan without reading raw diffs, pa
 
 - Mode: DIRECT_LOCAL / ORCHESTRATED / AUDIT_ONLY / INVESTIGATION / HALTED
 - Why this mode is appropriate:
-- Operator approval needed before worker packet? YES / NO
+- Run-first packet ready? YES / NO
 
 ## Current Status
 
@@ -51,7 +51,7 @@ The operator should be able to understand the plan without reading raw diffs, pa
 
 - Step ID:
 - Objective:
-- Status: NOT_STARTED / READY_FOR_REVIEW / APPROVED_FOR_PACKET / BLOCKED / DONE
+- Status: NOT_STARTED / READY_TO_RUN / NEEDS_REVISION / BLOCKED / DONE
 - What must be true before packet issuance:
 
 ## Approved Backlog
@@ -90,7 +90,7 @@ The operator should be able to understand the plan without reading raw diffs, pa
 - Rationale:
 
 Default is NO.
-Do not continue to the next packet automatically unless the operator explicitly approved that mode.
+Do not continue to the next packet automatically unless the operator explicitly chose that mode.
 
 ## Stop Conditions
 
@@ -120,7 +120,7 @@ Update this same file when:
 1. an audit is accepted or repaired,
 2. the next packet changes,
 3. reviewer returns REPAIR, REJECT, or ESCALATE,
-4. operator approval changes the backlog or auto-continue setting,
+4. operator direction changes the backlog or auto-continue setting,
 5. orchestrated work pauses or resumes.
 
 Do not create competing plan summaries when this file exists.
