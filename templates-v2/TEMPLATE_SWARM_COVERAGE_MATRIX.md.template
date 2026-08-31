@@ -1,0 +1,83 @@
+# Template Swarm Coverage Matrix ([PROJECT_NAME])
+
+Read when: evaluating whether templates-v2 docs are covered by AI swarm roles, manual auditors, validators, and update triggers.
+Skip when: implementing a narrow code slice that already names all affected docs.
+
+Purpose: map the broad templates-v2 document set and the reduced operating-system concepts to the project's AI roles, so coverage gaps are visible instead of assumed.
+
+## Coverage Summary
+
+| Coverage Area | Current Coverage | Notes |
+|---|---|---|
+| Startup and session state | [Covered/Partial/Missing] | [AI_AGENT / SESSION_BRIEF / CONTEXT_ROUTING status] |
+| Planning and project state | [Covered/Partial/Missing] | [GAME_PLAN / PROJECT_CANVAS / PROJECT_STATE status] |
+| Implementation commands and tests | [Covered/Partial/Missing] | [COMMANDS / WORKFLOW_COMMANDS / matrix status] |
+| Traceability and evidence | [Covered/Partial/Missing] | [MASTER_TRACEABILITY_TABLE / smoke evidence status] |
+| Template scaffold integrity | [Covered/Partial/Missing] | [Template auditor / validators status] |
+| Ops, security, release, server docs | [Covered/Partial/Missing] | [Ops/security/release docs status] |
+| OS-style role contracts | [Covered by Docs/Prompts/Missing] | [Orchestrator/worker/reviewer/auditor role status] |
+| OS-style packet artifacts | [Covered/Partial/Missing] | [Handoff/packet artifact status] |
+
+## Matrix
+
+| templates-v2 Artifact | Live Project Artifact | OS-Model Equivalent | Owning Role/Mode | Update Trigger | Validator/Auditor | Coverage Status | Gap / Next Repair |
+|---|---|---|---|---|---|---|---|
+| `AI_AGENT.md.template` | `AI_AGENT.md` | `AI_AGENT.md` | [role] | Session startup / contract change | [validator/auditor] | [status] | [gap] |
+| `profiles/lean/SESSION_BRIEF.md.template` | `docs/SESSION_BRIEF.md` | `SESSION_BRIEF.md` | [role] | Plan/status change | [validator/auditor] | [status] | [gap] |
+| `profiles/lean/CONTEXT_ROUTING.md.template` | `docs/CONTEXT_ROUTING.md` | `CONTEXT_ROUTING.md` | [role] | New docs/triggers | [validator/auditor] | [status] | [gap] |
+| `PROJECT_CANVAS.md.template` | `docs/PROJECT_CANVAS.md` | `PROJECT_STATE.md` | [role] | Milestone/current-priority changes | [validator/auditor] | [status] | [gap] |
+| `orchestrator-template/GAME_PLAN.md.template` | `docs/GAME_PLAN.md` or N/A | `PROJECT_STATE.md` / `ORCHESTRATOR_PLAN.md` | [role] | Plan/scope/phase change | [validator/auditor] | [status] | [gap] |
+| `ENGINEERING_PLAYBOOK.md.template` | `docs/ENGINEERING_PLAYBOOK.md` | `ENGINEERING_RUNBOOK.md` | [role] | Engineering process/command policy changes | [validator/auditor] | [status] | [gap] |
+| `COMMANDS.md.template` | `docs/COMMANDS.md` or equivalent | `ENGINEERING_RUNBOOK.md` command table | [role] | Routine command changes | [validator/auditor] | [status] | [gap] |
+| `WORKFLOW_TEST_MATRIX.md.template` | `docs/WORKFLOW_TEST_MATRIX.md` | `ENGINEERING_RUNBOOK.md` test/evidence section | [role] | New workflow or changed test command | [validator/auditor] | [status] | [gap] |
+| `SMOKE_TEST_CATALOG.md.template` | `docs/SMOKE_TEST_CATALOG.md` | `ENGINEERING_RUNBOOK.md` smoke/evidence section | [role] | New smoke test or smoke command change | [validator/auditor] | [status] | [gap] |
+| `MASTER_TRACEABILITY_TABLE.md.template` | `docs/MASTER_TRACEABILITY_TABLE.md` | `MASTER_TRACEABILITY_TABLE.md` | [role] | Entry point/pathway/evidence changes | [validator/auditor] | [status] | [gap] |
+| `POST_CODING_CHECKS.md.template` | `docs/POST_CODING_CHECKS.md` | `CLOSING_CHECKLIST.md` / `REVIEW_CHECKLIST.md` | [role] | Quality gate or doc sync policy changes | [validator/auditor] | [status] | [gap] |
+| `CHANGELOG.md.template` | `CHANGELOG.md` | Changelog / release history | [role] | Behavior/command/release changes | [validator/auditor] | [status] | [gap] |
+| `AI_MEMORY.md.template` | `docs/AI_MEMORY.md` | Project memory / state reference | [role] | Durable lessons/facts change | [validator/auditor] | [status] | [gap] |
+| `TECH_STACK.md.template` | `docs/TECH_STACK.md` | `ENGINEERING_RUNBOOK.md` architecture section | [role] | Runtime/framework/architecture changes | [validator/auditor] | [status] | [gap] |
+| `OPS_SECURITY_RELEASE.md.template` | `docs/OPS_SECURITY_RELEASE.md` | `OPERATIONS_RUNBOOK.md` | [role] | Deploy/security/secrets/release changes | [validator/auditor] | [status] | [gap] |
+| `addons/MULTI_APP_SERVER_BLUEPRINT.md.template` | `docs/MULTI_APP_SERVER_BLUEPRINT.md` or N/A | `OPERATIONS_RUNBOOK.md` / project state | [role] | Multi-app hosting changes | [validator/auditor] | [status] | [gap] |
+| `addons/docker-compose.local.yml.template` | `docker-compose.local.yml` or N/A | Operations/run command surface | [role] | Local runtime changes | [validator/auditor] | [status] | [gap] |
+| `TEMPLATE_INDEX.yaml.template` | `docs/TEMPLATE_INDEX.yaml` | `TEMPLATE_INDEX.yaml` | [role] | Template version/applicability/read order changes | [validator/auditor] | [status] | [gap] |
+| `.github/workflows/ci.yml.template` | `.github/workflows/ci.yml` | CI baseline / predeploy contracts | [role] | CI gate changes | [validator/auditor] | [status] | [gap] |
+| `scripts/verify.sh.template` or project verify script | `scripts/verify.sh` | Verify gate | [role] | Verify gate changes | [validator/auditor] | [status] | [gap] |
+| `scripts/predeploy_full_suite.sh.template` | `scripts/predeploy_full_suite.sh` or N/A | Predeploy gate | [role] | Release readiness changes | [validator/auditor] | [status] | [gap] |
+| `scripts/enforce_doc_updates.sh.template` | `scripts/enforce_doc_updates.sh` or N/A | Same-change doc guard | [role] | Doc guard changes | [validator/auditor] | [status] | [gap] |
+| `orchestrator-template/*CONTRACT*.template` | Kilo prompts / project role docs / N/A | Role contract docs | [role] | Role behavior changes | [validator/auditor] | [status] | [gap] |
+| `orchestrator-template/WORKER_TASK_PACKET.md.template` | Handoff/task packet artifact | `WORKER_TASK_PACKET.md` | [role] | Delegated work issued | [validator/auditor] | [status] | [gap] |
+| `orchestrator-template/WORKER_RESULT_PACKET.md.template` | Worker writeback/result packet artifact | `WORKER_RESULT_PACKET.md` | [role] | Worker returns | [validator/auditor] | [status] | [gap] |
+| `orchestrator-template/CLOSING_CHECKLIST.md.template` | Closing/checklist artifact | `CLOSING_CHECKLIST.md` | [role] | Done claim / closeout | [validator/auditor] | [status] | [gap] |
+| `orchestrator-template/TEMPLATE_AUDIT_MANIFEST.yaml.template` | `docs/TEMPLATE_AUDIT_MANIFEST.yaml` or N/A | `TEMPLATE_AUDIT_MANIFEST.yaml` | [role] | Template audit | [validator/auditor] | [status] | [gap] |
+
+## Manual Auditor Modes
+
+Use a `manual-` prefix for primary on-demand audit modes so they sort separately from active loop/swarm modes.
+
+| Mode Name | Purpose | Writes |
+|---|---|---|
+| `manual-template-auditor` | Template scaffold and templates-v2 integrity audit | `docs/TEMPLATE_AUDIT_REPORT.md` |
+| `manual-doc-freshness-auditor` | Post-change doc freshness repair/check | Project docs/generated maps allowed by prompt |
+| `manual-traceability-script-auditor` | Whole-repo traceability/script evidence audit | `docs/TRACEABILITY_SCRIPT_AUDIT_REPORT.md` |
+| `manual-template-swarm-coverage-auditor` | Template-to-role coverage matrix audit | `docs/TEMPLATE_SWARM_COVERAGE_MATRIX.md` |
+| `manual-ops-security-release-auditor` | Ops/security/release/rollback audit | `docs/OPS_SECURITY_RELEASE_AUDIT_REPORT.md` |
+| `manual-ci-verify-gate-auditor` | CI/local verify/smoke/package command audit | `docs/CI_VERIFY_GATE_AUDIT_REPORT.md` |
+| `manual-plan-state-consistency-auditor` | Plan/session/changelog/migration state consistency audit | `docs/PLAN_STATE_CONSISTENCY_AUDIT_REPORT.md` |
+
+## Recommended Use
+
+- Run `manual-template-swarm-coverage-auditor` after adding or renaming auditor modes, changing templates-v2, or considering operating-system-model migration.
+- Run `manual-traceability-script-auditor` before asking a supervisor/orchestrator to repair traceability/script gaps.
+- Run `manual-ci-verify-gate-auditor` after meaningful script, test, package, or CI changes.
+- Run `manual-ops-security-release-auditor` before deployment/readiness phases or after server/secret/rollback changes.
+- Run `manual-plan-state-consistency-auditor` when status docs feel contradictory or before a major handoff.
+
+## Strategic Choice
+
+Record whether this project is using:
+
+- broad templates-v2 live docs,
+- reduced operating-system docs,
+- or a hybrid of broad templates-v2 plus external agent prompts.
+
+If using a hybrid, document which OS-model concepts are implemented by prompts rather than project-local docs.

@@ -10,18 +10,20 @@ Human startup instruction:
 
 ## AI Navigation Map (Read in this order)
 1. `AI_AGENT.md` (this file)
-2. `docs/AI_MEMORY.md` (user preferences & lessons)
-3. `docs/TEMPLATE_INDEX.yaml` (if present)
-4. `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` (only if any § box is unchecked — partial adoption is a hard signal to stop and finish adoption first)
-5. `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C required)
-6. `docs/PROJECT_CANVAS.md`
-7. `docs/TECH_STACK.md`
-8. `docs/ENGINEERING_PLAYBOOK.md`
-9. `docs/OPS_SECURITY_RELEASE.md`
-10. `CHANGELOG.md`
-11. `AI_CONTEXT.md` (if present)
+2. `docs/OPERATOR_PROFILE.md` (who the operator is and how to work with him — read every session, follow it strictly)
+3. `docs/AI_MEMORY.md` (user preferences & lessons)
+4. `docs/TEMPLATE_INDEX.yaml` (if present)
+5. `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` (only if any § box is unchecked — partial adoption is a hard signal to stop and finish adoption first)
+6. `docs/MASTER_TRACEABILITY_TABLE.md` (Tier B/C required)
+7. `docs/PROJECT_CANVAS.md`
+8. `docs/TECH_STACK.md`
+9. `docs/ENGINEERING_PLAYBOOK.md`
+10. `docs/OPS_SECURITY_RELEASE.md`
+11. `CHANGELOG.md`
+12. `AI_CONTEXT.md` (if present)
 
 ## Mandatory Working Rules
+- Read `docs/OPERATOR_PROFILE.md` at the start of every session and follow it; when you notice a new pattern that helps keep the operator on track, append a short dated entry to its "Observed patterns" log.
 - If confidence is below 90%, pause and ask 1-3 precise clarifying questions.
 - Make smallest correct change first; avoid unnecessary scope.
 - If `docs/COMMANDS.md` exists, read it before guessing routine repo commands.

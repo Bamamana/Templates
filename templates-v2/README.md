@@ -24,6 +24,7 @@ For existing projects, open `TEMPLATE_PROFILE_MIGRATION.md.template` first. It m
 Copy and rename these templates into a project:
 - `TEMPLATE_ADOPTION_WALKTHROUGH.md.template` -> `docs/TEMPLATE_ADOPTION_WALKTHROUGH.md` (run first)
 - `AI_AGENT.md.template` -> `AI_AGENT.md` (canonical)
+- `OPERATOR_PROFILE.md.template` -> `docs/OPERATOR_PROFILE.md` (who the operator is + drift control; read every session)
 - `AI_MEMORY.md.template` -> `docs/AI_MEMORY.md` (new context/memory)
 - `MASTER_TRACEABILITY_TABLE.md.template` -> `docs/MASTER_TRACEABILITY_TABLE.md` (required for Tier B/C)
 - `PROJECT_CANVAS.md.template` -> `docs/PROJECT_CANVAS.md`
@@ -33,6 +34,8 @@ Copy and rename these templates into a project:
 - `CHANGELOG.md.template` -> `CHANGELOG.md`
 - `QUICKSTART_5_MIN.md.template` -> `docs/QUICKSTART_5_MIN.md`
 - `TEMPLATE_PROFILE_MIGRATION.md.template` -> `docs/TEMPLATE_PROFILE_MIGRATION.md`
+- `TEMPLATE_SWARM_COVERAGE_MATRIX.md.template` -> `docs/TEMPLATE_SWARM_COVERAGE_MATRIX.md` (for AI swarm/manual auditor coverage mapping)
+- `MANUAL_AUDIT_INSTRUCTIONS.md.template` -> `docs/MANUAL_AUDIT_INSTRUCTIONS.md` (manual-auditor batch order and Supervisor repair prompts)
 - `PLACEHOLDER_REFERENCE.md.template` -> `docs/PLACEHOLDER_REFERENCE.md`
 - `UPGRADE_GUIDE.md.template` -> `docs/UPGRADE_GUIDE.md`
 - `TEMPLATE_VALIDATION_CHECKLIST.md.template` -> `docs/TEMPLATE_VALIDATION_CHECKLIST.md`
@@ -60,6 +63,7 @@ Default startup contract is only `AI_AGENT.md`.
 ### Optional Script Starters (Verification Hardening)
 - `scripts/bootstrap_agent_ready.sh.template` -> `scripts/bootstrap_agent_ready.sh`
 - `scripts/check_template_drift.sh.template` -> `scripts/check_template_drift.sh`
+- `scripts/sync_templates_v2_source.sh.template` -> `scripts/sync_templates_v2_source.sh` (reference-only local source mirror for audits)
 - `scripts/placeholder_allowlist.txt.template` -> `scripts/placeholder_allowlist.txt`
 - `scripts/predeploy_full_suite.sh.template` -> `scripts/predeploy_full_suite.sh`
 - `scripts/parity_pathways_report.py.template` -> `scripts/parity_pathways_report.py`
@@ -144,6 +148,16 @@ bash scripts/check_template_drift.sh . /path/to/templates-v2
 
 - Drift check fails if target version differs from source template version.
 
+## Reference Source Mirror
+
+For repositories that need local comparison evidence, copy `scripts/sync_templates_v2_source.sh.template` to `scripts/sync_templates_v2_source.sh` and run:
+
+```bash
+bash scripts/sync_templates_v2_source.sh --source /path/to/Templates/templates-v2
+```
+
+This creates `docs/use-with-other-projects/templates-v2/` as a reference-only mirror and writes `docs/use-with-other-projects/templates-v2-sync-status.json`. The mirror is a yardstick for auditors; do not adapt live project docs inside it and do not use it as an auto-apply path.
+
 ## Template Regression Fixture
 
 - Fixture assets live under `templates-v2/tests-fixture/`.
@@ -159,8 +173,11 @@ bash scripts/check_template_drift.sh . /path/to/templates-v2
 ## Validation Assets
 - `TEMPLATE_VALIDATION_CHECKLIST.md.template` defines manual checks.
 - `scripts/validate_templates.sh.template` provides an automated baseline validation script.
+- `scripts/sync_templates_v2_source.sh.template` provides a reference-only local source mirror for template audits.
 - `TEMPLATE_INDEX.yaml.template` provides machine-readable navigation and applicability.
 - `MASTER_TRACEABILITY_TABLE.md.template` provides pathway-level traceability and smoke coverage mapping baseline.
+- `TEMPLATE_SWARM_COVERAGE_MATRIX.md.template` maps templates-v2 artifacts and operating-system concepts to AI role ownership, manual auditor coverage, update triggers, validators, and gaps.
+- `MANUAL_AUDIT_INSTRUCTIONS.md.template` gives operators a repeatable manual-audit-first loop: Batch 1 foundation, Batch 2 evidence/CI, Batch 3 ops/state truth, then bounded Supervisor repair.
 
 ## Startup Prompt for Human
 Use this single prompt with any AI agent:

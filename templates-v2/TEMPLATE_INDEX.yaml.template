@@ -1,8 +1,9 @@
-version: v2.8
+version: v2.9
 purpose: Machine-readable navigation and applicability map for templates-v2
 canonical_startup: AI_AGENT.md
 read_order:
   - AI_AGENT.md
+  - docs/OPERATOR_PROFILE.md
   - docs/AI_MEMORY.md
   - docs/MASTER_TRACEABILITY_TABLE.md
   - docs/PROJECT_CANVAS.md
@@ -17,6 +18,13 @@ core_templates:
   - template: AI_AGENT.md.template
     destination: AI_AGENT.md
     purpose: Canonical AI startup contract and execution rules
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: OPERATOR_PROFILE.md.template
+    destination: docs/OPERATOR_PROFILE.md
+    purpose: Who the operator is and how to work with him; drift-control and vision-interrogation protocol
     required_by_tier: [A, B, C]
     read_when: Always at session start
     skip_when: Never
@@ -126,6 +134,20 @@ core_templates:
     read_when: First install OR retrofit OR something feels missing / AI keeps ignoring a script that exists
     skip_when: Routine feature work after adoption is fully green
 
+  - template: TEMPLATE_SWARM_COVERAGE_MATRIX.md.template
+    destination: docs/TEMPLATE_SWARM_COVERAGE_MATRIX.md
+    purpose: Maps templates-v2 artifacts and reduced operating-system concepts to swarm/manual auditor ownership, update triggers, validators, and coverage gaps
+    required_by_tier: [B, C]
+    read_when: Auditing AI swarm coverage, adding manual auditor modes, changing template governance, or evaluating migration toward the operating-system model
+    skip_when: Routine feature work after coverage is known
+
+  - template: MANUAL_AUDIT_INSTRUCTIONS.md.template
+    destination: docs/MANUAL_AUDIT_INSTRUCTIONS.md
+    purpose: Batch order and operator prompts for manual-auditor-first governance/evidence cleanup before Supervisor repair loops
+    required_by_tier: [B, C]
+    read_when: Preparing to run manual auditors, bringing an existing repo up to date, or asking the Supervisor to repair audit findings
+    skip_when: Narrow implementation work with a current audit report and approved handoff
+
   - template: .github/workflows/ci.yml.template
     destination: .github/workflows/ci.yml
     purpose: Baseline CI quality and security checks
@@ -233,6 +255,11 @@ optional_addons:
     destination: scripts/check_template_drift.sh
     purpose: Compares applied project template version against source template pack for drift detection
     use_when: Team needs quick post-apply version parity checks during standardization
+
+  - template: scripts/sync_templates_v2_source.sh.template
+    destination: scripts/sync_templates_v2_source.sh
+    purpose: Synchronizes a reference-only local mirror of templates-v2 for auditor comparison without overwriting live project docs/scripts
+    use_when: Team wants each repository to keep a local template source mirror for drift audits and planned adoption work
 
   - template: scripts/placeholder_allowlist.txt.template
     destination: scripts/placeholder_allowlist.txt

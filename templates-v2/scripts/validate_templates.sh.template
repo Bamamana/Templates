@@ -26,20 +26,25 @@ pass() {
 
 required_files=(
   "AI_AGENT.md"
+  "docs/OPERATOR_PROFILE.md"
   "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md"
   "docs/AI_MEMORY.md"
   "docs/PROJECT_CANVAS.md"
   "docs/TECH_STACK.md"
   "docs/ENGINEERING_PLAYBOOK.md"
+  "docs/COMMANDS.md"
   "docs/OPS_SECURITY_RELEASE.md"
   "docs/QUICKSTART_5_MIN.md"
   "docs/TEMPLATE_PROFILE_MIGRATION.md"
+  "docs/TEMPLATE_SWARM_COVERAGE_MATRIX.md"
+  "docs/MANUAL_AUDIT_INSTRUCTIONS.md"
   "docs/PLACEHOLDER_REFERENCE.md"
   "docs/UPGRADE_GUIDE.md"
   "CHANGELOG.md"
   "docs/TEMPLATE_INDEX.yaml"
   ".github/workflows/ci.yml"
   "scripts/check_template_drift.sh"
+  "scripts/sync_templates_v2_source.sh"
 )
 
 for file in "${required_files[@]}"; do
@@ -58,14 +63,18 @@ fi
 
 scan_paths=(
   "AI_AGENT.md"
+  "docs/OPERATOR_PROFILE.md"
   "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md"
   "docs/AI_MEMORY.md"
   "docs/PROJECT_CANVAS.md"
   "docs/TECH_STACK.md"
   "docs/ENGINEERING_PLAYBOOK.md"
+  "docs/COMMANDS.md"
   "docs/OPS_SECURITY_RELEASE.md"
   "docs/QUICKSTART_5_MIN.md"
   "docs/TEMPLATE_PROFILE_MIGRATION.md"
+  "docs/TEMPLATE_SWARM_COVERAGE_MATRIX.md"
+  "docs/MANUAL_AUDIT_INSTRUCTIONS.md"
   "docs/PLACEHOLDER_REFERENCE.md"
   "docs/UPGRADE_GUIDE.md"
   "CHANGELOG.md"

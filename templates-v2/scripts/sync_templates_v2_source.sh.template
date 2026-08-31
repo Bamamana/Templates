@@ -1,0 +1,287 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DEFAULT_SOURCE="${TEMPLATES_V2_SOURCE:-/home/steven/github/Bamamana/Templates/templates-v2}"
+TARGET_ROOT="."
+SOURCE_ROOT="$DEFAULT_SOURCE"
+MIRROR_DIR="docs/use-with-other-projects/templates-v2"
+STATUS_FILE="docs/use-with-other-projects/templates-v2-sync-status.json"
+DRY_RUN=0
+CHECK_ONLY=0
+
+usage() {
+  cat <<EOF
+Usage:
+  bash scripts/sync_templates_v2_source.sh [options]
+
+Options:
+  --source PATH       templates-v2 source root (default: $DEFAULT_SOURCE)
+  --target PATH       target project root (default: current directory)
+  --mirror-dir PATH   mirror destination relative to target, or absolute path
+                      (default: docs/use-with-other-projects/templates-v2)
+  --status-file PATH  sync status file relative to target, or absolute path
+                      (default: docs/use-with-other-projects/templates-v2-sync-status.json)
+  --dry-run           show what would change without writing files
+  --check             verify the existing mirror matches the source
+  -h, --help          show this help
+
+Purpose:
+  Synchronize a read-only reference mirror of the central templates-v2 source.
+  This script never applies templates to live project docs or scripts.
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --source)
+      SOURCE_ROOT="$2"
+      shift 2
+      ;;
+    --target)
+      TARGET_ROOT="$2"
+      shift 2
+      ;;
+    --mirror-dir)
+      MIRROR_DIR="$2"
+      shift 2
+      ;;
+    --status-file)
+      STATUS_FILE="$2"
+      shift 2
+      ;;
+    --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
+    --check)
+      CHECK_ONLY=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "[templates-v2-mirror][FAIL] Unknown argument: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+python3 - "$SOURCE_ROOT" "$TARGET_ROOT" "$MIRROR_DIR" "$STATUS_FILE" "$DRY_RUN" "$CHECK_ONLY" <<'PY'
+import datetime as dt
+import hashlib
+import json
+import os
+import pathlib
+import shutil
+import sys
+
+source_root = pathlib.Path(sys.argv[1]).expanduser().resolve()
+target_root = pathlib.Path(sys.argv[2]).expanduser().resolve()
+mirror_arg = pathlib.Path(sys.argv[3]).expanduser()
+status_arg = pathlib.Path(sys.argv[4]).expanduser()
+dry_run = sys.argv[5] == "1"
+check_only = sys.argv[6] == "1"
+
+mirror_path = mirror_arg if mirror_arg.is_absolute() else target_root / mirror_arg
+status_path = status_arg if status_arg.is_absolute() else target_root / status_arg
+mirror_path = mirror_path.resolve()
+status_path = status_path.resolve()
+marker_name = ".template-source-mirror"
+marker_path = mirror_path / marker_name
+readme_name = "README_REFERENCE_MIRROR.md"
+
+exclude_dirs = {
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "node_modules",
+}
+exclude_files = {".DS_Store"}
+required_source_files = ["TEMPLATE_INDEX.yaml.template", "AI_AGENT.md.template"]
+
+
+def fail(message: str) -> None:
+    print(f"[templates-v2-mirror][FAIL] {message}")
+    sys.exit(1)
+
+
+def info(message: str) -> None:
+    print(f"[templates-v2-mirror] {message}")
+
+
+def relative_display(path: pathlib.Path) -> str:
+    try:
+        return str(path.relative_to(target_root))
+    except ValueError:
+        return str(path)
+
+
+def ensure_inside_target(path: pathlib.Path, label: str) -> None:
+    try:
+        path.relative_to(target_root)
+    except ValueError:
+        fail(f"{label} must stay inside target root: {path}")
+
+
+def read_template_version(root: pathlib.Path) -> str:
+    index_path = root / "TEMPLATE_INDEX.yaml.template"
+    if not index_path.exists():
+        return "unknown"
+    for raw_line in index_path.read_text(encoding="utf-8").splitlines():
+        if raw_line.startswith("version:"):
+            return raw_line.split(":", 1)[1].strip()
+    return "unknown"
+
+
+def iter_files(root: pathlib.Path):
+    for current_root, dirnames, filenames in os.walk(root):
+        current_path = pathlib.Path(current_root)
+        dirnames[:] = [name for name in dirnames if name not in exclude_dirs]
+        for filename in sorted(filenames):
+            if filename in exclude_files:
+                continue
+            file_path = current_path / filename
+            rel_path = file_path.relative_to(root)
+            if rel_path.name in {marker_name, readme_name}:
+                continue
+            yield rel_path, file_path
+
+
+def tree_hash(root: pathlib.Path) -> str:
+    digest = hashlib.sha256()
+    for rel_path, file_path in sorted(iter_files(root), key=lambda item: str(item[0])):
+        digest.update(str(rel_path).encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(file_path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def copy_source_tree(destination: pathlib.Path) -> None:
+    for rel_path, source_file in iter_files(source_root):
+        destination_file = destination / rel_path
+        destination_file.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_file, destination_file)
+
+
+def write_marker(destination: pathlib.Path, source_hash: str, template_version: str) -> None:
+    marker_text = "\n".join([
+        "REFERENCE MIRROR ONLY",
+        "This directory is a synchronized copy of templates-v2 for comparison/audit use.",
+        "Do not adapt project-specific docs or scripts inside this directory.",
+        "Use scripts/sync_templates_v2_source.sh to refresh it.",
+        f"source_root={source_root}",
+        f"template_version={template_version}",
+        f"source_sha256={source_hash}",
+        f"synced_at_utc={dt.datetime.now(dt.timezone.utc).isoformat()}",
+        "",
+    ])
+    (destination / marker_name).write_text(marker_text, encoding="utf-8")
+    readme_text = "\n".join([
+        "# Templates V2 Source Mirror",
+        "",
+        "REFERENCE MIRROR ONLY.",
+        "",
+        "This folder is a synchronized copy of the central templates-v2 source. It exists so auditors and agents can compare this project against the latest template source without changing live project docs.",
+        "",
+        "Rules:",
+        "- Do not write project-specific content here.",
+        "- Do not adapt templates inside this mirror.",
+        "- Do not treat files here as active project docs or scripts.",
+        "- Refresh this folder only by running `bash scripts/sync_templates_v2_source.sh` from the project root.",
+        "- Apply any adoption work to the real project files outside this mirror, through a planned change.",
+        "",
+    ])
+    (destination / readme_name).write_text(readme_text, encoding="utf-8")
+
+
+if not source_root.is_dir():
+    fail(f"Source root does not exist: {source_root}")
+if not target_root.is_dir():
+    fail(f"Target root does not exist: {target_root}")
+for rel_required in required_source_files:
+    if not (source_root / rel_required).is_file():
+        fail(f"Source root is not templates-v2; missing {rel_required}")
+
+ensure_inside_target(mirror_path, "Mirror directory")
+ensure_inside_target(status_path, "Status file")
+if mirror_path == target_root:
+    fail("Mirror directory cannot be the target root")
+if status_path.is_relative_to(mirror_path):
+    fail("Status file must stay outside the mirrored source tree")
+
+template_version = read_template_version(source_root)
+source_hash = tree_hash(source_root)
+
+if check_only:
+    if not mirror_path.is_dir():
+        fail(f"Mirror directory missing: {mirror_path}")
+    if not marker_path.is_file():
+        fail(f"Mirror marker missing: {marker_path}")
+    if not status_path.is_file():
+        fail(f"Mirror status file missing: {status_path}")
+    mirror_hash = tree_hash(mirror_path)
+    if mirror_hash != source_hash:
+        fail(f"Mirror hash drift: mirror={mirror_hash} source={source_hash}")
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    if status.get("source_sha256") != source_hash:
+        fail("Status file source_sha256 does not match current source")
+    info(f"[PASS] Mirror is current: {relative_display(mirror_path)} version={template_version}")
+    sys.exit(0)
+
+info(f"Source: {source_root}")
+info(f"Mirror: {mirror_path}")
+info(f"Status: {status_path}")
+info(f"Version: {template_version}")
+
+if dry_run:
+    info("Dry run only; no files changed")
+    sys.exit(0)
+
+if mirror_path.exists():
+    if not mirror_path.is_dir():
+        fail(f"Mirror path exists and is not a directory: {mirror_path}")
+    has_entries = any(mirror_path.iterdir())
+    if has_entries and not marker_path.is_file():
+        fail(
+            "Refusing to replace a non-empty unmarked directory. "
+            f"Expected marker: {marker_path}"
+        )
+
+temp_path = mirror_path.parent / f".{mirror_path.name}.tmp-{os.getpid()}"
+if temp_path.exists():
+    shutil.rmtree(temp_path)
+temp_path.mkdir(parents=True, exist_ok=False)
+copy_source_tree(temp_path)
+write_marker(temp_path, source_hash, template_version)
+
+if mirror_path.exists():
+    shutil.rmtree(mirror_path)
+mirror_path.parent.mkdir(parents=True, exist_ok=True)
+temp_path.rename(mirror_path)
+
+status = {
+    "kind": "templates-v2-source-mirror",
+    "reference_only": True,
+    "source_root": str(source_root),
+    "target_root": str(target_root),
+    "mirror_dir": relative_display(mirror_path),
+    "template_version": template_version,
+    "source_sha256": source_hash,
+    "synced_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
+    "rules": [
+        "Do not edit project-specific content inside the mirror.",
+        "Do not apply template files from this mirror directly over live docs without a planned change.",
+        "Use this mirror as comparison evidence for auditors and template adoption planning.",
+    ],
+}
+status_path.parent.mkdir(parents=True, exist_ok=True)
+status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
+info(f"[PASS] Synced reference mirror: {relative_display(mirror_path)}")
+PY

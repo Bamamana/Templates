@@ -266,6 +266,7 @@ copy_template() {
 apply_core() {
   copy_template "TEMPLATE_ADOPTION_WALKTHROUGH.md.template" "docs/TEMPLATE_ADOPTION_WALKTHROUGH.md"
   copy_template "AI_AGENT.md.template" "AI_AGENT.md"
+  copy_template "OPERATOR_PROFILE.md.template" "docs/OPERATOR_PROFILE.md"
   copy_template "AI_MEMORY.md.template" "docs/AI_MEMORY.md"
   copy_template "MASTER_TRACEABILITY_TABLE.md.template" "docs/MASTER_TRACEABILITY_TABLE.md"
   copy_template "PROJECT_CANVAS.md.template" "docs/PROJECT_CANVAS.md"
@@ -276,6 +277,8 @@ apply_core() {
   copy_template "CHANGELOG.md.template" "CHANGELOG.md"
   copy_template "QUICKSTART_5_MIN.md.template" "docs/QUICKSTART_5_MIN.md"
   copy_template "TEMPLATE_PROFILE_MIGRATION.md.template" "docs/TEMPLATE_PROFILE_MIGRATION.md"
+  copy_template "TEMPLATE_SWARM_COVERAGE_MATRIX.md.template" "docs/TEMPLATE_SWARM_COVERAGE_MATRIX.md"
+  copy_template "MANUAL_AUDIT_INSTRUCTIONS.md.template" "docs/MANUAL_AUDIT_INSTRUCTIONS.md"
   copy_template "PLACEHOLDER_REFERENCE.md.template" "docs/PLACEHOLDER_REFERENCE.md"
   copy_template "UPGRADE_GUIDE.md.template" "docs/UPGRADE_GUIDE.md"
   copy_template "TEMPLATE_VALIDATION_CHECKLIST.md.template" "docs/TEMPLATE_VALIDATION_CHECKLIST.md"
@@ -285,6 +288,7 @@ apply_core() {
   copy_template "scripts/validate_templates.sh.template" "scripts/validate_templates.sh"
   copy_template "scripts/bootstrap_agent_ready.sh.template" "scripts/bootstrap_agent_ready.sh"
   copy_template "scripts/check_template_drift.sh.template" "scripts/check_template_drift.sh"
+  copy_template "scripts/sync_templates_v2_source.sh.template" "scripts/sync_templates_v2_source.sh"
   copy_template "scripts/placeholder_allowlist.txt.template" "scripts/placeholder_allowlist.txt"
 }
 
@@ -491,6 +495,9 @@ fi
 if [[ -f "$TARGET_DIR/scripts/check_template_drift.sh" ]]; then
   chmod +x "$TARGET_DIR/scripts/check_template_drift.sh" || true
 fi
+if [[ -f "$TARGET_DIR/scripts/sync_templates_v2_source.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/sync_templates_v2_source.sh" || true
+fi
 if [[ -f "$TARGET_DIR/scripts/validate_context_budget.sh" ]]; then
   chmod +x "$TARGET_DIR/scripts/validate_context_budget.sh" || true
 fi
@@ -536,9 +543,12 @@ PLACEHOLDER_FILES=(
   "docs/PROJECT_CANVAS.md"
   "docs/TECH_STACK.md"
   "docs/ENGINEERING_PLAYBOOK.md"
+  "docs/COMMANDS.md"
   "docs/OPS_SECURITY_RELEASE.md"
   "docs/QUICKSTART_5_MIN.md"
   "docs/TEMPLATE_PROFILE_MIGRATION.md"
+  "docs/TEMPLATE_SWARM_COVERAGE_MATRIX.md"
+  "docs/MANUAL_AUDIT_INSTRUCTIONS.md"
   "docs/PLACEHOLDER_REFERENCE.md"
   "docs/UPGRADE_GUIDE.md"
   "docs/TEMPLATE_VALIDATION_CHECKLIST.md"

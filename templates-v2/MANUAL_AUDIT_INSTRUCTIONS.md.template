@@ -1,0 +1,215 @@
+# Manual Audit Instructions ([PROJECT_NAME])
+
+Read when: preparing to run manual auditors before asking a Supervisor, orchestrator, or lead agent to plan or apply fixes.
+Skip when: working on a narrow implementation task that already has a current audit report and approved handoff.
+
+Purpose: preserve the safest order for running manual audits so findings are gathered in useful batches, repaired through bounded slices, and confirmed without churn.
+
+## Core Rule
+
+Run audits in batches, then let the Supervisor or equivalent lead agent plan fixes for that batch. Do not fix after every single auditor unless the first auditor finds a foundation problem that makes later audits unreliable.
+
+Manual auditors are evidence roles. Unless a specific auditor prompt says otherwise, each auditor should write only its own report file and should not repair source, tests, scripts, CI, deployment config, or general docs.
+
+## Source Of Truth
+
+Use this repository's live docs, scripts, tests, CI, deployment config, and current state as authority.
+
+External repositories may be useful examples of process shape, but they are not authority for this project. If this repository does not yet have one of the report files, auditor modes, or docs named below, report that as current state instead of copying another project's content blindly.
+
+## Batch 1: Foundation
+
+Run these first:
+
+1. `manual-template-auditor`
+2. `manual-template-swarm-coverage-auditor`
+
+Expected report files:
+
+- `docs/TEMPLATE_AUDIT_REPORT.md`
+- `docs/TEMPLATE_SWARM_COVERAGE_MATRIX.md`
+
+Use this batch to answer:
+
+- Is the templates-v2 reference mirror present, current, and marked reference-only when this project uses one?
+- Are required template docs and indexes present?
+- Does the project have clear auditor/agent coverage for the template surface?
+- Are startup/routing docs trustworthy enough for later audits?
+
+Stop after Batch 1 and ask the Supervisor to fix foundation gaps if either auditor reports serious issues such as:
+
+- missing or stale `docs/use-with-other-projects/templates-v2/` when the project expects a local reference mirror
+- missing `docs/use-with-other-projects/templates-v2-sync-status.json` when the project expects a local reference mirror
+- failing `bash scripts/sync_templates_v2_source.sh --check` when that script exists and is part of the project contract
+- missing required startup/template docs
+- broken `docs/TEMPLATE_INDEX.yaml`
+- missing or unclear auditor role coverage
+
+After Supervisor fixes foundation issues, rerun the Batch 1 auditors before moving on.
+
+### Paste To Supervisor After Batch 1
+
+```text
+I ran Batch 1 foundation audits:
+- manual-template-auditor
+- manual-template-swarm-coverage-auditor
+
+Read the current Batch 1 audit reports. Do not start coding yet. Decide whether the gaps block later audits. Then hand the findings to the Architect or planning role to build a prioritized foundation repair plan. The plan should group fixes by blast radius, name the files likely to change, name validators to run, and identify which Batch 1 auditors should be rerun.
+
+Prioritize in this order:
+1. templates-v2 reference mirror problems, if this repo uses a mirror
+2. TEMPLATE_INDEX / template scaffold problems
+3. startup/routing doc problems
+4. auditor/agent coverage gaps
+5. smaller documentation consistency issues
+
+Ask for approval before applying the plan.
+```
+
+## Batch 2: Evidence And Execution
+
+Run these after Batch 1 is mostly clean:
+
+1. `manual-traceability-script-auditor`
+2. `manual-ci-verify-gate-auditor`
+
+Expected report files:
+
+- `docs/TRACEABILITY_SCRIPT_AUDIT_REPORT.md`
+- `docs/CI_VERIFY_GATE_AUDIT_REPORT.md`
+
+Use this batch to answer:
+
+- Are Path IDs, routes, workflows, scripts, and smoke evidence mapped?
+- Do local verify, smoke, package, and CI commands agree?
+- Can the project prove that future fixes work?
+
+Ask the Supervisor to fix evidence/proof gaps such as:
+
+- missing or stale `docs/MASTER_TRACEABILITY_TABLE.md` rows
+- missing smoke catalog entries
+- workflow matrix gaps
+- verify script and CI mismatch
+- stale script paths or command names
+- missing local proof commands
+
+After Supervisor fixes Batch 2 issues, rerun the Batch 2 auditors.
+
+### Paste To Supervisor After Batch 2
+
+```text
+I ran Batch 2 evidence and execution audits:
+- manual-traceability-script-auditor
+- manual-ci-verify-gate-auditor
+
+Read the current Batch 2 audit reports. Do not start coding yet. Build a prioritized evidence/verify repair plan only for the reported gaps.
+
+Prioritize in this order:
+1. missing or incorrect Path IDs and traceability rows
+2. missing smoke catalog or workflow matrix coverage
+3. broken or stale local verify/smoke commands
+4. CI/local command mismatches
+5. stale script paths, package commands, or evidence docs
+
+Keep fixes small and grouped by blast radius. Tell me which files/scripts you would change, which commands you would run to prove the fixes, and which Batch 2 auditors should be rerun afterward. Ask for approval before applying the plan.
+```
+
+## Batch 3: Safety And Truth
+
+Run these after Batch 2 is mostly clean:
+
+1. `manual-ops-security-release-auditor`
+2. `manual-plan-state-consistency-auditor`
+
+Expected report files:
+
+- `docs/OPS_SECURITY_RELEASE_AUDIT_REPORT.md`
+- `docs/PLAN_STATE_CONSISTENCY_AUDIT_REPORT.md`
+
+Use this batch to answer:
+
+- Are deploy, rollback, secrets, server, and release docs accurate?
+- Do `docs/GAME_PLAN.md`, `docs/SESSION_BRIEF.md`, `docs/PROJECT_CANVAS.md`, `CHANGELOG.md`, migration docs, and audit reports agree about the current state?
+- Is the project safe to hand back to the Supervisor for final planning?
+
+Ask the Supervisor to fix safety/truth gaps such as:
+
+- stale deployment or server assumptions
+- missing rollback/security notes
+- contradictory plan/session/changelog status
+- outdated migration or release readiness claims
+- audit reports that disagree with the current repo state
+
+After Supervisor fixes Batch 3 issues, rerun the Batch 3 auditors.
+
+### Paste To Supervisor After Batch 3
+
+```text
+I ran Batch 3 safety and truth audits:
+- manual-ops-security-release-auditor
+- manual-plan-state-consistency-auditor
+
+Read the current Batch 3 audit reports. Do not start coding yet. Build a prioritized safety/state repair plan only for the reported gaps.
+
+Prioritize in this order:
+1. security, secrets, deployment, rollback, or server-state contradictions
+2. release/readiness claims that are not backed by evidence
+3. GAME_PLAN / SESSION_BRIEF / PROJECT_CANVAS / CHANGELOG contradictions
+4. migration or parity docs that disagree with current repo state
+5. stale audit-report references or final handoff cleanup
+
+Keep fixes small and grouped by blast radius. Tell me which files you would change, which checks you would run, and which Batch 3 auditors should be rerun afterward. Ask for approval before applying the plan.
+```
+
+## Final Supervisor Handoff Prompt
+
+Use this after all batches are clean enough and you want one combined repair plan:
+
+```text
+Read all current manual audit reports. Do not start coding yet. Build a prioritized repair plan that fixes foundation/template gaps first, then traceability/evidence gaps, then CI/verify gaps, then ops/security gaps, then plan-state contradictions. Keep fixes small and grouped by blast radius. Tell me which files you would change, which commands you would run, and which auditors should be rerun afterward. Ask before applying the plan.
+```
+
+## Practical Stop Rules
+
+- If Batch 1 reports a broken template mirror, template index, or startup structure, stop and fix that before running later audits.
+- If Batch 1 is mostly clean, run Batch 2 before fixing minor foundation nits.
+- If Batch 2 is mostly clean, run Batch 3 before final Supervisor planning.
+- After each fix batch, rerun only the auditors that reported those gaps.
+- Do not let auditors apply fixes unless their prompt explicitly allows it.
+- If an auditor mode or report file does not exist yet in this repository, treat that as a foundation/coverage gap and ask the Supervisor to plan a bounded adoption slice.
+
+## Safety Rules
+
+Manual audits should avoid:
+
+- deploys
+- remote SSH
+- GitHub operations
+- package installs
+- migrations
+- secret-dependent commands
+- destructive commands
+- broad rewrites
+
+If a command would be useful but unsafe, secret-dependent, remote-only, or mutating, record it as a non-run with the reason and recommend it as a follow-up.
+
+## Model Cost Strategy
+
+Suggested model choices:
+
+| Role | Recommended Model |
+|---|---|
+| Supervisor / lead agent | Strong planning model |
+| Architect / planning role | Strong planning model |
+| Coder/Tester small chunks | Fast bounded coding model |
+| Coder/Tester hard chunks | Strong coding model |
+| Verifier | Strong verifier model |
+| Doc Freshness Auditor | Cost-effective doc model |
+| Manual Template Auditor | Cost-effective long-context model |
+| Manual Template/Swarm Coverage Auditor | Strong planning/doc model |
+| Manual Traceability/Script Auditor | Strong code-and-doc evidence model |
+| Manual CI/Verify Gate Auditor | Strong code-and-CI evidence model |
+| Manual Ops/Security/Release Auditor | Strong ops/security reasoning model |
+| Manual Plan-State Consistency Auditor | Strong doc consistency model |
+
+Cost-saving rule: use faster models for small, bounded coding slices, but use a stronger verifier when the change touches auth, data, CI, deployment, migrations, or multiple files.
