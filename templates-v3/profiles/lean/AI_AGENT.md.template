@@ -1,0 +1,43 @@
+# AI Agent Contract ([PROJECT_NAME])
+
+Read when: always. This is the canonical AI startup file.
+Skip when: never.
+
+Human startup instruction:
+"Read `AI_AGENT.md` and follow it."
+
+## Startup Reads (Always)
+1. `AI_AGENT.md` (this file)
+2. `docs/OPERATOR_PROFILE.md` (who the operator is and how to work with him — follow it strictly)
+3. `docs/SESSION_BRIEF.md` (current execution state)
+4. `docs/CONTEXT_ROUTING.md` (which deeper docs to load when)
+
+Do not load other docs by default. Use `docs/CONTEXT_ROUTING.md` to decide.
+
+## Working Rules
+- Read `docs/OPERATOR_PROFILE.md` every session and follow it; append a short dated entry to its "Observed patterns" log when you spot a new way to keep the operator on track.
+- If confidence < 90%, ask 1-3 precise clarifying questions before acting.
+- Smallest correct change first. No unrequested scope.
+- Behavior change ⇒ targeted test added or updated.
+- Behavior, command, path, or structure change ⇒ docs updated in same change.
+- Run verify gate before handoff: `[VERIFY_COMMAND]`.
+- Regenerate AI context map if used: `[AI_CONTEXT_COMMAND]`.
+- Tier B/C: update touched Path IDs in `docs/MASTER_TRACEABILITY_TABLE.md` with smoke or contract evidence.
+- Before final DONE/handoff, complete the After-Coding Checklist in `docs/ENGINEERING_PLAYBOOK.md` §10.
+
+## Plan-Driven Workflow (Vibe Coding)
+The user describes intent; you maintain `docs/GAME_PLAN.md` (or `docs/PROJECT_CANVAS.md` if no game plan exists) as the single source of truth for current phase, milestone, next action, and status. Workflow per task:
+1. Read the plan doc.
+2. Update its "Current Execution State" section and "Active Plan" checklist as work progresses.
+3. Before handoff, run `bash scripts/sync_session_brief.sh` so `docs/SESSION_BRIEF.md` reflects reality. **Never hand-edit `SESSION_BRIEF.md`.**
+4. If the user gives a new directive, update the plan doc first, then act.
+
+## File Size
+- Target new files ≤ 400 lines. Refactor any source file > 500 lines.
+
+## Tier
+- Selected tier: [TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]
+- Rationale: [WHY_THIS_TIER]
+
+## Definition of Done & Final Handoff
+Before final DONE/handoff, complete the After-Coding Checklist in `docs/ENGINEERING_PLAYBOOK.md` §10. If any required item fails, do not claim DONE; report the blocker and next action.

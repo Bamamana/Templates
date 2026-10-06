@@ -1,0 +1,180 @@
+# Orchestration Map ([PROJECT_NAME])
+
+Read when: assigning work between the premium cloud mastermind and the local code worker.
+Skip when: never.
+
+Purpose: define the stable role split, handoff protocol, token-saving policy, and escalation boundaries.
+
+If workflow intent or source-of-truth policy is disputed, the plan doc
+(`docs/GAME_PLAN.md` or `docs/PROJECT_CANVAS.md`) is the canonical workflow document.
+
+## Template Source Role
+This orchestrator profile is the reusable base for future projects. Project-specific repos may add hardware, runtime, or domain details, but generic three-role workflow improvements should be promoted back here before being treated as standard practice.
+
+## Rollout Model
+- Phase 1: one premium cloud orchestrator plus one local worker.
+- Phase 2: add specialized local lanes only after Phase 1 proves valuable.
+
+## 1) System Roles
+
+### Cloud Orchestrator
+- Holds project-wide context and milestone intent.
+- Writes feature specs for non-trivial work.
+- Decomposes specs into worker packets.
+- Reviews every DONE packet against `docs/POST_CODING_CHECKS.md` before merge or acceptance.
+- Decides accept / repair / reject / escalate.
+- Owns traceability integrity; worker fills evidence, orchestrator verifies it.
+
+### Local Worker
+- Performs bounded implementation, refactor, retrieval, docs, and test work inside `Allowed Files`.
+- Runs only the `Allowed Commands` set.
+- Runs the 9-step test-first loop locally (§9); cloud tokens are not spent inside the loop.
+- Completes the Apply Checklist Result section of `docs/WORKER_RESULT_PACKET.md` before returning DONE.
+- Returns evidence per Path ID in the result packet, not broad prose.
+- Returns BLOCKED rather than guessing or expanding scope.
+
+### Cloud Investigator
+- Escape hatch for repeated BLOCKED, test-honesty failures, production regressions, or architectural unknowns.
+- May load wider repo context than the orchestrator normally uses.
+- Returns root cause, corrected packet, direct fix, or spec amendment.
+- Used sparingly; frequent investigator use means the local-worker setup needs tuning.
+
+## Phase 1 Default Flow
+1. Premium orchestrator classifies the task.
+2. Premium orchestrator writes one bounded worker packet.
+3. Local worker executes the packet and returns a result packet.
+4. Premium orchestrator performs mandatory post-coding review.
+5. Operator approves the reviewed outcome, not the raw diff.
+
+## 2) Task Routing Rules
+
+### Keep On Cloud Orchestrator
+- Architecture and design decisions
+- Ambiguous debugging
+- Security and privacy review
+- Cross-project planning
+- Final review for risky changes
+- Conflicting or underspecified requirements
+
+### Push To Local Worker
+- Repo indexing and summarization
+- Bulk code transforms
+- First-pass refactors
+- Test drafting and repair loops
+- Log triage and failure summarization
+- Documentation extraction
+- Narrow implementation slices with clear acceptance criteria
+
+## 3) Token Budget Policy
+- Read full-project context once per milestone or major escalation.
+- Do not re-read the repository for each worker slice.
+- Pass only the minimum files, commands, constraints, and acceptance criteria needed for the task.
+- Return compact result packets instead of full logs unless a failure requires evidence.
+- Prefer Path IDs, Smoke IDs, and command names over pasted file dumps.
+- Treat `docs/state/session_budget.json` as the repo-visible budget ledger, not the final billing source.
+- When provider-side limits, proxy accounting, or extension-level budgets exist, set those limits outside the repo and record the non-secret policy here.
+- If repo-visible counters and provider/accounting counters disagree, use the higher-cost reading and stop when a ceiling may be exceeded.
+
+## 3a) Worker Sandbox Policy
+- Tier A/B default: worker is constrained by Allowed Files, Allowed Commands, no secret access, and packet timeout.
+- Tier C or sensitive-data work: worker must run in a dedicated branch/worktree or disposable checkout with secrets unavailable by default.
+- Tier C packets must list data snapshot/restore commands before any persistent mutation.
+- Worker must not push, deploy, migrate, or rotate secrets unless the packet explicitly authorizes that exact command and the cloud orchestrator reviewed the plan first.
+- If sandboxing cannot be verified for Tier C work, use Level 1 cloud orchestration or halt for operator approval.
+
+## 4) Bad-State Recovery
+- Local-worker outage means the runtime is down, model is loading/downloading, network path is unreachable, or result artifact is malformed.
+- Do not spend investigator budget on infrastructure outage.
+- Attended sessions may use one bounded cloud-only fallback slice when already in plan and surfaced to the user.
+- Unattended sessions halt instead of silently falling back to cloud-only.
+- Timeout or malformed result moves the packet out of active state before recovery begins.
+
+## 5) Worker Packet Requirements
+- `Packet ID` (`P-YYYY-MM-DD-NN`, never reused)
+- `Goal`
+- `Packet Class` and class rationale
+- `Concreteness Tier`
+- `Scope` with Allowed Files and Reference Files
+- `Path IDs Touched`
+- `Constraints`
+- `Acceptance Criteria`
+- `Allowed Commands`
+- `Required Smoke Tests`
+- `Final Verify Command`
+- `Expected Return Format`
+
+## 6) Result Packet Requirements
+- `Packet ID` echoes the task
+- `Status` = DONE / PARTIAL / BLOCKED
+- `Iterations used`
+- `Files changed` as diff stats by default
+- `Commands run` with exit codes
+- `Acceptance criteria results`
+- `Path IDs updated`
+- `Test-first evidence` for FEATURE / BUGFIX work
+- `Regression accretion` for BUGFIX work
+- `Local self-review`
+- `Final verify result`
+- `Assumptions`, blockers, and recommended next action
+
+## 7) Drift Prevention Rules
+- No silent scope expansion.
+- No architectural rewrites without orchestration review.
+- If acceptance criteria change, update the packet before coding.
+- Keep `AI_AGENT.md`, `docs/ENGINEERING_PLAYBOOK.md`, and this map aligned.
+- Behavior changes update tests and docs in the same packet.
+
+## 8) Current Project Routing Notes
+- High-risk domains that must stay orchestrator-owned:
+- Known safe worker domains:
+- Current validation bottlenecks:
+- Current token-saving opportunities:
+- Provider-side budget backstop:
+- Worker sandbox mode:
+
+## 9) The 9-Step Worker Loop
+
+All iteration happens locally. CI is final verification, not the inner debug loop.
+
+1. **READ** — Read the task packet. Confirm Packet ID, scope, allowed files, allowed commands, acceptance criteria, Packet Class, and Concreteness Tier.
+2. **PLAN** — Write a 2-5 line internal plan naming test files and production files. If confidence < 90%, return BLOCKED with one clarifying question.
+3. **RED** — For FEATURE and BUGFIX packets, write or extend the test first and confirm it fails for the right reason.
+4. **GREEN** — Write the smallest production change inside allowed files to make the test pass.
+5. **VALIDATE** — Run the scoped check ladder: lint, typecheck, targeted tests, required smoke IDs, full local regression.
+6. **REPAIR** — Fix failures inside scope up to the Packet Class iteration ceiling. Do not weaken assertions, skip tests, or broaden scope.
+7. **VERIFY** — Complete the Apply Checklist Result section of `docs/WORKER_RESULT_PACKET.md`, then run the packet's final verify command.
+8. **SELF-REVIEW** — With fresh local context, grade the draft result packet against the task packet and checklist. One loop-back to repair is allowed.
+9. **RETURN** — Fill `docs/WORKER_RESULT_PACKET.md` with evidence, not broad prose.
+
+### Packet Class Iteration Ceilings
+
+| Packet Class | Max Iterations | Use When |
+|---|---:|---|
+| FEATURE | 3 | New behavior; too many loops means the packet is too broad. |
+| BUGFIX | 5 | Specific failure with a regression test. |
+| GREEN-SUITE | 10 | Test repair, lint cleanup, regression backfill. |
+| REFACTOR | 3 | No behavior change; a behavior diff is a bug. |
+
+The orchestrator chooses the class and writes a one-line rationale. Misclassified
+packets are rejected or reissued.
+
+### Regression Accretion Rule
+Every BUGFIX packet adds or preserves at least one regression test that would have
+caught the bug before the fix. The result packet records the base revision, RED
+evidence, and GREEN confirmation. Tests must assert real behavior or user/data
+outcome, not merely that a function, mock, or variable exists.
+
+### Token-Saving Rules
+- Worker never re-reads the whole repo.
+- Orchestrator does not ask for full file dumps when line ranges or summaries are enough.
+- Result packet body target <= 200 lines; diff stats by default, full diff only when requested.
+- One milestone means one broad orchestrator read, not one broad read per edit loop.
+
+### Escalation Triggers
+Worker returns BLOCKED when architecture is undecided, product rules are unclear,
+security/privacy/compliance risk appears, an acceptance criterion is wrong or
+impossible, scope must widen, allowed commands are insufficient, or tooling is too
+unhealthy to return a valid result packet. A second BLOCKED on the same Path ID
+escalates to `docs/INVESTIGATOR_PROTOCOL.md`. If investigator and worker cannot
+resolve the same Path ID after two cycles, halt and present tie-breaker options on
+`docs/OPERATOR_DASHBOARD.md`.

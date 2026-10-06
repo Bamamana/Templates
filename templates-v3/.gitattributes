@@ -1,0 +1,8 @@
+# templates-v3 is consumed on Unix-like targets; force LF for scripts and machine files.
+*.sh.template text eol=lf
+*.sh text eol=lf
+*.py.template text eol=lf
+*.py text eol=lf
+*.yml.template text eol=lf
+*.yaml.template text eol=lf
+*.json.template text eol=lf

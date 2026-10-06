@@ -1,0 +1,67 @@
+# Local Worker Health ([PROJECT_NAME])
+
+Read when: configuring, validating, or troubleshooting the local worker lane.
+Skip when: the project is cloud-only or local-worker delegation is disabled.
+
+Purpose: prove the local worker is healthy before issuing implementation packets. This generalizes the ASUS endpoint-smoke lesson without assuming a specific machine, model, or VS Code extension.
+
+## Current Worker Route
+
+- Local worker enabled: YES / NO / PLANNED
+- Worker tool/client: `<CLIENT_OR_EXTENSION>`
+- Endpoint type: OpenAI-compatible / native extension / local CLI / other
+- Endpoint URL or command: `<PRIVATE_OR_LOCAL_ONLY_VALUE>`
+- Primary coding model: `<MODEL_NAME>`
+- Tool-calling support required: YES / NO
+- Last health check: `<YYYY-MM-DD>`
+- Health status: OK / DEGRADED / OFFLINE / UNKNOWN
+
+Do not store secrets here. Store real tokens, private hostnames, and credentials in the operator's private config, not in repo docs.
+
+## Minimum Health Checks
+
+Before local-worker implementation packets are allowed:
+
+- [ ] Worker endpoint or command is reachable from the development machine.
+- [ ] Expected model is visible or selectable.
+- [ ] Worker can read one allowed file and summarize it accurately.
+- [ ] Worker can produce a small edit in a sandbox or doc-only packet.
+- [ ] Worker can run the allowed command set or clearly report command limitations.
+- [ ] Worker returns structured result packets instead of broad prose.
+- [ ] Timeout behavior is known and recorded in `docs/state/session_budget.json` or active plan notes.
+
+## Sandbox And Secret Boundary
+
+- Worker execution location: same checkout / dedicated worktree / disposable checkout / remote sandbox
+- Secrets available to worker: NO / YES + rationale
+- Network access during worker loop: NONE / LAN / INTERNET + rationale
+- Push/deploy allowed from worker: NO unless explicitly packet-authorized
+- Tier C ready: YES / NO / N/A
+
+For Tier C or sensitive-data work, local-worker implementation packets are blocked until secrets are unavailable by default and rollback/snapshot commands are recorded in the packet.
+
+## Optional Endpoint Smoke Command
+
+If the worker exposes an OpenAI-compatible endpoint, create a project-specific smoke script such as:
+
+```bash
+python3 scripts/check_openai_compatible_endpoint.py \
+  --base-url http://<local-worker-host>:<port>/v1 \
+  --api-key test-key \
+  --expect-model <model-or-alias>
+```
+
+If no endpoint exists, replace this with the exact local CLI or extension smoke path.
+
+## Degraded / Offline Rules
+
+- Attended session: one bounded cloud-only fallback slice is allowed only when already in plan and surfaced to the operator.
+- Unattended session: halt instead of falling back to cloud-only.
+- Infrastructure outage is not investigator work.
+- Two malformed or timed-out results after the worker is otherwise healthy means the worker setup needs tuning before more packets.
+
+## Evidence Log
+
+| Date | Check | Result | Notes |
+|---|---|---|---|
+| `<YYYY-MM-DD>` | Initial worker health | UNKNOWN | Replace during setup |

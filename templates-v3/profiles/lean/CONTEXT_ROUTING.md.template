@@ -1,0 +1,45 @@
+# Context Routing Map ([PROJECT_NAME])
+
+Read when: always at session start. Skip when: never.
+
+Start with only `AI_AGENT.md`, `docs/SESSION_BRIEF.md`, `docs/CONTEXT_ROUTING.md`. Pull deeper docs only on triggers.
+
+## Doc Triggers
+
+| Doc | Load when |
+|---|---|
+| `docs/PROJECT_CANVAS.md` | scope, milestone, or next action unclear |
+| `docs/ENGINEERING_PLAYBOOK.md` | commands, test policy, workflow matrix, smoke catalog, review, DoD |
+| `docs/TECH_STACK.md` | architecture, dependency, integration boundary |
+| `docs/MASTER_TRACEABILITY_TABLE.md` | entrypoint, workflow, side effect, smoke evidence |
+| `docs/OPS_SECURITY_RELEASE.md` | deploy, secrets, auth, logging, data, release |
+| `docs/TEMPLATE_LIFECYCLE.md` | install, retrofit, missing capability, ignored script, profiles, placeholders, upgrade |
+| `CHANGELOG.md` | behavior history or documenting a change |
+| `AI_CONTEXT.md` | local reads are insufficient and generated map exists |
+
+## Event Triggers
+
+| Event | Load / Run |
+|---|---|
+| Version/release/bump | run the project bump script (see `docs/ENGINEERING_PLAYBOOK.md` §1) |
+| Merge/predeploy | `scripts/predeploy_full_suite.sh` |
+| Behavior change lacks docs | `scripts/enforce_doc_updates.sh` |
+| Template version bump | `scripts/check_template_drift.sh` + `docs/TEMPLATE_LIFECYCLE.md` §7 |
+| New entrypoint/workflow | `docs/MASTER_TRACEABILITY_TABLE.md` + `docs/ENGINEERING_PLAYBOOK.md` §3 |
+| New smoke test | `docs/ENGINEERING_PLAYBOOK.md` §4 |
+| BUGFIX | `docs/ENGINEERING_PLAYBOOK.md` test policy (§2) |
+| Install/retrofit/migration | `docs/TEMPLATE_LIFECYCLE.md` §2 and §4 |
+| Existing lean project audit | `docs/TEMPLATE_LIFECYCLE.md` "Lean project audit" |
+| Session brief has `(not set)` | `docs/GAME_PLAN.md` + `scripts/sync_session_brief.sh` |
+| Multi-service or release-prep repo | `docs/TEMPLATE_LIFECYCLE.md` §4.2 |
+| Beta/user acceptance | `docs/MASTER_TRACEABILITY_TABLE.md` + `docs/ENGINEERING_PLAYBOOK.md` §3 |
+| Optional/skipped runtime smoke | `scripts/test_smoke.sh` + `docs/ENGINEERING_PLAYBOOK.md` §2 |
+| Security docs promise scan | compare ops docs, CI, `scripts/verify.sh` |
+
+If event is unlisted and unclear, ask. If more than three deeper docs seem needed before first edit, ask whether task is too broad.
+
+## Skip Rules
+- Skip `CHANGELOG.md` for routine implementation unless documenting the change.
+- Skip `OPS_SECURITY_RELEASE.md` for isolated local/test-only work.
+- Skip `MASTER_TRACEABILITY_TABLE.md` for Tier A doc-only edits with no runtime pathway.
+- Skip `TECH_STACK.md` when the task is local and architecture is already clear.

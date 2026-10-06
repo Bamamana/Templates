@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Fail if the always-on AI startup context exceeds a budget.
+# Usage: bash scripts/validate_context_budget.sh [--budget-bytes N]
+#
+# Default budget: 6144 bytes (~1500 tokens). Tune via --budget-bytes or
+# the CONTEXT_BUDGET_BYTES env var.
+#
+# Always-on set is the lean startup triplet:
+#   AI_AGENT.md
+#   docs/SESSION_BRIEF.md
+#   docs/CONTEXT_ROUTING.md
+#
+# If a project does not use the lean profile (no SESSION_BRIEF or
+# CONTEXT_ROUTING), this script measures only AI_AGENT.md.
+
+set -euo pipefail
+
+BUDGET_BYTES="${CONTEXT_BUDGET_BYTES:-6144}"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --budget-bytes)
+      BUDGET_BYTES="$2"
+      shift 2
+      ;;
+    -h|--help)
+      sed -n '2,15p' "$0"
+      exit 0
+      ;;
+    *)
+      echo "[budget][FAIL] Unknown argument: $1" >&2
+      exit 2
+      ;;
+  esac
+done
+
+FILES=()
+[[ -f "AI_AGENT.md" ]] && FILES+=("AI_AGENT.md")
+[[ -f "docs/SESSION_BRIEF.md" ]] && FILES+=("docs/SESSION_BRIEF.md")
+[[ -f "docs/CONTEXT_ROUTING.md" ]] && FILES+=("docs/CONTEXT_ROUTING.md")
+
+if [[ ${#FILES[@]} -eq 0 ]]; then
+  echo "[budget][FAIL] No always-on startup files found." >&2
+  exit 1
+fi
+
+TOTAL=0
+echo "Always-on startup context:"
+for f in "${FILES[@]}"; do
+  bytes=$(wc -c < "$f" | tr -d ' ')
+  TOTAL=$((TOTAL + bytes))
+  printf "  %6d bytes  %s\n" "$bytes" "$f"
+done
+echo "  ---"
+printf "  %6d bytes  TOTAL  (budget: %d)\n" "$TOTAL" "$BUDGET_BYTES"
+
+# Approx tokens at ~4 bytes/token English markdown
+APPROX_TOKENS=$((TOTAL / 4))
+echo "  approx tokens: $APPROX_TOKENS"
+
+if [[ "$TOTAL" -gt "$BUDGET_BYTES" ]]; then
+  echo "[budget][FAIL] Always-on context exceeds budget." >&2
+  echo "[budget][HINT] Trim AI_AGENT.md, SESSION_BRIEF.md, or CONTEXT_ROUTING.md." >&2
+  exit 1
+fi
+
+echo "[budget][OK] Always-on context within budget."

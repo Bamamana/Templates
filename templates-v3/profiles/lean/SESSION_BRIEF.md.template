@@ -1,0 +1,31 @@
+# Session Brief ([PROJECT_NAME])
+
+Read when: always at session start.
+Skip when: never.
+
+> **This file is auto-generated.** Do not hand-edit.
+> The plan lives in `docs/GAME_PLAN.md` (preferred) or `docs/PROJECT_CANVAS.md`.
+> To refresh after a planning conversation, run:
+> `bash scripts/sync_session_brief.sh`
+>
+> The AI is required to run that command at the end of any task that changes phase, milestone, next action, or status (see `AI_AGENT.md`).
+
+## Now
+- Phase: (not set — run sync)
+- Milestone: (not set — run sync)
+- Status: (not set — run sync)
+- Next item: (not set — run sync)
+- Next command: (not set — run sync)
+- Last verified: (not set — run sync)
+
+## Focus
+- Active objective:
+- In-scope area:
+- Known blocker or risk:
+
+## Guardrails (Quick Reference)
+- See `AI_AGENT.md` for tier, verify command, and AI context command.
+- Likely-next docs: PROJECT_CANVAS, ENGINEERING_PLAYBOOK (per `docs/CONTEXT_ROUTING.md`)
+
+## Notes For Next Session
+- Edit `docs/GAME_PLAN.md` (or `docs/PROJECT_CANVAS.md`) then run `bash scripts/sync_session_brief.sh`.

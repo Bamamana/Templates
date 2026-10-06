@@ -1,0 +1,90 @@
+# Advanced Verification Playbook
+
+Use this unified playbook for refactor safety, fixture stability, and release canary/rollback control.
+
+## 1) Smoke + Pathway Parity
+
+Run three layers together:
+
+1. Baseline smoke (repo health, required files, limits)
+2. Targeted lane contract smoke (module wiring + exports)
+3. Baseline parity report (pre-refactor + latest deployed snapshot vs current)
+
+Pathway coverage rule:
+- Maintain `docs/MASTER_TRACEABILITY_TABLE.md` and ensure every active Path ID has smoke coverage status (`Automated`, `Manual`, or `N/A` with rationale).
+- Lane contracts should be traceable back to one or more Path IDs.
+
+Suggested script layout:
+
+```text
+scripts/
+  test_smoke.sh
+  verify.sh
+  refactor_smoke_contract.py
+  parity_pathways_report.py
+  parity-retired-pathways.json
+  smoke_<lane>_refactor.sh
+  refactor-contracts/
+    <lane>-slice1.json
+```
+
+## 2) Fixture Testing
+
+Contract/pathway smoke checks prove wiring.
+Fixture tests prove behavior outputs remain stable.
+
+Use fixtures for:
+- parsing/normalization pipelines,
+- payload mapping,
+- routing decisions,
+- policy/rule evaluation.
+
+Suggested fixture structure:
+
+```text
+tests/fixtures/
+  [lane]/
+    case-001.input.json
+    case-001.expected.json
+scripts/
+  run_fixture_suite.sh
+```
+
+Fixture lifecycle:
+- Add fixtures whenever behavior changes intentionally.
+- Keep old fixtures when backward compatibility is required.
+- For intentional breaking changes, update fixture + changelog in same change.
+
+## 3) Release Canary + Rollback
+
+Pre-canary gate:
+- `bash scripts/predeploy_full_suite.sh` passed (or `bash scripts/verify.sh` if predeploy runner is not present)
+- Changelog updated with deployment scope and risk notes
+- Rollback owner assigned
+- Rollback command/procedure validated in staging or dry run
+
+Canary thresholds (set before rollout):
+- Error rate threshold: `[ERROR_RATE_THRESHOLD]`
+- Latency threshold: `[LATENCY_THRESHOLD]`
+- Queue/backlog threshold (if applicable): `[QUEUE_THRESHOLD]`
+- Functional smoke threshold: `[SMOKE_THRESHOLD]`
+
+Decision + rollback:
+- Pass: all thresholds within limits for `[CANARY_WINDOW]`
+- Fail: any threshold exceeded -> execute rollback immediately
+
+Rollback checklist:
+- Trigger rollback command: `[ROLLBACK_COMMAND]`
+- Confirm previous version is active
+- Re-run minimum smoke checks
+- Record incident summary and follow-up tasks
+
+## 4) Adoption Checklist
+
+- [ ] Add lane contract checker + contracts
+- [ ] Add baseline parity checker + retirement allowlist
+- [ ] Wire all checks into `verify.sh`
+- [ ] Add one-command predeploy runner
+- [ ] Add fixture suite and run it in CI/predeploy gates
+- [ ] Ensure every active Path ID in `docs/MASTER_TRACEABILITY_TABLE.md` maps to smoke evidence
+- [ ] Define canary thresholds and rollback command before production rollout

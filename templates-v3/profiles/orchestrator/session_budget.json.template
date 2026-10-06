@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "last_updated": "[YYYY-MM-DD]T00:00:00Z",
+  "current_session": {
+    "session_id": "initial-session",
+    "status": "ACTIVE",
+    "execution_mode": "HYBRID",
+    "cloud_spend_usd": 0.0,
+    "worker_packets_issued": 0,
+    "investigator_invocations": 0,
+    "done_packets_reviewed": 0,
+    "limits": {
+      "cloud_spend_usd": 5.0,
+      "worker_packets_issued": 10,
+      "investigator_invocations": 2
+    },
+    "assumptions": {
+      "done_packet_review_cost_usd": 0.1,
+      "investigator_cost_tracking": "manual until provider-side or proxy accounting exists"
+    },
+    "packet_ledger_path": "docs/state/packet_ledger.json"
+  }
+}

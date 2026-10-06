@@ -1,0 +1,95 @@
+# Ops, Security, and Release System ([PROJECT_NAME])
+
+Read when: deploying, hardening, incident handling, or release/risk review.
+Skip when: never.
+
+Consolidated operations governance for deployment, secrets, security automation, observability, and release control.
+
+## 1) Tiered Requirements
+- Tier A: baseline only (advanced sections may be `N/A` with rationale)
+- Tier B: baseline + recommended advanced controls
+- Tier C: all controls required
+
+## 2) Secrets Policy (Baseline)
+- No secrets in source control.
+- No secrets in docs/changelogs/issues.
+- Separate values for local/dev/prod.
+- Keep secret ownership defined.
+
+## 3) Deployment + Rollback
+### Preconditions
+- [ ] Verify gate passes
+- [ ] Required env vars present
+- [ ] Backup/restore process validated (B/C)
+- [ ] Local runtime profile validated (if using compose/tunnel)
+
+### Deploy Steps
+1. Pull release candidate.
+2. Apply environment values.
+3. Start/update services.
+4. Run smoke checks.
+
+### Local Runtime Notes
+- Compose/local run command: `[LOCAL_ONLY_RUN_COMMAND]`
+- Optional tunnel profile: `[TUNNEL_PROFILE_COMMAND_OR_NA]`
+
+### Rollback
+1. Stop failed release.
+2. Restore prior known-good version.
+3. Restore backup if needed.
+4. Re-run smoke checks.
+
+## 4) Security Automation (Tiered)
+- Secret scan command: `[SECRET_SCAN_COMMAND]`
+- Dependency scan command: `[SCA_COMMAND]`
+- Static analysis command: `[SAST_COMMAND]`
+- Container scan (if applicable): `[IMAGE_SCAN_COMMAND]`
+- SBOM/provenance (C): `[SBOM_COMMAND]`
+
+Security CI policy:
+- Fail on critical vulnerabilities: [YES/NO]
+- Fail on secrets detected: [YES/NO]
+- Exception process (owner + expiry required): [PROCESS_OR_NA]
+
+## 5) Observability + Incident
+- Availability signal:
+- Latency signal:
+- Error-rate signal:
+- Alert channel:
+- Throughput signal:
+- Availability SLO target:
+- Latency SLO target (p95/p99):
+- Error budget window:
+- Log retention period:
+- Trace/correlation ID strategy:
+
+Error handling and logging standards:
+- Log format: [JSON_OR_TEXT] with request/correlation ID on every request path.
+- Error taxonomy: [USER_ERROR/SYSTEM_ERROR/SECURITY_ERROR] with consistent codes.
+- Redaction policy: secrets/PII must never be logged.
+- Incident evidence minimum: timestamp, request ID, affected component, mitigation action.
+
+Incident flow:
+1. Triage severity.
+2. Contain impact.
+3. Recover service.
+4. Record root cause and prevention actions.
+
+## 6) Release Policy
+- Versioning: [SEMVER_OR_SIMPLE_TAG]
+- Promotion path: local -> CI -> staging/preview (if used) -> production
+- Mandatory release evidence:
+  - [ ] Verify gate output
+  - [ ] Smoke/targeted test output
+  - [ ] Changelog entry
+  - [ ] Rollback readiness note
+  - [ ] Post-deploy health/log checks
+
+## 7) Risk Register (Lightweight)
+| ID | Risk | Likelihood (1-5) | Impact (1-5) | Score | Owner | Mitigation | Status |
+|---|---|---:|---:|---:|---|---|---|
+| R-001 | [Risk] | [1-5] | [1-5] | [LxI] | [Owner] | [Action] | [Open/Monitoring/Closed] |
+
+Risk escalation rules:
+- Escalate score >= 15 immediately.
+- Block release if unresolved risk violates selected tier controls.

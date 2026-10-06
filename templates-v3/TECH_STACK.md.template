@@ -1,0 +1,65 @@
+# Tech Stack & Architecture ([PROJECT_NAME])
+
+Read when: making architectural decisions, adding dependencies, or onboarding.
+Write when: architecture changes or new major dependencies are added.
+
+Owner: [OWNER]
+Last updated: [YYYY-MM-DD]
+
+Boundary rule:
+- Durable architecture and dependency decisions live here.
+- Sprint/phase status and current execution state belong in `docs/PROJECT_CANVAS.md`.
+
+## 1) Core Stack
+- **Language:** [e.g., TypeScript 5.x]
+- **Runtime:** [e.g., Node.js 20.x, Python 3.11]
+- **Framework:** [e.g., Next.js 14, FastAPI]
+- **Database:** [e.g., PostgreSQL, Redis]
+- **Infrastructure:** [e.g., AWS CDK, Docker, Kubernetes]
+
+## 2) Key Libraries & Decisions
+| Category | Selection | Rationale / Constraints |
+|---|---|---|
+| State Management | [e.g. Zustand] | [Why this over Redux? e.g. Simplicity] |
+| Styling | [e.g. Tailwind] | [Standardization] |
+| Testing | [e.g. Vitest] | [Speed] |
+| Auth | [e.g. NextAuth] | [OIDC support] |
+
+## 3) Architecture Patterns
+- [Pattern 1: e.g., "Vertical Slice Architecture"]
+- [Pattern 2: e.g., "Hexagonal / Ports & Adapters for core logic"]
+- [Pattern 3: e.g., "Event-driven communication via RabbitMQ"]
+
+## 4) Data Flow & Boundaries
+- **Frontend -> Backend:** [e.g., REST, GraphQL, tRPC]
+- **Service -> Service:** [e.g., gRPC, HTTP]
+- **Storage Strategy:** [e.g., "Single database per service" or "Shared monolith DB"]
+
+## 5) Environment & Config Strategy
+- Configuration loading: [e.g., dotenv, 12-factor apps]
+- Secret management: [e.g., AWS Secrets Manager, GitHub Secrets]
+- Environment parity statement: [HOW_DEV_STAGING_PROD_STAY_ALIGNED]
+
+## 6) Dependency Update Policy
+- Update mechanism: [DEPENDABOT/RENOVATE/MANUAL]
+- Cadence: [WEEKLY/BIWEEKLY/MONTHLY]
+- Risk policy: patch/minor auto-merge rules and major-version review policy
+- Owner for dependency health:
+
+## 7) API Documentation Strategy (If API Exists)
+- API contract format: [OPENAPI/GRAPHQL_SCHEMA/OTHER]
+- Source-of-truth location: [PATH_OR_URL]
+- Versioning policy: [URI_VERSIONING/HEADER/SCHEMA_VERSION]
+- Change process for breaking API updates:
+
+## 8) Database Migration Strategy (If Stateful)
+- Migration tool: [ALEMBIC/PRISMA/FLYWAY/OTHER]
+- Forward migration command:
+- Rollback migration command:
+- Backward-compatibility policy for zero-downtime deploys:
+
+## 9) Feature Flag and Rollout Strategy
+- Flag provider/mechanism: [NONE/LAUNCHDARKLY/UNLEASH/CONFIG_FLAG]
+- Default behavior when provider unavailable:
+- Rollout sequence: [INTERNAL -> LIMITED -> FULL]
+- Flag cleanup policy after rollout:

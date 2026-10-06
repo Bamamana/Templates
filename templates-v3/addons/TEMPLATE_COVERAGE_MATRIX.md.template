@@ -1,0 +1,79 @@
+# Template Coverage Matrix ([PROJECT_NAME])
+
+Read when: evaluating whether templates-v3 docs are covered by AI swarm roles, manual auditors, validators, and update triggers.
+Skip when: implementing a narrow code slice that already names all affected docs.
+
+Purpose: map the templates-v3 document set (core + profiles + addons) to the
+project's AI roles, so coverage gaps are visible instead of assumed.
+
+## Coverage Summary
+
+| Coverage Area | Current Coverage | Notes |
+|---|---|---|
+| Startup and session state | [Covered/Partial/Missing] | [AI_AGENT / SESSION_BRIEF / CONTEXT_ROUTING status] |
+| Planning and project state | [Covered/Partial/Missing] | [GAME_PLAN / PROJECT_CANVAS status] |
+| Commands, tests, smoke, workflow | [Covered/Partial/Missing] | [ENGINEERING_PLAYBOOK §1–§4 status] |
+| Traceability and evidence | [Covered/Partial/Missing] | [MASTER_TRACEABILITY_TABLE / smoke evidence status] |
+| Template scaffold integrity | [Covered/Partial/Missing] | [Template auditor / validators status] |
+| Ops, security, release, server docs | [Covered/Partial/Missing] | [Ops/security/release docs status] |
+| Orchestrator role and packet flow | [Covered by Docs/Prompts/Missing] | [Orchestration map / packet / review status] |
+
+## Matrix
+
+| templates-v3 Artifact | Live Project Artifact | Owning Role/Mode | Update Trigger | Validator/Auditor | Coverage Status | Gap / Next Repair |
+|---|---|---|---|---|---|---|
+| `AI_AGENT.md.template` | `AI_AGENT.md` | [role] | Session startup / contract change | [validator/auditor] | [status] | [gap] |
+| `OPERATOR_PROFILE.md.template` | `docs/OPERATOR_PROFILE.md` | [role] | New operator pattern observed | [validator/auditor] | [status] | [gap] |
+| `profiles/lean/SESSION_BRIEF.md.template` | `docs/SESSION_BRIEF.md` | [role] | Plan/status change | [validator/auditor] | [status] | [gap] |
+| `profiles/lean/CONTEXT_ROUTING.md.template` | `docs/CONTEXT_ROUTING.md` | [role] | New docs/triggers | [validator/auditor] | [status] | [gap] |
+| `PROJECT_CANVAS.md.template` | `docs/PROJECT_CANVAS.md` | [role] | Milestone/current-priority changes | [validator/auditor] | [status] | [gap] |
+| `ENGINEERING_PLAYBOOK.md.template` | `docs/ENGINEERING_PLAYBOOK.md` | [role] | Command/test/smoke/workflow policy changes | [validator/auditor] | [status] | [gap] |
+| `MASTER_TRACEABILITY_TABLE.md.template` | `docs/MASTER_TRACEABILITY_TABLE.md` | [role] | Entry point/pathway/evidence changes | [validator/auditor] | [status] | [gap] |
+| `OPS_SECURITY_RELEASE.md.template` | `docs/OPS_SECURITY_RELEASE.md` | [role] | Deploy/security/secrets/release changes | [validator/auditor] | [status] | [gap] |
+| `TECH_STACK.md.template` | `docs/TECH_STACK.md` | [role] | Runtime/framework/architecture changes | [validator/auditor] | [status] | [gap] |
+| `CHANGELOG.md.template` | `CHANGELOG.md` | [role] | Behavior/command/release changes | [validator/auditor] | [status] | [gap] |
+| `TEMPLATE_LIFECYCLE.md.template` | `docs/TEMPLATE_LIFECYCLE.md` | [role] | Adoption/profile/placeholder/upgrade changes | [validator/auditor] | [status] | [gap] |
+| `TEMPLATE_INDEX.yaml.template` | `docs/TEMPLATE_INDEX.yaml` | [role] | Template version/applicability/read order changes | [validator/auditor] | [status] | [gap] |
+| `.github/workflows/ci.yml.template` | `.github/workflows/ci.yml` | [role] | CI gate changes | [validator/auditor] | [status] | [gap] |
+| `profiles/orchestrator/ORCHESTRATION_MAP.md.template` | `docs/ORCHESTRATION_MAP.md` or N/A | [role] | Role split / worker loop / token policy changes | [validator/auditor] | [status] | [gap] |
+| `profiles/orchestrator/WORKER_TASK_PACKET.md.template` | `docs/WORKER_TASK_PACKET.md` or N/A | [role] | Delegated work issued | [validator/auditor] | [status] | [gap] |
+| `profiles/orchestrator/WORKER_RESULT_PACKET.md.template` | `docs/WORKER_RESULT_PACKET.md` or N/A | [role] | Worker returns | [validator/auditor] | [status] | [gap] |
+| `profiles/orchestrator/POST_CODING_CHECKS.md.template` | `docs/POST_CODING_CHECKS.md` or N/A | [role] | Mandatory DONE review | [validator/auditor] | [status] | [gap] |
+| `profiles/orchestrator/CLOSING_CHECKLIST.md.template` | `docs/CLOSING_CHECKLIST.md` or N/A | [role] | Done claim / closeout | [validator/auditor] | [status] | [gap] |
+| `scripts/validate_templates.sh.template` | `scripts/validate_templates.sh` | [role] | Template scaffold changes | [validator/auditor] | [status] | [gap] |
+| `scripts/check_template_drift.sh.template` | `scripts/check_template_drift.sh` | [role] | Template version bump | [validator/auditor] | [status] | [gap] |
+| `scripts/sync_templates_source.sh.template` | `scripts/sync_templates_source.sh` or N/A | [role] | Reference mirror refresh | [validator/auditor] | [status] | [gap] |
+| `scripts/predeploy_full_suite.sh.template` | `scripts/predeploy_full_suite.sh` or N/A | [role] | Release readiness changes | [validator/auditor] | [status] | [gap] |
+| `scripts/enforce_doc_updates.sh.template` | `scripts/enforce_doc_updates.sh` or N/A | [role] | Same-change doc guard changes | [validator/auditor] | [status] | [gap] |
+
+## Manual Auditor Modes
+
+Use a `manual-` prefix for primary on-demand audit modes so they sort separately from active loop/swarm modes.
+
+| Mode Name | Purpose | Writes |
+|---|---|---|
+| `manual-template-auditor` | Template scaffold and templates-v3 integrity audit | `docs/TEMPLATE_AUDIT_REPORT.md` |
+| `manual-doc-freshness-auditor` | Post-change doc freshness repair/check | Project docs/generated maps allowed by prompt |
+| `manual-traceability-script-auditor` | Whole-repo traceability/script evidence audit | `docs/TRACEABILITY_SCRIPT_AUDIT_REPORT.md` |
+| `manual-template-coverage-auditor` | Template-to-role coverage matrix audit | `docs/TEMPLATE_COVERAGE_MATRIX.md` |
+| `manual-ops-security-release-auditor` | Ops/security/release/rollback audit | `docs/OPS_SECURITY_RELEASE_AUDIT_REPORT.md` |
+| `manual-ci-verify-gate-auditor` | CI/local verify/smoke/package command audit | `docs/CI_VERIFY_GATE_AUDIT_REPORT.md` |
+| `manual-plan-state-consistency-auditor` | Plan/session/changelog/migration state consistency audit | `docs/PLAN_STATE_CONSISTENCY_AUDIT_REPORT.md` |
+
+## Recommended Use
+
+- Run `manual-template-coverage-auditor` after adding or renaming auditor modes, changing templates-v3, or considering an operating-system-model migration.
+- Run `manual-traceability-script-auditor` before asking a supervisor/orchestrator to repair traceability/script gaps.
+- Run `manual-ci-verify-gate-auditor` after meaningful script, test, package, or CI changes.
+- Run `manual-ops-security-release-auditor` before deployment/readiness phases or after server/secret/rollback changes.
+- Run `manual-plan-state-consistency-auditor` when status docs feel contradictory or before a major handoff.
+
+## Strategic Choice
+
+Record whether this project is using:
+
+- broad templates-v3 live docs,
+- reduced operating-system docs,
+- or a hybrid of broad templates-v3 plus external agent prompts.
+
+If using a hybrid, document which OS-model concepts are implemented by prompts rather than project-local docs.

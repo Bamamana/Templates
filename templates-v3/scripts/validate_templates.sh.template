@@ -1,0 +1,367 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Validate a project that applied templates-v3.
+# Usage: ./scripts/validate_templates.sh [project_root]
+
+project_root="${1:-.}"
+cd "$project_root"
+
+PLACEHOLDER_ALLOWLIST_FILE="scripts/placeholder_allowlist.txt"
+
+tier_requires_traceability=0
+
+fail() {
+  echo "[FAIL] $1"
+  exit 1
+}
+
+warn() {
+  echo "[WARN] $1"
+}
+
+pass() {
+  echo "[PASS] $1"
+}
+
+required_files=(
+  "AI_AGENT.md"
+  "docs/OPERATOR_PROFILE.md"
+  "docs/TEMPLATE_LIFECYCLE.md"
+  "docs/AI_MEMORY.md"
+  "docs/PROJECT_CANVAS.md"
+  "docs/TECH_STACK.md"
+  "docs/ENGINEERING_PLAYBOOK.md"
+  "docs/OPS_SECURITY_RELEASE.md"
+  "CHANGELOG.md"
+  "docs/TEMPLATE_INDEX.yaml"
+  ".github/workflows/ci.yml"
+  "scripts/check_template_drift.sh"
+)
+
+for file in "${required_files[@]}"; do
+  [[ -f "$file" ]] || fail "Missing required file: $file"
+done
+pass "Required files exist"
+
+tier_line=$(grep -E "Selected tier:" -n AI_AGENT.md || true)
+[[ -n "$tier_line" ]] || fail "Selected tier not set in AI_AGENT.md"
+
+if grep -Eq "Selected tier:.*(TIER_B|TIER_C|Tier B|Tier C|B_STANDARD|C_PRODUCTION)" AI_AGENT.md; then
+  tier_requires_traceability=1
+  [[ -f "docs/MASTER_TRACEABILITY_TABLE.md" ]] || fail "Tier B/C requires docs/MASTER_TRACEABILITY_TABLE.md"
+  pass "Tier B/C traceability file present"
+fi
+
+scan_paths=(
+  "AI_AGENT.md"
+  "docs/OPERATOR_PROFILE.md"
+  "docs/TEMPLATE_LIFECYCLE.md"
+  "docs/AI_MEMORY.md"
+  "docs/PROJECT_CANVAS.md"
+  "docs/TECH_STACK.md"
+  "docs/ENGINEERING_PLAYBOOK.md"
+  "docs/OPS_SECURITY_RELEASE.md"
+  "CHANGELOG.md"
+  "docs/TEMPLATE_INDEX.yaml"
+  ".github/workflows/ci.yml"
+)
+
+if [[ -f "AI_OPERATING_CONTRACT.md" ]]; then
+  scan_paths+=("AI_OPERATING_CONTRACT.md")
+fi
+
+if [[ -f "docs/MASTER_TRACEABILITY_TABLE.md" ]]; then
+  scan_paths+=("docs/MASTER_TRACEABILITY_TABLE.md")
+fi
+
+if [[ -f "docs/CONTEXT_ROUTING.md" ]]; then
+  scan_paths+=("docs/CONTEXT_ROUTING.md")
+fi
+
+if [[ -f "docs/SESSION_BRIEF.md" || -f "docs/CONTEXT_ROUTING.md" ]]; then
+  [[ -f "docs/SESSION_BRIEF.md" ]] || fail "Routed startup profile requires docs/SESSION_BRIEF.md"
+  [[ -f "docs/CONTEXT_ROUTING.md" ]] || fail "Routed startup profile requires docs/CONTEXT_ROUTING.md"
+  grep -q "## Event Triggers" "docs/CONTEXT_ROUTING.md" || fail "docs/CONTEXT_ROUTING.md must include an ## Event Triggers section"
+  if grep -Eq '^-[[:space:]]+(Phase|Milestone|Status):[[:space:]]+\(not set\)' "docs/SESSION_BRIEF.md"; then
+    fail "docs/SESSION_BRIEF.md has unset Phase/Milestone/Status; update the plan doc and run scripts/sync_session_brief.sh"
+  fi
+  if grep -Eq '^-[[:space:]]+(Next item|Next command|Last verified):[[:space:]]+\(not set\)' "docs/SESSION_BRIEF.md"; then
+    warn "docs/SESSION_BRIEF.md has unset next-action fields; confirm the plan format and sync script still agree"
+  fi
+  pass "Routed startup docs present"
+fi
+
+if [[ -f "docs/TEMPLATE_LIFECYCLE.md" ]]; then
+  grep -q "Adoption Capability Walkthrough" "docs/TEMPLATE_LIFECYCLE.md" || \
+    fail "docs/TEMPLATE_LIFECYCLE.md missing adoption walkthrough section; refresh from templates-v3"
+  grep -q "Validation gate inventory" "docs/TEMPLATE_LIFECYCLE.md" || \
+    fail "docs/TEMPLATE_LIFECYCLE.md missing validation gate inventory; refresh from templates-v3"
+fi
+
+placeholder_hits_file="$(mktemp)"
+placeholder_filtered_file="$(mktemp)"
+
+grep -nE '\\[[A-Z0-9_]+\\]' "${scan_paths[@]}" > "$placeholder_hits_file" 2>/dev/null || true
+
+python3 - "$placeholder_hits_file" "$PLACEHOLDER_ALLOWLIST_FILE" "$placeholder_filtered_file" <<'PY'
+import pathlib
+import re
+import sys
+
+hits_path = pathlib.Path(sys.argv[1])
+allowlist_path = pathlib.Path(sys.argv[2])
+filtered_path = pathlib.Path(sys.argv[3])
+
+allowed = set()
+if allowlist_path.exists():
+    for raw in allowlist_path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        token = line.strip()
+        if token.startswith("[") and token.endswith("]"):
+            token = token[1:-1]
+        allowed.add(token)
+
+token_re = re.compile(r"\[([A-Z0-9_]+)\]")
+out = []
+for raw in hits_path.read_text(encoding="utf-8").splitlines():
+    tokens = token_re.findall(raw)
+    unresolved = [t for t in tokens if t not in allowed]
+    if unresolved:
+        out.append(f"{raw} :: unresolved={','.join(sorted(set(unresolved)))}")
+
+filtered_path.write_text("\n".join(out), encoding="utf-8")
+PY
+
+if [[ -s "$placeholder_filtered_file" ]]; then
+  echo "[FAIL] Unresolved placeholders found:"
+  cat "$placeholder_filtered_file"
+  exit 1
+fi
+pass "No unresolved placeholders (after allowlist filtering)"
+
+if [[ -f "AI_OPERATING_CONTRACT.md" ]] && ! cmp -s "AI_OPERATING_CONTRACT.md" "AI_AGENT.md"; then
+  fail "AI_OPERATING_CONTRACT.md differs from AI_AGENT.md; alias must mirror canonical startup contract"
+fi
+pass "Canonical startup contract consistency valid"
+
+if ! grep -q "## \[Unreleased\]" CHANGELOG.md; then
+  fail "CHANGELOG.md missing [Unreleased] section"
+fi
+pass "Changelog structure looks valid"
+
+if [[ -f "docs/TEMPLATE_VERSION.md" ]]; then
+  stamped_version="$(grep -E '^template_version:' docs/TEMPLATE_VERSION.md | head -n1 | awk '{print $2}' | tr -d '[:space:]')"
+  indexed_version="$(grep -E '^version:' docs/TEMPLATE_INDEX.yaml | head -n1 | awk '{print $2}' | tr -d '[:space:]')"
+  if [[ -z "$stamped_version" || -z "$indexed_version" ]]; then
+    fail "Template version check failed: missing template_version or version value"
+  fi
+  if [[ "$stamped_version" != "$indexed_version" ]]; then
+    fail "Template version mismatch: docs/TEMPLATE_VERSION.md=$stamped_version docs/TEMPLATE_INDEX.yaml=$indexed_version"
+  fi
+  pass "Template version stamp matches TEMPLATE_INDEX"
+else
+  warn "docs/TEMPLATE_VERSION.md not found (run bootstrap to stamp applied template version)"
+fi
+
+pass "Tier selection present"
+
+if [[ -f "docs/MASTER_TRACEABILITY_TABLE.md" ]]; then
+  if grep -q "| Path ID |" "docs/MASTER_TRACEABILITY_TABLE.md" && grep -q "Smoke" "docs/MASTER_TRACEABILITY_TABLE.md"; then
+    pass "Traceability table includes pathway and smoke coverage columns"
+  else
+    fail "docs/MASTER_TRACEABILITY_TABLE.md must include Path ID rows and smoke coverage field(s)"
+  fi
+fi
+
+if [[ "$tier_requires_traceability" == "1" ]]; then
+  python3 - "docs/MASTER_TRACEABILITY_TABLE.md" <<'PY'
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+text = path.read_text(encoding="utf-8")
+lines = text.splitlines()
+
+def norm(value: str) -> str:
+  return re.sub(r"\s+", " ", value.strip().lower())
+
+header = None
+header_idx = {}
+data_rows = []
+
+for idx, line in enumerate(lines):
+  if not line.strip().startswith("|"):
+    continue
+  parts = [part.strip() for part in line.strip().strip("|").split("|")]
+  normalized = [norm(p) for p in parts]
+  if "path id" in normalized and any("smoke coverage" in v for v in normalized):
+    header = parts
+    for i, name in enumerate(normalized):
+      header_idx[name] = i
+    for follow in lines[idx + 1:]:
+      if not follow.strip().startswith("|"):
+        break
+      row_parts = [p.strip() for p in follow.strip().strip("|").split("|")]
+      if all(re.fullmatch(r"[-: ]+", p) for p in row_parts):
+        continue
+      if len(row_parts) < len(parts):
+        row_parts.extend([""] * (len(parts) - len(row_parts)))
+      data_rows.append(row_parts)
+    break
+
+if not header:
+  print("[FAIL] Traceability semantic check: master table with 'Path ID' and 'Smoke Coverage' columns not found")
+  sys.exit(1)
+
+path_col = None
+coverage_col = None
+command_col = None
+
+for key, idx in header_idx.items():
+  if key == "path id":
+    path_col = idx
+  if "smoke coverage" in key:
+    coverage_col = idx
+  if "smoke command / runbook" in key or "smoke command/runbook" in key:
+    command_col = idx
+
+if path_col is None or coverage_col is None or command_col is None:
+  print("[FAIL] Traceability semantic check: required columns Path ID / Smoke Coverage / Smoke Command-Runbook missing")
+  sys.exit(1)
+
+if not data_rows:
+  print("[FAIL] Traceability semantic check: no data rows present in master traceability table")
+  sys.exit(1)
+
+allowed_coverage = {"automated", "manual", "n/a", "n-a", "na"}
+errors = []
+path_row_count = 0
+
+for row in data_rows:
+  path_id = row[path_col].strip()
+  if not path_id:
+    continue
+  if path_id.lower() == "path id":
+    continue
+
+  path_row_count += 1
+
+  coverage = row[coverage_col].strip().strip("`").lower()
+  smoke_ref = row[command_col].strip().strip("`")
+  smoke_ref_lower = smoke_ref.lower()
+
+  if coverage not in allowed_coverage:
+    errors.append(f"{path_id}: invalid smoke coverage '{row[coverage_col].strip()}'")
+
+  if not smoke_ref:
+    errors.append(f"{path_id}: missing Smoke Command / Runbook")
+  if "pending" in coverage or "pending" in smoke_ref_lower:
+    errors.append(f"{path_id}: coverage cannot be pending in Tier B/C")
+  if coverage in {"n/a", "n-a", "na"} and not any(marker in smoke_ref_lower for marker in ["because", "rationale", "not applicable", "covered by", "manual runbook", "baseline"]):
+    errors.append(f"{path_id}: N/A coverage needs a rationale in Smoke Command / Runbook")
+  if coverage == "manual" and not any(marker in smoke_ref_lower for marker in ["docs/", "step", "runbook", "manual:", "local:", "live:"]):
+    errors.append(f"{path_id}: Manual coverage must point to a concrete runbook or steps")
+  if "[" in smoke_ref and "]" in smoke_ref:
+    errors.append(f"{path_id}: Smoke Command / Runbook still has placeholder '{smoke_ref}'")
+
+  doc_refs = re.findall(r"docs/[A-Za-z0-9_./#-]+", smoke_ref)
+  for ref in doc_refs:
+    doc_path = pathlib.Path(ref.split("#", 1)[0])
+    if not doc_path.exists():
+      errors.append(f"{path_id}: referenced runbook/doc does not exist: {doc_path}")
+
+if path_row_count == 0:
+  errors.append("no non-empty Path ID rows found")
+
+if errors:
+  print("[FAIL] Traceability semantic check failed:")
+  for err in errors:
+    print(f" - {err}")
+  sys.exit(1)
+
+print(f"[PASS] Traceability semantic check passed ({path_row_count} Path ID rows)")
+PY
+fi
+
+if [[ "$tier_requires_traceability" == "1" ]]; then
+  python3 - "docs/MASTER_TRACEABILITY_TABLE.md" <<'PY'
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+lines = path.read_text(encoding="utf-8").splitlines()
+
+inside = False
+header = None
+location_col = None
+errors = []
+row_count = 0
+
+for line in lines:
+  if line.strip().lower().startswith("## state mutation index"):
+    inside = True
+    continue
+  if inside and line.strip().startswith("## "):
+    break
+  if not inside or not line.strip().startswith("|"):
+    continue
+
+  parts = [part.strip() for part in line.strip().strip("|").split("|")]
+  normalized = [re.sub(r"\s+", " ", part.lower()) for part in parts]
+  if "location" in normalized and "function" in normalized:
+    header = normalized
+    location_col = normalized.index("location")
+    continue
+  if header is None:
+    continue
+  if all(re.fullmatch(r"[-: ]+", part) for part in parts):
+    continue
+  if location_col is None or location_col >= len(parts):
+    continue
+
+  raw_location = parts[location_col].strip().strip("`")
+  if not raw_location or raw_location.lower() in {"location", "n/a", "na", "none"}:
+    continue
+  if "[" in raw_location and "]" in raw_location:
+    continue
+
+  row_count += 1
+  location = raw_location.split("#", 1)[0].strip()
+  if location.endswith("/...") or location.endswith("/*"):
+    location = location[:-4]
+  if not pathlib.Path(location).exists():
+    errors.append(f"State Mutation Index location does not exist: {raw_location}")
+
+if header is None:
+  errors.append("State Mutation Index table missing Location/Function columns")
+
+if errors:
+  print("[FAIL] State Mutation Index semantic check failed:")
+  for error in errors:
+    print(f" - {error}")
+  sys.exit(1)
+
+print(f"[PASS] State Mutation Index semantic check passed ({row_count} checked rows)")
+PY
+fi
+
+if [[ -f "docs/ORCHESTRATION_MAP.md" ]]; then
+  if [[ -f "scripts/orchestrator_state.py" ]]; then
+    python3 scripts/orchestrator_state.py validate
+  else
+    fail "Orchestrator project missing scripts/orchestrator_state.py"
+  fi
+fi
+
+if command -v bash >/dev/null 2>&1; then
+  pass "Shell runtime available"
+else
+  fail "Shell runtime not available"
+fi
+
+echo "Validation complete. Run your project verify command next."

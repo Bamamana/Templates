@@ -1,0 +1,203 @@
+version: v3.0
+purpose: Machine-readable navigation and applicability map for templates-v3
+canonical_startup: AI_AGENT.md
+design: Thin core plus load profiles. Shared rules live in one place; profiles add deltas only.
+read_order:
+  - AI_AGENT.md
+  - docs/OPERATOR_PROFILE.md
+  - docs/PROJECT_CANVAS.md
+  - docs/SESSION_BRIEF.md (routed profiles only)
+  - docs/CONTEXT_ROUTING.md (routed profiles only)
+  - docs/ENGINEERING_PLAYBOOK.md (on trigger)
+  - docs/OPS_SECURITY_RELEASE.md (on trigger)
+  - docs/MASTER_TRACEABILITY_TABLE.md (Tier B/C)
+  - docs/TECH_STACK.md (on trigger)
+  - docs/AI_MEMORY.md
+  - CHANGELOG.md
+
+core_templates:
+  - template: AI_AGENT.md.template
+    destination: AI_AGENT.md
+    purpose: Canonical AI startup contract; points to single sources of truth
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: OPERATOR_PROFILE.md.template
+    destination: docs/OPERATOR_PROFILE.md
+    purpose: Who the operator is and how to work with them; drift control
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: AI_MEMORY.md.template
+    destination: docs/AI_MEMORY.md
+    purpose: Durable user preferences and lessons learned
+    required_by_tier: [A, B, C]
+    read_when: Always at session start
+    skip_when: Never
+
+  - template: PROJECT_CANVAS.md.template
+    destination: docs/PROJECT_CANVAS.md
+    purpose: Current phase, status, scope, next action, architecture/risk snapshot
+    required_by_tier: [A, B, C]
+    read_when: Establishing current state and next work item
+    skip_when: Never
+
+  - template: TECH_STACK.md.template
+    destination: docs/TECH_STACK.md
+    purpose: Durable architecture, technology choices, and dependency decisions
+    required_by_tier: [A, B, C]
+    read_when: Architectural decisions, new dependencies, onboarding
+    skip_when: Routine feature work touching no architecture
+
+  - template: ENGINEERING_PLAYBOOK.md.template
+    destination: docs/ENGINEERING_PLAYBOOK.md
+    purpose: Single source for commands, test policy, workflow matrix, smoke catalog, review, DoD, and size rules
+    required_by_tier: [A, B, C]
+    read_when: Implementing, testing, validating, or troubleshooting
+    skip_when: Never
+
+  - template: OPS_SECURITY_RELEASE.md.template
+    destination: docs/OPS_SECURITY_RELEASE.md
+    purpose: Tiered ops, security, release, observability, and risk controls
+    required_by_tier: [A, B, C]
+    read_when: Deploying, hardening, incident handling, release/risk review
+    skip_when: Tier A with no deploy surface (mark N/A with rationale)
+
+  - template: MASTER_TRACEABILITY_TABLE.md.template
+    destination: docs/MASTER_TRACEABILITY_TABLE.md
+    purpose: Canonical pathway/entrypoint traceability with per-path smoke/contract coverage
+    required_by_tier: [B, C]
+    read_when: Planning refactors, changing entrypoints, validating parity
+    skip_when: Tier A projects with no multi-path runtime (mark N/A with rationale)
+
+  - template: CHANGELOG.md.template
+    destination: CHANGELOG.md
+    purpose: Release history and verification evidence
+    required_by_tier: [A, B, C]
+    read_when: Planning or documenting behavior changes
+    skip_when: Never
+
+  - template: TEMPLATE_LIFECYCLE.md.template
+    destination: docs/TEMPLATE_LIFECYCLE.md
+    purpose: Consolidated quickstart, profiles, apply order, adoption, placeholders, validation, upgrade, version management
+    required_by_tier: [A, B, C]
+    read_when: Installing, adopting, migrating, resolving placeholders, validating, upgrading
+    skip_when: Routine feature work after adoption is green and profile current
+
+  - template: TEMPLATE_INDEX.yaml.template
+    destination: docs/TEMPLATE_INDEX.yaml
+    purpose: Machine-readable navigation and applicability map
+    required_by_tier: [A, B, C]
+    read_when: Tooling, audits, and drift checks
+    skip_when: Never
+
+  - template: .github/workflows/ci.yml.template
+    destination: .github/workflows/ci.yml
+    purpose: Baseline CI quality and security checks
+    required_by_tier: [A, B, C]
+    read_when: Setting CI baseline or troubleshooting CI failures
+    skip_when: Never
+
+profiles:
+  - profile: lean
+    path: profiles/lean/
+    apply_flag: --lean
+    overlays:
+      - profiles/lean/AI_AGENT.md.template -> AI_AGENT.md (replaces core)
+      - profiles/lean/SESSION_BRIEF.md.template -> docs/SESSION_BRIEF.md
+      - profiles/lean/CONTEXT_ROUTING.md.template -> docs/CONTEXT_ROUTING.md
+    adds:
+      - scripts/validate_context_budget.sh
+      - scripts/report_context_size.sh
+      - scripts/sync_session_brief.sh
+    use_when: Keep all core docs/scripts but start every session from 3 small files
+
+  - profile: orchestrator
+    path: profiles/orchestrator/
+    apply_flag: --orchestrator
+    overlays:
+      - profiles/orchestrator/AI_AGENT.md.template -> AI_AGENT.md (replaces core)
+      - profiles/lean/SESSION_BRIEF.md.template -> docs/SESSION_BRIEF.md (shared)
+      - profiles/orchestrator/CONTEXT_ROUTING.md.template -> docs/CONTEXT_ROUTING.md
+    adds:
+      - docs/ORCHESTRATION_MAP.md
+      - docs/SCENARIO_PLAYBOOK.md
+      - docs/WORKER_TASK_PACKET.md
+      - docs/WORKER_RESULT_PACKET.md
+      - docs/POST_CODING_CHECKS.md
+      - docs/INVESTIGATOR_PROTOCOL.md
+      - docs/STATE_LEDGER_PROTOCOL.md
+      - docs/LOCAL_WORKER_HEALTH.md
+      - docs/TEST_BLOAT_SWEEP.md
+      - docs/OPERATOR_DASHBOARD.md
+      - docs/CLOSING_CHECKLIST.md
+      - docs/FEATURE_SPEC_TEMPLATE.md
+      - docs/state/packet_ledger.json
+      - docs/state/session_budget.json
+      - scripts/orchestrator_state.py
+    use_when: Cloud orchestrator + local worker + investigator packet flow
+    requires: lean startup overlay plus packet ledgers and review gates
+
+optional_addons:
+  - template: addons/README.md.template
+    destination: README.md
+  - template: addons/.gitignore.template
+    destination: .gitignore
+  - template: addons/CONTRIBUTING.md.template
+    destination: CONTRIBUTING.md
+  - template: addons/LICENSE.template
+    destination: LICENSE
+  - template: addons/.github/PULL_REQUEST_TEMPLATE.md.template
+    destination: .github/PULL_REQUEST_TEMPLATE.md
+  - template: addons/.github/ISSUE_TEMPLATE/bug_report.md.template
+    destination: .github/ISSUE_TEMPLATE/bug_report.md
+  - template: addons/.github/ISSUE_TEMPLATE/feature_request.md.template
+    destination: .github/ISSUE_TEMPLATE/feature_request.md
+  - template: addons/.github/ISSUE_TEMPLATE/config.yml.template
+    destination: .github/ISSUE_TEMPLATE/config.yml
+  - template: addons/.github/workflows/ci.predeploy.yml.template
+    destination: .github/workflows/ci.yml (predeploy-gated variant)
+  - template: addons/docker-compose.local.yml.template
+    destination: docker-compose.local.yml
+  - template: addons/MULTI_APP_SERVER_BLUEPRINT.md.template
+    destination: docs/MULTI_APP_SERVER_BLUEPRINT.md
+  - template: addons/FIRST_SESSION_PROMPT.txt.template
+    destination: docs/FIRST_SESSION_PROMPT.txt
+  - template: addons/ADR_TEMPLATE.md.template
+    destination: docs/ADR_TEMPLATE.md
+  - template: addons/ADVANCED_VERIFICATION_PLAYBOOK.md.template
+    destination: docs/ADVANCED_VERIFICATION_PLAYBOOK.md
+  - template: addons/AI_OPERATING_CONTRACT.md (generated)
+    destination: AI_OPERATING_CONTRACT.md (legacy compatibility alias; bootstrap mirrors AI_AGENT.md exactly)
+  - template: addons/GAME_PLAN.md.template
+    destination: docs/GAME_PLAN.md (optional plan doc used by routed profiles)
+  - template: addons/TEMPLATE_COVERAGE_MATRIX.md.template
+    destination: docs/TEMPLATE_COVERAGE_MATRIX.md (governance/audit mapping)
+  - template: addons/MANUAL_AUDIT_INSTRUCTIONS.md.template
+    destination: docs/MANUAL_AUDIT_INSTRUCTIONS.md (manual auditor batch order)
+
+verification_hardening:
+  applied_by: --profile 2 (default) and --profile 3
+  assets:
+    - addons/ADVANCED_VERIFICATION_PLAYBOOK.md.template
+    - scripts/predeploy_full_suite.sh.template
+    - scripts/parity_pathways_report.py.template
+    - scripts/parity-retired-pathways.json.template
+    - scripts/refactor_smoke_contract.py.template
+    - scripts/enforce_doc_updates.sh.template
+    - scripts/smoke_masterapi_refactor.sh.template
+    - scripts/smoke_enginepath_refactor.sh.template
+    - scripts/run_fixture_suite.sh.template
+    - scripts/refresh_snapshot_baseline.sh.template
+    - scripts/refactor-contracts/masterapi-slice1.json.template
+    - scripts/refactor-contracts/enginepath-slice1.json.template
+
+validation_order:
+  - Apply files using TEMPLATE_LIFECYCLE §3 (or bootstrap)
+  - Complete TEMPLATE_LIFECYCLE §4 adoption and §6 validation
+  - Ensure each active Path ID has smoke/contract coverage (Automated/Manual/N-A)
+  - Run scripts/validate_templates.sh .
+  - Run scripts/check_template_drift.sh . /path/to/templates-v3
+  - Run the project verify command

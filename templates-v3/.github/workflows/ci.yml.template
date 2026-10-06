@@ -1,0 +1,140 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  template-selftest:
+    if: ${{ hashFiles('templates-v3/scripts/bootstrap_agent_ready.sh.template') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bootstrap fixture project
+        run: |
+          set -euo pipefail
+          OUT_DIR="/tmp/templates-v3-fixture"
+          rm -rf "$OUT_DIR"
+          bash templates-v3/scripts/bootstrap_agent_ready.sh.template \
+            --target "$OUT_DIR" \
+            --template-root templates-v3 \
+            --project-name "Template Fixture" \
+            --tier TIER_B_STANDARD \
+            --profile 2 \
+            --ci 1 \
+            --overwrite overwrite \
+            --strict
+
+      - name: Verify expected fixture outputs
+        run: |
+          set -euo pipefail
+          OUT_DIR="/tmp/templates-v3-fixture"
+          EXPECTED="templates-v3/tests-fixture/expected_files_tier_b_profile2.txt"
+          while IFS= read -r rel; do
+            [[ -z "$rel" ]] && continue
+            [[ "$rel" =~ ^# ]] && continue
+            [[ -f "$OUT_DIR/$rel" ]] || { echo "[ci][FAIL] Missing fixture output: $rel"; exit 1; }
+          done < "$EXPECTED"
+
+      - name: Bootstrap orchestrator fixture project
+        run: |
+          set -euo pipefail
+          OUT_DIR="/tmp/templates-v3-orchestrator-fixture"
+          rm -rf "$OUT_DIR"
+          bash templates-v3/scripts/bootstrap_agent_ready.sh.template \
+            --target "$OUT_DIR" \
+            --template-root templates-v3 \
+            --project-name "Orchestrator Fixture" \
+            --tier TIER_B_STANDARD \
+            --profile 2 \
+            --ci 1 \
+            --overwrite overwrite \
+            --orchestrator \
+            --strict
+
+      - name: Verify orchestrator fixture outputs
+        run: |
+          set -euo pipefail
+          OUT_DIR="/tmp/templates-v3-orchestrator-fixture"
+          EXPECTED="templates-v3/tests-fixture/expected_files_orchestrator_tier_b.txt"
+          while IFS= read -r rel; do
+            [[ -z "$rel" ]] && continue
+            [[ "$rel" =~ ^# ]] && continue
+            [[ -f "$OUT_DIR/$rel" ]] || { echo "[ci][FAIL] Missing orchestrator fixture output: $rel"; exit 1; }
+          done < "$EXPECTED"
+          cd "$OUT_DIR"
+          python3 scripts/orchestrator_state.py issue --packet-id P-2026-05-01-01 --path-ids CLI-VERIFY-01 --notes "ci lifecycle smoke"
+          python3 scripts/orchestrator_state.py record-result --packet-id P-2026-05-01-01 --status DONE
+          python3 scripts/orchestrator_state.py review --packet-id P-2026-05-01-01 --outcome ACCEPT
+          python3 scripts/orchestrator_state.py validate
+          bash scripts/validate_templates.sh .
+
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Toolchain
+        run: |
+          [CI_SETUP_COMMANDS]
+
+      - name: Install dependencies
+        run: |
+          [CI_INSTALL_COMMAND]
+
+      - name: Lint
+        run: |
+          [LINT_COMMAND]
+
+      - name: Format check
+        run: |
+          [FORMAT_CHECK_COMMAND]
+
+      - name: Type check
+        run: |
+          [TYPECHECK_COMMAND]
+
+      - name: Smoke tests
+        run: |
+          [SMOKE_COMMAND]
+
+      - name: Targeted tests
+        run: |
+          [TARGETED_TEST_COMMAND]
+
+      - name: Verify gate
+        run: |
+          [VERIFY_COMMAND]
+
+      - name: Template validation
+        if: ${{ hashFiles('scripts/validate_templates.sh') != '' }}
+        run: bash scripts/validate_templates.sh .
+
+      - name: Context budget
+        if: ${{ hashFiles('scripts/validate_context_budget.sh') != '' }}
+        run: bash scripts/validate_context_budget.sh
+
+      - name: Template drift
+        if: ${{ hashFiles('scripts/check_template_drift.sh') != '' && hashFiles('templates-v3/TEMPLATE_INDEX.yaml.template') != '' }}
+        run: bash scripts/check_template_drift.sh . templates-v3
+
+      - name: Documentation update enforcement
+        if: ${{ hashFiles('scripts/enforce_doc_updates.sh') != '' }}
+        run: bash scripts/enforce_doc_updates.sh --against origin/main
+
+  security:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Security scan baseline
+        run: |
+          [SECRET_SCAN_COMMAND]
+          [SCA_COMMAND]
+          [SAST_COMMAND]

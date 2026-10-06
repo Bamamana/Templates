@@ -1,0 +1,14 @@
+## Summary
+- What changed:
+- Why:
+
+## Verification
+- Commands run:
+- Results:
+
+## Checklist
+- [ ] Tests added/updated for behavior changes
+- [ ] Verify gate passed
+- [ ] Docs updated in same change
+- [ ] Changelog updated
+- [ ] Risks and rollback notes included (if applicable)
