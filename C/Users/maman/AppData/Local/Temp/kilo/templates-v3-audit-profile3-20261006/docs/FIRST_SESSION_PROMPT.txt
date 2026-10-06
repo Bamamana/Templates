@@ -1,0 +1,9 @@
+Read `AI_AGENT.md` first and follow it strictly.
+
+If confidence is below 90%, ask clarifying questions before coding.
+Then execute the next unchecked item from the implementation checklist.
+
+Handoff format:
+- Files changed
+- Commands/tests run with results
+- Open risks or follow-up refactors

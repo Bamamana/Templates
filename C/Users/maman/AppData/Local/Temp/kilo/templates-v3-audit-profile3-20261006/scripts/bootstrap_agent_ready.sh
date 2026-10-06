@@ -1,0 +1,804 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEMPLATE_ROOT_DEFAULT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+TARGET_DIR=""
+TEMPLATE_ROOT="$TEMPLATE_ROOT_DEFAULT"
+PROFILE="2"
+CI_OPTION="1"
+OVERWRITE="skip"
+STRICT_MODE=0
+INTERACTIVE_MODE=0
+TIER_PROFILE="auto"
+LEAN_MODE=0
+ORCHESTRATOR_MODE=0
+
+PROJECT_NAME=""
+TIER="TIER_B_STANDARD"
+VERIFY_COMMAND="bash scripts/verify.sh"
+AI_CONTEXT_COMMAND="python3 scripts/update_ai_map.py"
+SMOKE_COMMAND="bash scripts/test_smoke.sh"
+TARGETED_TEST_COMMAND="bash scripts/test_targeted.sh"
+TRACEABILITY_SMOKE_COMMAND="bash scripts/predeploy_full_suite.sh"
+PLACEHOLDER_ALLOWLIST_FILE="scripts/placeholder_allowlist.txt"
+USER_SET_VERIFY_COMMAND=0
+USER_SET_CI_OPTION=0
+
+usage() {
+  cat <<EOF
+Usage:
+  bash scripts/bootstrap_agent_ready.sh \
+    --target /path/to/project \
+    [--template-root /path/to/templates-v3] \
+    [--profile 1|2|3] \
+    [--ci 1|2|3|4] \
+    [--tier-profile auto|A|B|C] \
+    [--overwrite skip|overwrite] \
+    [--strict] \
+    [--interactive] \
+    [--lean] \
+    [--orchestrator] \
+    [--project-name "My Project"] \
+    [--tier TIER_A_STATIC|TIER_B_STANDARD|TIER_C_PRODUCTION_CRITICAL] \
+    [--verify-command "bash scripts/verify.sh"] \
+    [--ai-context-command "python3 scripts/update_ai_map.py"] \
+    [--smoke-command "bash scripts/test_smoke.sh"] \
+    [--targeted-test-command "bash scripts/test_targeted.sh"] \
+    [--traceability-smoke-command "bash scripts/predeploy_full_suite.sh"]
+
+Description:
+  One-command bootstrap for templates-v3:
+  1) apply templates,
+  2) auto-fill common placeholders,
+  3) run template validator,
+  4) write docs/TEMPLATE_READINESS_REPORT.md.
+
+Notes:
+  - If --target is omitted, interactive mode is used.
+  - CI options select setup command presets inside one canonical ci.yml template.
+  - --orchestrator applies the reusable cloud-orchestrator/local-worker variant.
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --target)
+      TARGET_DIR="$2"
+      shift 2
+      ;;
+    --template-root)
+      TEMPLATE_ROOT="$2"
+      shift 2
+      ;;
+    --profile)
+      PROFILE="$2"
+      shift 2
+      ;;
+    --ci)
+      CI_OPTION="$2"
+      USER_SET_CI_OPTION=1
+      shift 2
+      ;;
+    --tier-profile)
+      TIER_PROFILE="$2"
+      shift 2
+      ;;
+    --lean)
+      LEAN_MODE=1
+      shift
+      ;;
+    --orchestrator)
+      ORCHESTRATOR_MODE=1
+      shift
+      ;;
+    --overwrite)
+      OVERWRITE="$2"
+      shift 2
+      ;;
+    --strict)
+      STRICT_MODE=1
+      shift
+      ;;
+    --interactive)
+      INTERACTIVE_MODE=1
+      shift
+      ;;
+    --project-name)
+      PROJECT_NAME="$2"
+      shift 2
+      ;;
+    --tier)
+      TIER="$2"
+      shift 2
+      ;;
+    --verify-command)
+      VERIFY_COMMAND="$2"
+      USER_SET_VERIFY_COMMAND=1
+      shift 2
+      ;;
+    --ai-context-command)
+      AI_CONTEXT_COMMAND="$2"
+      shift 2
+      ;;
+    --smoke-command)
+      SMOKE_COMMAND="$2"
+      shift 2
+      ;;
+    --targeted-test-command)
+      TARGETED_TEST_COMMAND="$2"
+      shift 2
+      ;;
+    --traceability-smoke-command)
+      TRACEABILITY_SMOKE_COMMAND="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "[bootstrap][FAIL] Unknown argument: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [[ -z "$TARGET_DIR" ]]; then
+  INTERACTIVE_MODE=1
+fi
+
+if [[ "$INTERACTIVE_MODE" == "1" ]]; then
+  if [[ -z "$TARGET_DIR" ]]; then
+    read -r -p "Target project directory (default: current directory): " TARGET_DIR
+    TARGET_DIR="${TARGET_DIR:-$PWD}"
+  fi
+
+  echo
+  echo "Choose apply profile:"
+  echo "  1) Core only"
+  echo "  2) Core + verification hardening (recommended)"
+  echo "  3) Core + all optional add-ons"
+  read -r -p "Profile [1/2/3] (default $PROFILE): " PROFILE_INPUT
+  PROFILE="${PROFILE_INPUT:-$PROFILE}"
+
+  echo
+  echo "CI setup profile:"
+  echo "  1) Generic baseline"
+  echo "  2) Python preset"
+  echo "  3) Node preset"
+  echo "  4) Predeploy-focused preset"
+  read -r -p "CI option [1/2/3/4] (default $CI_OPTION): " CI_INPUT
+  CI_OPTION="${CI_INPUT:-$CI_OPTION}"
+
+  echo
+  echo "Overwrite policy:"
+  echo "  1) Skip existing files"
+  echo "  2) Overwrite all"
+  read -r -p "Policy [1/2] (default 1): " OVERWRITE_INPUT
+  if [[ "$OVERWRITE_INPUT" == "2" ]]; then
+    OVERWRITE="overwrite"
+  else
+    OVERWRITE="skip"
+  fi
+fi
+
+mkdir -p "$TARGET_DIR"
+TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
+TEMPLATE_ROOT="$(cd "$TEMPLATE_ROOT" && pwd)"
+
+resolve_tier_profile() {
+  if [[ "$TIER_PROFILE" != "auto" ]]; then
+    echo "$TIER_PROFILE"
+    return
+  fi
+
+  case "$TIER" in
+    *TIER_A*|*Tier\ A*|*A_STATIC*)
+      echo "A"
+      ;;
+    *TIER_C*|*Tier\ C*|*C_PRODUCTION*)
+      echo "C"
+      ;;
+    *)
+      echo "B"
+      ;;
+  esac
+}
+
+TIER_PROFILE_RESOLVED="$(resolve_tier_profile)"
+
+if [[ ! "$TIER_PROFILE_RESOLVED" =~ ^(A|B|C)$ ]]; then
+  echo "[bootstrap][FAIL] Invalid tier profile resolved: $TIER_PROFILE_RESOLVED"
+  exit 1
+fi
+
+if [[ ! -f "$TEMPLATE_ROOT/AI_AGENT.md.template" ]]; then
+  echo "[bootstrap][FAIL] Invalid template root: $TEMPLATE_ROOT"
+  echo "[bootstrap][HINT] Expected file missing: AI_AGENT.md.template"
+  exit 1
+fi
+
+TEMPLATE_VERSION="unknown"
+if [[ -f "$TEMPLATE_ROOT/TEMPLATE_INDEX.yaml.template" ]]; then
+  TEMPLATE_VERSION="$(grep -E '^version:' "$TEMPLATE_ROOT/TEMPLATE_INDEX.yaml.template" | head -n1 | awk '{print $2}' | tr -d '[:space:]')"
+fi
+if [[ -z "$TEMPLATE_VERSION" ]]; then
+  TEMPLATE_VERSION="unknown"
+fi
+
+if [[ -z "$PROJECT_NAME" ]]; then
+  PROJECT_NAME="$(basename "$TARGET_DIR")"
+fi
+
+SKIP_EXISTING=1
+if [[ "$OVERWRITE" == "overwrite" ]]; then
+  SKIP_EXISTING=0
+fi
+
+COPIED_COUNT=0
+
+copy_template() {
+  local src_rel="$1"
+  local dst_rel="$2"
+  local src="$TEMPLATE_ROOT/$src_rel"
+  local dst="$TARGET_DIR/$dst_rel"
+
+  if [[ ! -f "$src" ]]; then
+    echo "[bootstrap][WARN] Missing template source: $src_rel"
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$dst")"
+
+  if [[ -f "$dst" && "$SKIP_EXISTING" == "1" ]]; then
+    echo "[bootstrap][skip] $dst_rel (exists)"
+    return 0
+  fi
+
+  cp "$src" "$dst"
+  COPIED_COUNT=$((COPIED_COUNT + 1))
+  echo "[bootstrap][copy] $src_rel -> $dst_rel"
+}
+
+apply_core() {
+  copy_template "AI_AGENT.md.template" "AI_AGENT.md"
+  copy_template "OPERATOR_PROFILE.md.template" "docs/OPERATOR_PROFILE.md"
+  copy_template "AI_MEMORY.md.template" "docs/AI_MEMORY.md"
+  copy_template "MASTER_TRACEABILITY_TABLE.md.template" "docs/MASTER_TRACEABILITY_TABLE.md"
+  copy_template "PROJECT_CANVAS.md.template" "docs/PROJECT_CANVAS.md"
+  copy_template "TECH_STACK.md.template" "docs/TECH_STACK.md"
+  copy_template "ENGINEERING_PLAYBOOK.md.template" "docs/ENGINEERING_PLAYBOOK.md"
+  copy_template "OPS_SECURITY_RELEASE.md.template" "docs/OPS_SECURITY_RELEASE.md"
+  copy_template "CHANGELOG.md.template" "CHANGELOG.md"
+  copy_template "TEMPLATE_LIFECYCLE.md.template" "docs/TEMPLATE_LIFECYCLE.md"
+  copy_template "TEMPLATE_INDEX.yaml.template" "docs/TEMPLATE_INDEX.yaml"
+  copy_template ".github/workflows/ci.yml.template" ".github/workflows/ci.yml"
+  copy_template "scripts/validate_templates.sh.template" "scripts/validate_templates.sh"
+  copy_template "scripts/bootstrap_agent_ready.sh.template" "scripts/bootstrap_agent_ready.sh"
+  copy_template "scripts/check_template_drift.sh.template" "scripts/check_template_drift.sh"
+  copy_template "scripts/sync_templates_source.sh.template" "scripts/sync_templates_source.sh"
+  copy_template "scripts/placeholder_allowlist.txt.template" "scripts/placeholder_allowlist.txt"
+}
+
+apply_lean_overlay() {
+  # Lean profile: replace AI_AGENT.md with the slim variant and add
+  # SESSION_BRIEF.md and CONTEXT_ROUTING.md. Also ship the context-budget
+  # validator so the always-on layer stays small.
+  local prev_skip="$SKIP_EXISTING"
+  SKIP_EXISTING=0
+  copy_template "profiles/lean/AI_AGENT.md.template" "AI_AGENT.md"
+  copy_template "profiles/lean/SESSION_BRIEF.md.template" "docs/SESSION_BRIEF.md"
+  copy_template "profiles/lean/CONTEXT_ROUTING.md.template" "docs/CONTEXT_ROUTING.md"
+  SKIP_EXISTING="$prev_skip"
+  copy_template "scripts/validate_context_budget.sh.template" "scripts/validate_context_budget.sh"
+  copy_template "scripts/report_context_size.sh.template" "scripts/report_context_size.sh"
+  copy_template "scripts/sync_session_brief.sh.template" "scripts/sync_session_brief.sh"
+  # Plan doc: create GAME_PLAN.md unless it already exists. PROJECT_CANVAS.md
+  # is left untouched (it serves a different governance purpose). The sync
+  # script prefers GAME_PLAN.md when both exist.
+  if [[ ! -f "$TARGET_DIR/docs/GAME_PLAN.md" ]]; then
+    copy_template "addons/GAME_PLAN.md.template" "docs/GAME_PLAN.md"
+  fi
+  # Auto-sync SESSION_BRIEF.md from whichever plan doc exists.
+  if [[ -f "$TARGET_DIR/scripts/sync_session_brief.sh" ]]; then
+    chmod +x "$TARGET_DIR/scripts/sync_session_brief.sh" || true
+    ( cd "$TARGET_DIR" && bash scripts/sync_session_brief.sh ) || \
+      echo "[bootstrap][warn] initial session brief sync skipped"
+  fi
+}
+
+apply_orchestrator_overlay() {
+  # Orchestrator profile: lean startup plus the reusable cloud-orchestrator /
+  # local-worker contract deltas. It deliberately does NOT re-ship canonical
+  # docs (PROJECT_CANVAS, ENGINEERING_PLAYBOOK, MASTER_TRACEABILITY_TABLE, ...);
+  # those come from core and stay single-source.
+  local prev_skip="$SKIP_EXISTING"
+  SKIP_EXISTING=0
+  copy_template "profiles/orchestrator/AI_AGENT.md.template" "AI_AGENT.md"
+  copy_template "profiles/lean/SESSION_BRIEF.md.template" "docs/SESSION_BRIEF.md"
+  copy_template "profiles/orchestrator/CONTEXT_ROUTING.md.template" "docs/CONTEXT_ROUTING.md"
+  copy_template "profiles/orchestrator/SCENARIO_PLAYBOOK.md.template" "docs/SCENARIO_PLAYBOOK.md"
+  copy_template "profiles/orchestrator/CLOSING_CHECKLIST.md.template" "docs/CLOSING_CHECKLIST.md"
+  copy_template "profiles/orchestrator/ORCHESTRATION_MAP.md.template" "docs/ORCHESTRATION_MAP.md"
+  copy_template "profiles/orchestrator/WORKER_TASK_PACKET.md.template" "docs/WORKER_TASK_PACKET.md"
+  copy_template "profiles/orchestrator/WORKER_RESULT_PACKET.md.template" "docs/WORKER_RESULT_PACKET.md"
+  copy_template "profiles/orchestrator/POST_CODING_CHECKS.md.template" "docs/POST_CODING_CHECKS.md"
+  copy_template "profiles/orchestrator/INVESTIGATOR_PROTOCOL.md.template" "docs/INVESTIGATOR_PROTOCOL.md"
+  copy_template "profiles/orchestrator/STATE_LEDGER_PROTOCOL.md.template" "docs/STATE_LEDGER_PROTOCOL.md"
+  copy_template "profiles/orchestrator/LOCAL_WORKER_HEALTH.md.template" "docs/LOCAL_WORKER_HEALTH.md"
+  copy_template "profiles/orchestrator/TEST_BLOAT_SWEEP.md.template" "docs/TEST_BLOAT_SWEEP.md"
+  copy_template "profiles/orchestrator/OPERATOR_DASHBOARD.md.template" "docs/OPERATOR_DASHBOARD.md"
+  copy_template "profiles/orchestrator/FEATURE_SPEC_TEMPLATE.md.template" "docs/FEATURE_SPEC_TEMPLATE.md"
+  copy_template "profiles/orchestrator/packet_ledger.json.template" "docs/state/packet_ledger.json"
+  copy_template "profiles/orchestrator/session_budget.json.template" "docs/state/session_budget.json"
+  if [[ ! -f "$TARGET_DIR/docs/GAME_PLAN.md" ]]; then
+    copy_template "addons/GAME_PLAN.md.template" "docs/GAME_PLAN.md"
+  fi
+  SKIP_EXISTING="$prev_skip"
+  copy_template "scripts/orchestrator_state.py.template" "scripts/orchestrator_state.py"
+  copy_template "scripts/validate_context_budget.sh.template" "scripts/validate_context_budget.sh"
+  copy_template "scripts/report_context_size.sh.template" "scripts/report_context_size.sh"
+  copy_template "scripts/sync_session_brief.sh.template" "scripts/sync_session_brief.sh"
+  if [[ -f "$TARGET_DIR/scripts/sync_session_brief.sh" ]]; then
+    chmod +x "$TARGET_DIR/scripts/sync_session_brief.sh" || true
+    ( cd "$TARGET_DIR" && bash scripts/sync_session_brief.sh ) || \
+      echo "[bootstrap][warn] initial session brief sync skipped"
+  fi
+}
+
+apply_ci_variant() { :; }
+
+apply_verification_hardening() {
+  copy_template "addons/ADVANCED_VERIFICATION_PLAYBOOK.md.template" "docs/ADVANCED_VERIFICATION_PLAYBOOK.md"
+  copy_template "scripts/predeploy_full_suite.sh.template" "scripts/predeploy_full_suite.sh"
+  copy_template "scripts/parity_pathways_report.py.template" "scripts/parity_pathways_report.py"
+  copy_template "scripts/parity-retired-pathways.json.template" "scripts/parity-retired-pathways.json"
+  copy_template "scripts/refactor_smoke_contract.py.template" "scripts/refactor_smoke_contract.py"
+  copy_template "scripts/enforce_doc_updates.sh.template" "scripts/enforce_doc_updates.sh"
+  copy_template "scripts/smoke_masterapi_refactor.sh.template" "scripts/smoke_masterapi_refactor.sh"
+  copy_template "scripts/smoke_enginepath_refactor.sh.template" "scripts/smoke_enginepath_refactor.sh"
+  copy_template "scripts/run_fixture_suite.sh.template" "scripts/run_fixture_suite.sh"
+  copy_template "scripts/refresh_snapshot_baseline.sh.template" "scripts/refresh_snapshot_baseline.sh"
+  copy_template "scripts/refactor-contracts/masterapi-slice1.json.template" "scripts/refactor-contracts/masterapi-slice1.json"
+  copy_template "scripts/refactor-contracts/enginepath-slice1.json.template" "scripts/refactor-contracts/enginepath-slice1.json"
+}
+
+apply_all_optional_addons() {
+  copy_template "addons/README.md.template" "README.md"
+  copy_template "addons/.gitignore.template" ".gitignore"
+  copy_template "addons/CONTRIBUTING.md.template" "CONTRIBUTING.md"
+  copy_template "addons/LICENSE.template" "LICENSE"
+  copy_template "addons/ADR_TEMPLATE.md.template" "docs/ADR_TEMPLATE.md"
+  copy_template "addons/FIRST_SESSION_PROMPT.txt.template" "docs/FIRST_SESSION_PROMPT.txt"
+  copy_template "addons/MULTI_APP_SERVER_BLUEPRINT.md.template" "docs/MULTI_APP_SERVER_BLUEPRINT.md"
+  copy_template "addons/docker-compose.local.yml.template" "docker-compose.local.yml"
+}
+
+echo "[bootstrap] Template root: $TEMPLATE_ROOT"
+echo "[bootstrap] Target dir:    $TARGET_DIR"
+echo "[bootstrap] Profile:       $PROFILE"
+echo "[bootstrap] CI option:     $CI_OPTION"
+echo "[bootstrap] Overwrite:     $OVERWRITE"
+echo "[bootstrap] Strict mode:   $STRICT_MODE"
+echo "[bootstrap] Tier profile:  $TIER_PROFILE_RESOLVED"
+echo "[bootstrap] Lean mode:     $LEAN_MODE"
+echo "[bootstrap] Orchestrator:  $ORCHESTRATOR_MODE"
+
+apply_core
+apply_ci_variant
+
+case "$PROFILE" in
+  1)
+    ;;
+  2)
+    apply_verification_hardening
+    ;;
+  3)
+    apply_verification_hardening
+    apply_all_optional_addons
+    ;;
+  *)
+    echo "[bootstrap][WARN] Unknown profile '$PROFILE'; using profile 2"
+    apply_verification_hardening
+    ;;
+esac
+
+if [[ "$TIER_PROFILE_RESOLVED" == "C" ]]; then
+  if [[ "$PROFILE" == "1" ]]; then
+    apply_verification_hardening
+  fi
+  if [[ "$USER_SET_CI_OPTION" == "0" ]]; then
+    CI_OPTION="4"
+  fi
+fi
+
+if [[ "$LEAN_MODE" == "1" ]]; then
+  apply_lean_overlay
+fi
+
+if [[ "$ORCHESTRATOR_MODE" == "1" ]]; then
+  apply_orchestrator_overlay
+fi
+
+PRUNED_COUNT=0
+prune_path() {
+  local rel="$1"
+  local path="$TARGET_DIR/$rel"
+  if [[ -f "$path" ]]; then
+    rm -f "$path"
+    PRUNED_COUNT=$((PRUNED_COUNT + 1))
+    echo "[bootstrap][prune] removed file: $rel"
+  elif [[ -d "$path" ]]; then
+    rm -rf "$path"
+    PRUNED_COUNT=$((PRUNED_COUNT + 1))
+    echo "[bootstrap][prune] removed dir: $rel"
+  fi
+}
+
+apply_tier_pruning() {
+  case "$TIER_PROFILE_RESOLVED" in
+    A)
+      prune_path "docs/MASTER_TRACEABILITY_TABLE.md"
+      prune_path "docs/ADVANCED_VERIFICATION_PLAYBOOK.md"
+      prune_path "scripts/predeploy_full_suite.sh"
+      prune_path "scripts/parity_pathways_report.py"
+      prune_path "scripts/parity-retired-pathways.json"
+      prune_path "scripts/refactor_smoke_contract.py"
+      prune_path "scripts/smoke_masterapi_refactor.sh"
+      prune_path "scripts/smoke_enginepath_refactor.sh"
+      prune_path "scripts/run_fixture_suite.sh"
+      prune_path "scripts/refresh_snapshot_baseline.sh"
+      prune_path "scripts/refactor-contracts"
+      ;;
+    B)
+      ;;
+    C)
+      ;;
+  esac
+}
+
+apply_tier_pruning
+
+# Legacy compatibility: when the full add-on profile is applied, AI_OPERATING_CONTRACT.md
+# must be an exact mirror of the canonical AI_AGENT.md (no separate rules allowed).
+if [[ "$PROFILE" == "3" && -f "$TARGET_DIR/AI_AGENT.md" ]]; then
+  cp "$TARGET_DIR/AI_AGENT.md" "$TARGET_DIR/AI_OPERATING_CONTRACT.md"
+fi
+
+if [[ -f "$TARGET_DIR/scripts/validate_templates.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/validate_templates.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/predeploy_full_suite.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/predeploy_full_suite.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/enforce_doc_updates.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/enforce_doc_updates.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/bootstrap_agent_ready.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/bootstrap_agent_ready.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/check_template_drift.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/check_template_drift.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/sync_templates_source.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/sync_templates_source.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/validate_context_budget.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/validate_context_budget.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/report_context_size.sh" ]]; then
+  chmod +x "$TARGET_DIR/scripts/report_context_size.sh" || true
+fi
+if [[ -f "$TARGET_DIR/scripts/orchestrator_state.py" ]]; then
+  chmod +x "$TARGET_DIR/scripts/orchestrator_state.py" || true
+fi
+
+if [[ "$ORCHESTRATOR_MODE" == "1" && -f "$TARGET_DIR/scripts/orchestrator_state.py" ]]; then
+  ( cd "$TARGET_DIR" && python3 scripts/orchestrator_state.py init ) || \
+    echo "[bootstrap][warn] orchestrator state init skipped"
+fi
+
+CI_SETUP_COMMANDS_DEFAULT="echo 'Configure runtime and dependencies'"
+case "$CI_OPTION" in
+  2)
+    CI_SETUP_COMMANDS_DEFAULT=$'python3 --version || true\npip --version || true'
+    ;;
+  3)
+    CI_SETUP_COMMANDS_DEFAULT=$'node --version || true\nnpm --version || true'
+    ;;
+  4)
+    CI_SETUP_COMMANDS_DEFAULT=$'echo "Predeploy-focused setup"\nchmod +x scripts/predeploy_full_suite.sh 2>/dev/null || true'
+    if [[ "$USER_SET_VERIFY_COMMAND" == "0" ]]; then
+      VERIFY_COMMAND="bash scripts/predeploy_full_suite.sh"
+    fi
+    ;;
+  *)
+    ;;
+esac
+
+PLACEHOLDER_FILES=(
+  "AI_AGENT.md"
+  "CHANGELOG.md"
+  "README.md"
+  "AI_OPERATING_CONTRACT.md"
+  "docs/OPERATOR_PROFILE.md"
+  "docs/SESSION_BRIEF.md"
+  "docs/CONTEXT_ROUTING.md"
+  "docs/AI_MEMORY.md"
+  "docs/MASTER_TRACEABILITY_TABLE.md"
+  "docs/PROJECT_CANVAS.md"
+  "docs/TECH_STACK.md"
+  "docs/ENGINEERING_PLAYBOOK.md"
+  "docs/OPS_SECURITY_RELEASE.md"
+  "docs/TEMPLATE_LIFECYCLE.md"
+  "docs/TEMPLATE_INDEX.yaml"
+  "docs/GAME_PLAN.md"
+  "docs/SCENARIO_PLAYBOOK.md"
+  "docs/CLOSING_CHECKLIST.md"
+  "docs/ORCHESTRATION_MAP.md"
+  "docs/WORKER_TASK_PACKET.md"
+  "docs/WORKER_RESULT_PACKET.md"
+  "docs/POST_CODING_CHECKS.md"
+  "docs/INVESTIGATOR_PROTOCOL.md"
+  "docs/STATE_LEDGER_PROTOCOL.md"
+  "docs/LOCAL_WORKER_HEALTH.md"
+  "docs/TEST_BLOAT_SWEEP.md"
+  "docs/OPERATOR_DASHBOARD.md"
+  "docs/FEATURE_SPEC_TEMPLATE.md"
+  "docs/state/packet_ledger.json"
+  "docs/state/session_budget.json"
+  "docs/ADVANCED_VERIFICATION_PLAYBOOK.md"
+  "docs/ADR_TEMPLATE.md"
+  "LICENSE"
+  "CONTRIBUTING.md"
+  "docker-compose.local.yml"
+  ".github/workflows/ci.yml"
+)
+
+EXISTING_FILES=()
+for rel in "${PLACEHOLDER_FILES[@]}"; do
+  if [[ -f "$TARGET_DIR/$rel" ]]; then
+    EXISTING_FILES+=("$TARGET_DIR/$rel")
+  fi
+done
+
+python3 - "$PROJECT_NAME" "$TIER" "$VERIFY_COMMAND" "$AI_CONTEXT_COMMAND" "$SMOKE_COMMAND" "$TARGETED_TEST_COMMAND" "$TRACEABILITY_SMOKE_COMMAND" "$CI_SETUP_COMMANDS_DEFAULT" "$TEMPLATE_VERSION" "${EXISTING_FILES[@]}" <<'PY'
+import pathlib
+import re
+import sys
+
+project_name = sys.argv[1]
+tier = sys.argv[2]
+verify_command = sys.argv[3]
+ai_context_command = sys.argv[4]
+smoke_command = sys.argv[5]
+targeted_test_command = sys.argv[6]
+traceability_smoke_command = sys.argv[7]
+ci_setup_commands = sys.argv[8]
+template_version = sys.argv[9]
+files = [pathlib.Path(p) for p in sys.argv[10:]]
+
+replacements = {
+    "[PROJECT_NAME]": project_name,
+    "[TIER_A_STATIC/TIER_B_STANDARD/TIER_C_PRODUCTION_CRITICAL]": tier,
+    "[VERIFY_COMMAND]": verify_command,
+    "[AI_CONTEXT_COMMAND]": ai_context_command,
+    "[SMOKE_COMMAND]": smoke_command,
+    "[TARGETED_TEST_COMMAND]": targeted_test_command,
+    "[COVERAGE_COMMAND]": "echo 'Set coverage command'",
+    "[TRACEABILITY_SMOKE_COMMAND]": traceability_smoke_command,
+    "[WHY_THIS_TIER]": "Set during bootstrap; refine with project rationale.",
+    "[TRUNK_BASED_OR_GITFLOW]": "TRUNK_BASED",
+    "[SMALL_MEDIUM]": "SMALL",
+    "[SQUASH_OR_MERGE_COMMIT]": "SQUASH",
+    "[SYNTAX_COMMAND]": smoke_command,
+    "[CI_SETUP_COMMANDS]": ci_setup_commands,
+    "[CI_INSTALL_COMMAND]": "echo 'Install project dependencies'",
+    "[LINT_COMMAND]": "echo 'Set lint command'",
+    "[FORMAT_CHECK_COMMAND]": "echo 'Set format check command'",
+    "[TYPECHECK_COMMAND]": "echo 'Set typecheck command'",
+    "[SECRET_SCAN_COMMAND]": "echo 'Set secret scan command'",
+    "[SCA_COMMAND]": "echo 'Set software composition analysis command'",
+    "[SAST_COMMAND]": "echo 'Set static analysis command'",
+    "[SETUP_COMMANDS]": "echo 'Set setup commands'",
+    "[BUILD_RUN_COMMAND]": "echo 'Set build/run command'",
+    "[PACKAGE_COMMAND]": "echo 'Set package command'",
+    "[PATH_ID]": "CLI-VERIFY-01",
+    "[LOCAL_ONLY_RUN_COMMAND]": "echo 'Set local-only run command'",
+    "[LOGS_COMMAND]": "echo 'Set logs command'",
+    "[FEATURE_SPEC_LINK_OR_NA]": "N/A",
+    "[ONE_LINE_DESCRIPTION]": "AI-agent-ready project baseline.",
+    "[ACTIVE/MAINTENANCE/ARCHIVED]": "ACTIVE",
+    "[LICENSE_TYPE]": "UNLICENSED",
+    "[LICENSE_TEXT_OR_REFERENCE]": "See LICENSE policy for this project.",
+    "[TITLE]": "Decision title",
+    "[FEATURE_OR_CHANGELOG_LINK]": "N/A",
+    "[NONE/FLAG_NAME + ROLLOUT_PLAN]": "NONE",
+    "[OWNER]": "Project Owner",
+    "[PLANNED_ITEM]": "Planned item",
+    "[CHANGE_SUMMARY]": "Change summary",
+    "[COMMAND_AND_RESULT]": "command -> result",
+    "[RISK_OR_NONE]": "None",
+    "[YYYY-MM-DD]": "2026-03-01",
+    "[MILESTONE]": "Initial Bootstrap",
+    "[PHASE]": "Initial Bootstrap",
+    "[MILESTONE_NAME]": "Initial Bootstrap",
+    "[EXACT_ITEM_TEXT]": "Populate project-specific docs and commands",
+    "[PACKET_ID_OR_NONE]": "none",
+    "[RESULT_PACKET_ID_OR_NONE]": "none",
+    "[SHORT_DESCRIPTION]": "Initial template specialization",
+    "[NEXT_COMMAND]": verify_command,
+    "[CANARY_PERCENT_OR_SEGMENT]": "10%",
+    "[ERROR_RATE_THRESHOLD]": "<1%",
+    "[LATENCY_THRESHOLD]": "p95 < 500ms",
+    "[QUEUE_THRESHOLD]": "No sustained queue growth",
+    "[SMOKE_THRESHOLD]": "All required smokes pass",
+    "[CANARY_WINDOW]": "30 minutes",
+    "[ROLLBACK_COMMAND]": "bash scripts/rollback.sh",
+    "[HOW_DEV_STAGING_PROD_STAY_ALIGNED]": "Shared CI + verify gates and release checklist",
+    "[PATH_OR_URL]": "docs/TECH_STACK.md",
+    "[TUNNEL_PROFILE_COMMAND_OR_NA]": "N/A",
+    "[IMAGE_SCAN_COMMAND]": "echo 'Set image scan command'",
+    "[SBOM_COMMAND]": "echo 'Set SBOM command'",
+    "[PROCESS_OR_NA]": "N/A",
+    "[JSON_OR_TEXT]": "JSON",
+    "[SEMVER_OR_SIMPLE_TAG]": "SEMVER",
+    "[ENTRY_FUNCTION]": "entryFunction",
+    "[RUNBOOK_SECTION]": "docs/MANUAL_SMOKE_RUNBOOK.md#pathway-check",
+    "[RATIONALE]": "Not automatable in baseline; covered by manual runbook",
+    "[CHAIN]": "moduleA -> moduleB",
+    "[CHAIN_START]": "moduleA",
+    "[CHAIN_NEXT]": "moduleB",
+    "[ASSERTION]": "Expected output/state asserted",
+    "[TYPE]": "API",
+    "[COMPONENT]": "CORE",
+    "[NUMBER]": "01",
+    "[FILE]": "src/module.ts",
+    "[FUNCTION]": "handleRequest",
+    "[TEMPLATE_VERSION]": template_version,
+}
+
+for path in files:
+    text = path.read_text(encoding="utf-8")
+    for old, new in replacements.items():
+      text = text.replace(old, new)
+    path.write_text(text, encoding="utf-8")
+PY
+
+VALIDATION_STATUS="not-run"
+VALIDATION_LOG="scripts/template_validation.log"
+if [[ -f "$TARGET_DIR/scripts/validate_templates.sh" ]]; then
+  if (cd "$TARGET_DIR" && bash scripts/validate_templates.sh . > "$VALIDATION_LOG" 2>&1); then
+    VALIDATION_STATUS="pass"
+    echo "[bootstrap] Validation passed"
+  else
+    VALIDATION_STATUS="fail"
+    echo "[bootstrap][FAIL] Validation failed (see $TARGET_DIR/$VALIDATION_LOG)"
+  fi
+fi
+
+UNRESOLVED_REPORT="$TARGET_DIR/docs/TEMPLATE_UNRESOLVED_PLACEHOLDERS.txt"
+mkdir -p "$TARGET_DIR/docs"
+
+SCAN_PATHS=(
+  "$TARGET_DIR/AI_AGENT.md"
+  "$TARGET_DIR/CHANGELOG.md"
+  "$TARGET_DIR/README.md"
+  "$TARGET_DIR/AI_OPERATING_CONTRACT.md"
+  "$TARGET_DIR/docs"
+  "$TARGET_DIR/.github/workflows"
+)
+
+EXISTING_SCAN=()
+for p in "${SCAN_PATHS[@]}"; do
+  if [[ -e "$p" ]]; then
+    EXISTING_SCAN+=("$p")
+  fi
+done
+
+RAW_PLACEHOLDER_REPORT="$(mktemp)"
+
+if [[ ${#EXISTING_SCAN[@]} -gt 0 ]]; then
+  grep -R -nE '\[[A-Z0-9_]+\]' "${EXISTING_SCAN[@]}" > "$RAW_PLACEHOLDER_REPORT" || true
+else
+  : > "$RAW_PLACEHOLDER_REPORT"
+fi
+
+python3 - "$RAW_PLACEHOLDER_REPORT" "$TARGET_DIR/$PLACEHOLDER_ALLOWLIST_FILE" "$UNRESOLVED_REPORT" <<'PY'
+import pathlib
+import re
+import sys
+
+raw_report = pathlib.Path(sys.argv[1])
+allowlist_file = pathlib.Path(sys.argv[2])
+unresolved_report = pathlib.Path(sys.argv[3])
+
+allowed = set()
+if allowlist_file.exists():
+    for raw in allowlist_file.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        token = line
+        if token.startswith("[") and token.endswith("]"):
+            token = token[1:-1]
+        allowed.add(token)
+
+token_re = re.compile(r"\[([A-Z0-9_]+)\]")
+out = []
+for raw in raw_report.read_text(encoding="utf-8").splitlines():
+    tokens = token_re.findall(raw)
+    unresolved = sorted({t for t in tokens if t not in allowed})
+    if unresolved:
+        out.append(f"{raw} :: unresolved={','.join(unresolved)}")
+
+unresolved_report.write_text("\n".join(out), encoding="utf-8")
+PY
+
+UNRESOLVED_COUNT=$(wc -l < "$UNRESOLVED_REPORT" | tr -d ' ')
+
+TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+VERSION_FILE="$TARGET_DIR/docs/TEMPLATE_VERSION.md"
+cat > "$VERSION_FILE" <<EOF
+# Applied Template Version
+
+template_version: $TEMPLATE_VERSION
+generated_utc: $TIMESTAMP
+template_root: $TEMPLATE_ROOT
+tier_profile: $TIER_PROFILE_RESOLVED
+apply_profile: $PROFILE
+ci_option: $CI_OPTION
+EOF
+
+REPORT_FILE="$TARGET_DIR/docs/TEMPLATE_READINESS_REPORT.md"
+
+cat > "$REPORT_FILE" <<EOF
+# Template Readiness Report
+
+- Generated (UTC): $TIMESTAMP
+- Template version: $TEMPLATE_VERSION
+- Template root: $TEMPLATE_ROOT
+- Target project: $TARGET_DIR
+- Apply profile: $PROFILE
+- CI option: $CI_OPTION
+- Overwrite policy: $OVERWRITE
+- Strict mode: $STRICT_MODE
+- Tier profile: $TIER_PROFILE_RESOLVED
+- Files copied: $COPIED_COUNT
+- Paths pruned: $PRUNED_COUNT
+- Validation status: $VALIDATION_STATUS
+- Unresolved placeholder lines: $UNRESOLVED_COUNT
+
+## Commands Run
+- Apply templates + placeholder fill via: \
+  bash scripts/bootstrap_agent_ready.sh --target "$TARGET_DIR"
+- Validation command: bash scripts/validate_templates.sh .
+- Drift check command: bash scripts/check_template_drift.sh . "$TEMPLATE_ROOT"
+
+## Outputs
+- Validation log: $VALIDATION_LOG
+- Placeholder scan: docs/TEMPLATE_UNRESOLVED_PLACEHOLDERS.txt
+- Version stamp: docs/TEMPLATE_VERSION.md
+- Allowlist file: $PLACEHOLDER_ALLOWLIST_FILE
+
+## Next Actions
+- If validation failed, review scripts/template_validation.log and correct required files/placeholders.
+- Resolve remaining entries in docs/TEMPLATE_UNRESOLVED_PLACEHOLDERS.txt.
+- Run project verify gate and commit once report is clean.
+EOF
+
+echo "[bootstrap] Readiness report written: $REPORT_FILE"
+echo "[bootstrap] Unresolved placeholder lines: $UNRESOLVED_COUNT"
+
+if [[ "$VALIDATION_STATUS" == "fail" ]]; then
+  exit 1
+fi
+
+if [[ "$STRICT_MODE" == "1" && "$UNRESOLVED_COUNT" -gt 0 ]]; then
+  echo "[bootstrap][FAIL] Strict mode enabled and unresolved placeholders remain"
+  exit 1
+fi
